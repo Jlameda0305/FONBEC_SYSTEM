@@ -1,4 +1,8 @@
-.FONBE_SYSTEM/
+FONBEC_SYSTEM/
 .env
 .vscode/
 __pycache__/
+.atl/
+openspec/
+AGENT.md
+temp_seed.py
