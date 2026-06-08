@@ -1,0 +1,25 @@
+@startuml diagrama
+' Mejora la disposición de izquierda a derecha
+left to right direction
+skinparam actorStyle awesome
+
+' Definición de actores
+:Tutor: as t
+
+package "Sistema de Gestión de Becas" {
+    usecase "Listar becarios asignados" as CU_Listar
+    usecase "Sin becarios asignados" as Ext_NoBecarios
+    usecase "Lista de becarios asignados" as List_becarios
+
+    usecase "Registro" as r
+    usecase "Login" as l
+}
+
+' Relaciones del Tutor
+t --> CU_Listar
+CU_Listar .> l : <<include>>
+l .> r : <<include>>
+
+CU_Listar .left.> Ext_NoBecarios : <<extend>>
+CU_Listar ..> List_becarios : <<include>>
+@enduml

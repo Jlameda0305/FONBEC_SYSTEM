@@ -1,0 +1,29 @@
+@startuml diagrama
+left to right direction
+skinparam actorStyle awesome
+
+' Definición de actores
+:Tutor: as t
+
+package "Sistema de Gestión de Becas" {
+    usecase "Listar becarios asignados" as CU_Listar
+    usecase "Seleccionar becario" as CU_Select
+    usecase "Contactar al mediador" as CU_Contactar
+    usecase "Mostrar alerta de sin mediador" as Ext_NoMediador
+    usecase "Generar vínculo de contacto" as CU_Vinculo
+    usecase "Mostrar error de sin número" as Ext_NoNum
+}
+
+' Relaciones del Tutor (inicia la acción)
+t --> CU_Contactar
+
+' Lógica de Inclusión: Pasos obligatorios del flujo
+CU_Contactar ..> CU_Select : <<include>>
+CU_Select ..> CU_Listar : <<include>>
+CU_Contactar ..> CU_Vinculo : <<include>>
+
+' Lógica de Extensión: Situaciones excepcionales (flechas hacia el caso base)
+Ext_NoNum ..> CU_Contactar : <<extend>>
+Ext_NoMediador ..> CU_Contactar : <<extend>>
+
+@enduml

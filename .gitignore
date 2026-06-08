@@ -1,0 +1,4 @@
+.FONBE_SYSTEM/
+.env
+.vscode/
+__pycache__/

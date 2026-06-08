@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+' Definición de actores
+:Tutor: as t
+
+package "Sistema de Gestión de Becas" {
+    
+    usecase "Seleccionar becario" as ICU_Select
+    usecase "Solicitar visualización de datos" as CU_Solicitud
+    usecase "Visualizar datos" as V_datos
+    usecase "Mostrar alerta de datos vacíos" as Ext_DatosVacios
+}
+
+' El Tutor inicia el flujo solicitando la visualización
+t --> CU_Solicitud
+
+' Includes: Pasos lógicos del flujo del Tutor
+CU_Solicitud .right.> ICU_Select : <<include>>
+CU_Solicitud ..> V_datos : <<include>>
+
+' Extend: Condición alternativa (¡Flecha correcta!)
+Ext_DatosVacios .left.> V_datos : <<extend>>
+
+' Nota aclaratoria con tildes corregidas
+note right of V_datos
+    Permite la visualización de:
+    1. Estado de datos académicos
+    2. Datos académicos
+    3. Opciones correspondientes 
+    al estado de datos académicos
+end note
+
+@enduml

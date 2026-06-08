@@ -1,0 +1,27 @@
+@startuml diagrama
+left to right direction
+skinparam actorStyle awesome
+
+' Definición de actores
+:Tutor: as t
+' Si el becario no interactúa físicamente en este flujo, no lo conectamos
+' :Becario: as b
+
+package "Sistema de Gestión de Becas" {
+    usecase "Listar becarios asignados" as CU_Listar
+    usecase "Seleccionar becario" as CU_Select
+    usecase "Mostrar alerta de becario no encontrado" as Ext_NoBecario
+    usecase "Visualizar datos y opciones del becario" as CU_DatosBecario
+}
+
+' Relaciones del Actor con el sistema
+t --> CU_Select
+
+' Includes del caso base
+CU_Select ..> CU_Listar : <<include>>
+CU_Select ..> CU_DatosBecario : <<include>>
+
+' Extend (flecha desde la extensión hacia el caso base)
+Ext_NoBecario .left.> CU_Select : <<extend>>
+
+@enduml

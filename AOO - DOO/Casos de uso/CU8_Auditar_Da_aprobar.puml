@@ -1,0 +1,33 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+:Tutor: as t
+
+package "Sistema de Gestión de Becas" {
+    usecase "Seleccionar Becario" as ICU_Select
+    usecase "Visualización de datos" as V_datos
+    usecase "Validación de estado" as ICU_Validacion
+    usecase "Aprobar datos académicos" as CU_Aprobar
+    usecase "Actualizar estado" as CU_Actualizar
+    
+    ' Agregamos el caso de uso aquí para que quede dentro del sistema
+    usecase "Manejar datos vacíos" as Ext_DatosVacios
+}
+
+' Relación principal
+t --> CU_Aprobar
+
+' Dependencias (Includes) del flujo de aprobación
+CU_Aprobar ..> ICU_Validacion : <<include>>
+CU_Aprobar ..> V_datos : <<include>>
+V_datos ..> ICU_Select : <<include>>
+
+' Actualizar el estado es una consecuencia obligatoria de aprobar
+CU_Aprobar ..> CU_Actualizar : <<include>>
+
+' Corrección del Extend: La flecha va desde la extensión hacia la base
+Ext_DatosVacios ..> ICU_Validacion : <<extend>>
+
+@enduml
+
