@@ -12,11 +12,10 @@ Covers:
 import sys
 import os
 import unittest
+from datetime import datetime
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
-from domain.enums import EstadoVerificacion, NivelCursado
-from domain.models import Becario, DatosAcademicos, Mediador, Tutor
+from src.domain.enums import EstadoVerificacion, NivelCursado
+from src.domain.models import Becario, DatosAcademicos, DocumentoAcademico, Mediador, Tutor
 
 
 def _make_usuario_kwargs(**overrides):
@@ -157,6 +156,34 @@ class TestLlenarFormularioAcademico(unittest.TestCase):
             becario.llenar_actualizar_formulario_academico({
                 "nombre_carrera": "Otra Carrera",
             })
+
+    def test_formulario_tipos_invalidos_lanza_error(self):
+        """Invalid types should raise TypeError."""
+        becario = _make_becario()
+        with self.assertRaises(TypeError):
+            becario.llenar_actualizar_formulario_academico({"anio_ingreso": "2020"})  # str instead of int
+            
+    def test_formulario_anio_futuro_lanza_error(self):
+        """Year beyond current year should raise ValueError."""
+        becario = _make_becario()
+        future_year = datetime.now().year + 5
+        with self.assertRaises(ValueError):
+            becario.llenar_actualizar_formulario_academico({"anio_ingreso": future_year})
+
+    def test_agregar_documento_exitoso(self):
+        """Should add DocumentoAcademico when not APROBADO."""
+        becario = _make_becario()
+        doc = DocumentoAcademico("Test", "ruta/test.pdf", datetime.now())
+        becario.datos_academicos.agregar_documento(doc)
+        self.assertEqual(len(becario.datos_academicos.lista_documentos), 1)
+        
+    def test_agregar_documento_bloqueado_si_aprobado(self):
+        """RN-02: Cannot add document when APROBADO."""
+        becario = _make_becario()
+        becario.datos_academicos.estado_verificacion = EstadoVerificacion.APROBADO
+        doc = DocumentoAcademico("Test", "ruta/test.pdf", datetime.now())
+        with self.assertRaises(ValueError):
+            becario.datos_academicos.agregar_documento(doc)
 
 
 # ---------------------------------------------------------------------------

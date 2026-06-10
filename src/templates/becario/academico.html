@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Datos Académicos — FONBEC{% endblock %}
+
+{% block content %}
+{% if datos %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 2px solid #E5E7EB;">
+        <h2 style="margin: 0; border: none; padding: 0;">Datos Académicos</h2>
+        <a href="{{ url_for('becario.editar_formulario_academico') }}" style="background-color: #4F46E5; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;">✏️ Editar Formulario</a>
+    </div>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+            {% if datos.nombre_carrera is defined %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.75rem 0; font-weight: 600; color: #555; width: 40%;">Carrera</td>
+                <td style="padding: 0.75rem 0;">{{ datos.nombre_carrera }}</td>
+            </tr>
+            {% endif %}
+
+            {% if datos.anio_ingreso is defined %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Año de Ingreso</td>
+                <td style="padding: 0.75rem 0;">{{ datos.anio_ingreso }}</td>
+            </tr>
+            {% endif %}
+
+            {% if datos.anio_en_curso is defined %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Año en Curso</td>
+                <td style="padding: 0.75rem 0;">{{ datos.anio_en_curso }}</td>
+            </tr>
+            {% endif %}
+
+            {% if datos.estado_verificacion is defined %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Estado de Verificación</td>
+                <td style="padding: 0.75rem 0;">
+                    {% if 'Aprobado' in datos.estado_verificacion %}
+                        <span class="badge badge-approved">{{ datos.estado_verificacion }}</span>
+                    {% elif 'Pendiente' in datos.estado_verificacion %}
+                        <span class="badge badge-pending">{{ datos.estado_verificacion }}</span>
+                    {% elif 'Incompleto' in datos.estado_verificacion %}
+                        <span class="badge badge-incomplete">{{ datos.estado_verificacion }}</span>
+                    {% else %}
+                        <span class="badge">{{ datos.estado_verificacion }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% if datos.materias_a_cursar is defined and datos.materias_a_cursar %}
+<div class="card">
+    <h2>Materias a Cursar</h2>
+    <ul style="list-style: none; padding: 0;">
+        {% for materia in datos.materias_a_cursar %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">📘 {{ materia }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if datos.materias_adeudadas is defined and datos.materias_adeudadas %}
+<div class="card">
+    <h2>Materias Adeudadas</h2>
+    <ul style="list-style: none; padding: 0;">
+        {% for materia in datos.materias_adeudadas %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">📕 {{ materia }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if datos.observaciones is defined and datos.observaciones %}
+<div class="card">
+    <h2>Observaciones</h2>
+    <p style="padding: 0.5rem 0; color: #555;">{{ datos.observaciones }}</p>
+</div>
+{% endif %}
+
+{% else %}
+<div class="card empty-state" style="text-align: center; padding: 3rem 1rem;">
+    <p style="font-size: 1.25rem; color: #4B5563; margin-bottom: 0.5rem;">📋 Aún no has registrado tus datos académicos.</p>
+    <p style="font-size: 0.95rem; color: #6B7280; margin-bottom: 2rem;">Completa el formulario para que tu mediador pueda revisar tu progreso.</p>
+    <a href="{{ url_for('becario.editar_formulario_academico') }}" style="background-color: #4F46E5; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);">Completar Formulario Ahora</a>
+</div>
+{% endif %}
+{% endblock %}

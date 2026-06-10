@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FONBEC - Formulario Académico</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-color: #F3F4F6;
+            --surface: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --danger: #EF4444;
+            --success: #10B981;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--surface);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .flashes li {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .flashes .error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border-left: 4px solid var(--danger);
+        }
+
+        .flashes .success {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border-left: 4px solid var(--success);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .help-text {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Llenar / Actualizar Formulario Académico</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="nombre_carrera">Carrera:</label>
+                <input type="text" id="nombre_carrera" name="nombre_carrera" value="{{ datos.get('nombre_carrera', '') }}" required placeholder="Ej. Ingeniería en Sistemas">
+            </div>
+
+            <div class="form-group">
+                <label for="anio_ingreso">Año de Ingreso:</label>
+                <input type="number" id="anio_ingreso" name="anio_ingreso" value="{{ datos.get('anio_ingreso', '') }}" required placeholder="Ej. 2021">
+            </div>
+
+            <div class="form-group">
+                <label for="anio_en_curso">Año en Curso:</label>
+                <input type="number" id="anio_en_curso" name="anio_en_curso" value="{{ datos.get('anio_en_curso', '') }}" required placeholder="Ej. 4">
+            </div>
+
+            <div class="form-group">
+                <label for="materias_a_cursar">Materias a Cursar:</label>
+                <input type="text" id="materias_a_cursar" name="materias_a_cursar" value="{{ ', '.join(datos.get('materias_a_cursar', [])) }}" required placeholder="Matemática I, Física II...">
+                <span class="help-text">Separadas por coma.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="materias_adeudadas">Materias Adeudadas:</label>
+                <input type="text" id="materias_adeudadas" name="materias_adeudadas" value="{{ ', '.join(datos.get('materias_adeudadas', [])) }}" placeholder="Química, Álgebra...">
+                <span class="help-text">Opcional. Separadas por coma.</span>
+            </div>
+
+            <div class="form-group">
+                <label for="documento_academico">Adjuntar Certificado (PDF):</label>
+                <input type="file" id="documento_academico" name="documento_academico" accept="application/pdf">
+                <span class="help-text">Opcional. Tamaño máximo: 5MB.</span>
+            </div>
+
+            <button type="submit" class="btn-submit">Guardar Formulario</button>
+        </form>
+    </div>
+</body>
+</html>

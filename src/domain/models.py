@@ -101,6 +101,8 @@ class DatosAcademicos:
         EstadoVerificacion.PENDIENTE_REVISION: {
             EstadoVerificacion.APROBADO,
             EstadoVerificacion.PENDIENTE_MODIFICAR,
+            EstadoVerificacion.PENDIENTE_REVISION,
+            EstadoVerificacion.INCOMPLETO,
         },
         EstadoVerificacion.PENDIENTE_MODIFICAR: {
             EstadoVerificacion.INCOMPLETO,
@@ -171,10 +173,65 @@ class DatosAcademicos:
             "nombre_carrera", "anio_ingreso", "anio_en_curso",
             "materias_a_cursar", "materias_adeudadas",
         }
+        
+        from datetime import datetime
+        current_year = datetime.now().year
+
         for campo, valor in kwargs.items():
             if campo not in campos_permitidos:
                 raise AttributeError(f"Campo no permitido: {campo}")
+
+            if valor is not None:
+                if campo == "anio_ingreso":
+                    if not isinstance(valor, int) or isinstance(valor, bool):
+                        raise TypeError("anio_ingreso debe ser un entero.")
+                    if valor > current_year or valor < 1900:
+                        raise ValueError(f"anio_ingreso inválido: {valor}")
+                elif campo == "anio_en_curso":
+                    if not isinstance(valor, int) or isinstance(valor, bool):
+                        raise TypeError("anio_en_curso debe ser un entero.")
+                    if valor < 1 or valor > 15:
+                        raise ValueError("anio_en_curso inválido. Debe ser el año de la carrera que cursas (ej: 1, 2, 3), máximo 15.")
+                elif campo in ("materias_a_cursar", "materias_adeudadas"):
+                    if not isinstance(valor, list):
+                        raise TypeError(f"{campo} debe ser una lista.")
+                    if not all(isinstance(m, str) for m in valor):
+                        raise TypeError(f"Todos los elementos en {campo} deben ser texto.")
+
             setattr(self, campo, valor)
+
+    def agregar_documento(self, documento: 'DocumentoAcademico') -> None:
+        """
+        Appends a new DocumentoAcademico to the lista_documentos.
+        Guards RN-02: rejects changes when estado_verificacion is APROBADO.
+        """
+        if self.estado_verificacion == EstadoVerificacion.APROBADO:
+            raise ValueError(
+                "Los datos académicos han sido aprobados y no pueden modificarse"
+            )
+        if not isinstance(documento, DocumentoAcademico):
+            raise TypeError("Se esperaba una instancia de DocumentoAcademico.")
+        self.lista_documentos.append(documento)
+
+    def to_dict(self) -> dict:
+        """
+        Serialize academic data to a plain dictionary (DTO).
+
+        Translates Enum values to their string representations to prevent
+        domain model leakage into the application/presentation layers.
+
+        Returns:
+            A dictionary with all academic data fields.
+        """
+        return {
+            "nombre_carrera": self.nombre_carrera,
+            "anio_ingreso": self.anio_ingreso,
+            "anio_en_curso": self.anio_en_curso,
+            "materias_a_cursar": self.materias_a_cursar,
+            "materias_adeudadas": self.materias_adeudadas,
+            "estado_verificacion": self.estado_verificacion.value,
+            "observaciones": self.observaciones,
+        }
 
 
 # ---------------------------------------------------------------------------
