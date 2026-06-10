@@ -98,6 +98,10 @@ Vacio ---> Pendiente_Revision : Guardar datos y marcar para revisión
 Incompleto --> Incompleto : Guardar datos sin completar
 Incompleto --> Pendiente_Revision : Guardar datos y marcar para revisión
 
+' Actualizacion de datos en estado pendiente de revisión
+Pendiente_Revision --> Incompleto : Guardar datos sin completar
+Pendiente_Revision --> Pendiente_Revision : Guardar datos y marcar para revisión
+
 ' Acciones del Tutor (CU-08)
 Pendiente_Revision --> Pendiente_Modificar : Rechazar datos y agregar comentarios
 Pendiente_Revision ---> Aprobado : Aprobar datos tras revisión  

@@ -17,4 +17,4 @@ def obtener_usuario_actual() -> str:
     Returns:
         A hardcoded becario_id for development and testing purposes.
     """
-    return "bec-003"
+    return "bec-002"

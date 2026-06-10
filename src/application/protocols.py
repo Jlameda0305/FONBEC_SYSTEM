@@ -46,15 +46,39 @@ class IStorageServiceProtocol(Protocol):
     Abstract contract for handling file storage operations.
     """
 
-    def subir_documento(self, archivo: object, becario_id: str) -> str:
+    def subir_documento(
+        self,
+        archivo: object,
+        becario_id: str,
+        tipo_documento: str,
+        nombre_completo: str,
+    ) -> str:
         """
         Uploads an academic document to the storage backend.
 
         Args:
             archivo: The file-like object to upload.
             becario_id: The ID of the Becario owning the document.
+            tipo_documento: Explicit document classification
+                (e.g. "Programa", "CartaCompromiso", "Inscripcion").
+            nombre_completo: Full name of the Becario, used for
+                file naming (e.g. "Juan_Perez").
 
         Returns:
-            str: The unique URL or access path of the uploaded file.
+            str: The public URL or access path of the uploaded file.
+        """
+        ...
+
+    def eliminar_documento_por_url(self, ruta_archivo: str) -> None:
+        """
+        Deletes an academic document from the storage backend using its URL.
+
+        Parses the URL to extract the deterministic object path and removes it.
+
+        Args:
+            ruta_archivo: The full public URL or access path of the uploaded file.
+
+        Raises:
+            Exception: If the storage backend reports an error.
         """
         ...

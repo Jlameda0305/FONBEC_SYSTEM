@@ -139,6 +139,22 @@
     <div class="container">
         <h2>Llenar / Actualizar Formulario Académico</h2>
 
+        {% set req_docs = [
+          ('Programa', 'Programa de la Carrera'),
+          ('CartaCompromiso', 'Carta de Compromiso'),
+          ('Inscripcion', 'Inscripción al Año en Curso')
+        ] %}
+        
+        {% if datos.documentos is defined %}
+          {% for key, name in req_docs %}
+            {% if key in datos.documentos %}
+              <form id="delete-form-{{ key }}" action="{{ url_for('becario.eliminar_documento_academico') }}" method="POST" style="display: none;">
+                  <input type="hidden" name="tipo_documento" value="{{ key }}">
+              </form>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             <ul class="flashes">
@@ -177,11 +193,39 @@
                 <span class="help-text">Opcional. Separadas por coma.</span>
             </div>
 
-            <div class="form-group">
-                <label for="documento_academico">Adjuntar Certificado (PDF):</label>
-                <input type="file" id="documento_academico" name="documento_academico" accept="application/pdf">
-                <span class="help-text">Opcional. Tamaño máximo: 5MB.</span>
+            <!-- INICIO CARGA DE DOCUMENTOS -->
+            <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px solid var(--border);">
+                <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Adjuntar Documentos</h3>
+                <p class="help-text" style="margin-bottom: 1.5rem;">Puedes subir archivos PDF (máximo 5MB cada uno).</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                {% for key, name in req_docs %}
+                    <div style="background-color: {% if datos.documentos is defined and key in datos.documentos %}#F0FDF4{% else %}#F9FAFB{% endif %}; border: 1px solid {% if datos.documentos is defined and key in datos.documentos %}#86EFAC{% else %}var(--border){% endif %}; border-radius: 0.75rem; padding: 1.25rem;">
+                        <label style="font-weight: 600; color: var(--text-main); font-size: 1rem; margin-bottom: {% if datos.documentos is defined and key in datos.documentos %}0.75rem{% else %}0.5rem{% endif %};">{{ name }}</label>
+                        
+                        {% if datos.documentos is defined and key in datos.documentos %}
+                            <div style="display: flex; align-items: center; justify-content: space-between; background-color: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #E5E7EB; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.25rem;">✅</span>
+                                    <div>
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: #065F46;">Archivo Cargado</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ datos.documentos[key].fecha_carga[:10] if datos.documentos[key].fecha_carga else 'Recientemente' }}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <a href="{{ datos.documentos[key].ruta_archivo }}" target="_blank" style="padding: 0.4rem 0.75rem; background-color: #EEF2FF; color: var(--primary); text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#E0E7FF'" onmouseout="this.style.backgroundColor='#EEF2FF'">Ver</a>
+                                    <button type="submit" form="delete-form-{{ key }}" title="Eliminar documento" style="padding: 0.4rem 0.75rem; background-color: #FEF2F2; color: var(--danger); border: none; cursor: pointer; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#FEE2E2'" onmouseout="this.style.backgroundColor='#FEF2F2'">Borrar</button>
+                                </div>
+                            </div>
+                            <label for="{{ key }}" style="font-size: 0.875rem; color: var(--text-muted); font-weight: normal; margin-bottom: 0.25rem;">Subir una nueva versión (opcional):</label>
+                        {% endif %}
+                        
+                        <input type="file" id="{{ key }}" name="{{ key }}" accept="application/pdf" style="background-color: white; border: 1px dashed var(--border); padding: 1rem; cursor: pointer;">
+                    </div>
+                {% endfor %}
+                </div>
             </div>
+            <!-- FIN CARGA DE DOCUMENTOS -->
 
             <button type="submit" class="btn-submit">Guardar Formulario</button>
         </form>

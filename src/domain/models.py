@@ -202,7 +202,12 @@ class DatosAcademicos:
 
     def agregar_documento(self, documento: 'DocumentoAcademico') -> None:
         """
-        Appends a new DocumentoAcademico to the lista_documentos.
+        Add or replace a DocumentoAcademico in lista_documentos.
+
+        If a document with the same tipo_documento already exists it is
+        replaced in-place, preventing duplicates. Otherwise the new
+        document is appended.
+
         Guards RN-02: rejects changes when estado_verificacion is APROBADO.
         """
         if self.estado_verificacion == EstadoVerificacion.APROBADO:
@@ -211,7 +216,38 @@ class DatosAcademicos:
             )
         if not isinstance(documento, DocumentoAcademico):
             raise TypeError("Se esperaba una instancia de DocumentoAcademico.")
+
+        # Replace existing document of the same type (upsert semantics)
+        for i, doc in enumerate(self.lista_documentos):
+            if doc.tipo_documento == documento.tipo_documento:
+                self.lista_documentos[i] = documento
+                return
         self.lista_documentos.append(documento)
+
+    def eliminar_documento(self, tipo_documento: str) -> None:
+        """
+        Remove a DocumentoAcademico by its tipo_documento key.
+
+        Guards RN-02: rejects changes when estado_verificacion is APROBADO.
+
+        Args:
+            tipo_documento: The classification key of the document to remove
+                (e.g. "Programa", "CartaCompromiso", "Inscripcion").
+
+        Raises:
+            ValueError: If estado is APROBADO or no document of that type exists.
+        """
+        if self.estado_verificacion == EstadoVerificacion.APROBADO:
+            raise ValueError(
+                "Los datos académicos han sido aprobados y no pueden modificarse"
+            )
+        for i, doc in enumerate(self.lista_documentos):
+            if doc.tipo_documento == tipo_documento:
+                self.lista_documentos.pop(i)
+                return
+        raise ValueError(
+            f"No existe un documento de tipo '{tipo_documento}' para eliminar."
+        )
 
     def to_dict(self) -> dict:
         """
@@ -219,10 +255,18 @@ class DatosAcademicos:
 
         Translates Enum values to their string representations to prevent
         domain model leakage into the application/presentation layers.
+        Includes a 'documentos' map keyed by tipo_documento.
 
         Returns:
             A dictionary with all academic data fields.
         """
+        documentos = {
+            doc.tipo_documento: {
+                "ruta_archivo": doc.ruta_archivo,
+                "fecha_carga": doc.fecha_carga.isoformat() if doc.fecha_carga else None,
+            }
+            for doc in self.lista_documentos
+        }
         return {
             "nombre_carrera": self.nombre_carrera,
             "anio_ingreso": self.anio_ingreso,
@@ -231,6 +275,7 @@ class DatosAcademicos:
             "materias_adeudadas": self.materias_adeudadas,
             "estado_verificacion": self.estado_verificacion.value,
             "observaciones": self.observaciones,
+            "documentos": documentos,
         }
 
 
@@ -523,12 +568,20 @@ class Becario(Usuario):
             raise ValueError(
                 "Los datos académicos han sido aprobados y no pueden modificarse"
             )
+        documentos = {
+            doc.tipo_documento: {
+                "ruta_archivo": doc.ruta_archivo,
+                "fecha_carga": doc.fecha_carga.isoformat() if doc.fecha_carga else None,
+            }
+            for doc in self.datos_academicos.lista_documentos
+        }
         return {
             "nombre_carrera": self.datos_academicos.nombre_carrera,
             "anio_ingreso": self.datos_academicos.anio_ingreso,
             "anio_en_curso": self.datos_academicos.anio_en_curso,
             "materias_a_cursar": self.datos_academicos.materias_a_cursar,
             "materias_adeudadas": self.datos_academicos.materias_adeudadas,
+            "documentos": documentos,
         }
 
     def llenar_actualizar_formulario_academico(self, datos: dict) -> None:

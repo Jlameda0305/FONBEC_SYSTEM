@@ -16,7 +16,8 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from domain.enums import EstadoVerificacion
-from domain.models import DatosAcademicos
+from domain.models import DatosAcademicos, DocumentoAcademico
+from datetime import datetime
 
 
 class TestTransicionesValidas(unittest.TestCase):
@@ -169,6 +170,101 @@ class TestActualizarDatos(unittest.TestCase):
         datos = DatosAcademicos(estado_verificacion=EstadoVerificacion.VACIO)
         with self.assertRaises(AttributeError):
             datos.actualizar_datos(campo_inventado="valor")
+
+
+class TestAgregarDocumentoUpsert(unittest.TestCase):
+    """Test agregar_documento() upsert semantics."""
+
+    def test_agregar_documento_nuevo(self):
+        """Adding a new tipo_documento appends to the list."""
+        datos = DatosAcademicos()
+        doc = DocumentoAcademico("Programa", "/path/prog.pdf", datetime(2026, 1, 1))
+        datos.agregar_documento(doc)
+        self.assertEqual(len(datos.lista_documentos), 1)
+
+    def test_agregar_documento_mismo_tipo_reemplaza(self):
+        """Adding a document with the same tipo_documento replaces it."""
+        datos = DatosAcademicos()
+        doc1 = DocumentoAcademico("Programa", "/path/v1.pdf", datetime(2026, 1, 1))
+        doc2 = DocumentoAcademico("Programa", "/path/v2.pdf", datetime(2026, 6, 1))
+        datos.agregar_documento(doc1)
+        datos.agregar_documento(doc2)
+        self.assertEqual(len(datos.lista_documentos), 1)
+        self.assertEqual(datos.lista_documentos[0].ruta_archivo, "/path/v2.pdf")
+
+    def test_agregar_tipos_distintos_no_reemplaza(self):
+        """Adding different tipo_documento values appends each."""
+        datos = DatosAcademicos()
+        datos.agregar_documento(
+            DocumentoAcademico("Programa", "/p1.pdf", datetime(2026, 1, 1))
+        )
+        datos.agregar_documento(
+            DocumentoAcademico("CartaCompromiso", "/p2.pdf", datetime(2026, 1, 1))
+        )
+        self.assertEqual(len(datos.lista_documentos), 2)
+
+    def test_agregar_bloqueado_en_aprobado(self):
+        """RN-02: Cannot add documents when APROBADO."""
+        datos = DatosAcademicos(estado_verificacion=EstadoVerificacion.APROBADO)
+        doc = DocumentoAcademico("Programa", "/path.pdf", datetime(2026, 1, 1))
+        with self.assertRaises(ValueError):
+            datos.agregar_documento(doc)
+
+
+class TestEliminarDocumento(unittest.TestCase):
+    """Test eliminar_documento() domain method."""
+
+    def setUp(self):
+        self.datos = DatosAcademicos()
+        self.datos.agregar_documento(
+            DocumentoAcademico("Programa", "/p1.pdf", datetime(2026, 1, 1))
+        )
+        self.datos.agregar_documento(
+            DocumentoAcademico("CartaCompromiso", "/p2.pdf", datetime(2026, 1, 1))
+        )
+
+    def test_eliminar_existente(self):
+        """Removing an existing tipo_documento reduces the list."""
+        self.datos.eliminar_documento("Programa")
+        self.assertEqual(len(self.datos.lista_documentos), 1)
+        self.assertEqual(self.datos.lista_documentos[0].tipo_documento, "CartaCompromiso")
+
+    def test_eliminar_inexistente_lanza_error(self):
+        """Removing a non-existent tipo_documento raises ValueError."""
+        with self.assertRaises(ValueError) as ctx:
+            self.datos.eliminar_documento("Inscripcion")
+        self.assertIn("No existe un documento", str(ctx.exception))
+
+    def test_eliminar_bloqueado_en_aprobado(self):
+        """RN-02: Cannot remove documents when APROBADO."""
+        self.datos.estado_verificacion = EstadoVerificacion.APROBADO
+        with self.assertRaises(ValueError):
+            self.datos.eliminar_documento("Programa")
+
+
+class TestToDictConDocumentos(unittest.TestCase):
+    """Test to_dict() includes the documentos map."""
+
+    def test_to_dict_sin_documentos(self):
+        """Empty lista_documentos produces an empty documentos dict."""
+        datos = DatosAcademicos()
+        result = datos.to_dict()
+        self.assertIn("documentos", result)
+        self.assertEqual(result["documentos"], {})
+
+    def test_to_dict_con_documentos(self):
+        """Documents are serialized as a map keyed by tipo_documento."""
+        datos = DatosAcademicos()
+        datos.agregar_documento(
+            DocumentoAcademico("Programa", "/p1.pdf", datetime(2026, 1, 15))
+        )
+        datos.agregar_documento(
+            DocumentoAcademico("Inscripcion", "/p2.pdf", datetime(2026, 6, 1))
+        )
+        result = datos.to_dict()
+        self.assertIn("Programa", result["documentos"])
+        self.assertIn("Inscripcion", result["documentos"])
+        self.assertEqual(result["documentos"]["Programa"]["ruta_archivo"], "/p1.pdf")
 
 
 if __name__ == "__main__":

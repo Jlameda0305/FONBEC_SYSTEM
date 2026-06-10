@@ -14,8 +14,14 @@ from src.application.use_cases.CU04_VisualizarDatosAcademicos import (
 from src.application.use_cases.CU03_LlenarActualizarFormularioAcademico import (
     CU03_LlenarActualizarFormularioAcademico,
 )
+from src.application.use_cases.CU03_EliminarDocumentoAcademico import (
+    CU03_EliminarDocumentoAcademico,
+)
 from src.infrastructure.repositories import SQLAlchemyBecarioRepository
 from src.infrastructure.storage.supabase_storage import SupabaseStorageServiceImpl
+
+# Explicit document type keys — order matches the UI fields
+TIPOS_DOCUMENTO = ["Programa", "CartaCompromiso", "Inscripcion"]
 
 becario_bp = Blueprint("becario", __name__, url_prefix="/becario")
 
@@ -50,6 +56,7 @@ def editar_formulario_academico():
     POST /becario/academico/editar
     
     Handles filling and updating the academic form (CU03).
+    Reads three explicit file inputs: Programa, CartaCompromiso, Inscripcion.
     """
     user_id = obtener_usuario_actual()
     repo = SQLAlchemyBecarioRepository(g.db_session)
@@ -69,10 +76,12 @@ def editar_formulario_academico():
                 "materias_adeudadas": [m.strip() for m in request.form.get("materias_adeudadas", "").split(",") if m.strip()]
             }
             
+            # Collect files from explicit per-type inputs
             archivos = []
-            file_obj = request.files.get("documento_academico")
-            if file_obj and file_obj.filename:
-                archivos.append((file_obj.filename, file_obj))
+            for tipo in TIPOS_DOCUMENTO:
+                file_obj = request.files.get(tipo)
+                if file_obj and file_obj.filename:
+                    archivos.append((tipo, file_obj))
                 
             use_case = CU03_LlenarActualizarFormularioAcademico(repo, storage)
             use_case.ejecutar(user_id, datos, archivos)
@@ -92,3 +101,33 @@ def editar_formulario_academico():
         datos_actuales = {}
         
     return render_template("becario/formulario.html", datos=datos_actuales)
+
+
+@becario_bp.route("/academico/documento/eliminar", methods=["POST"])
+def eliminar_documento_academico():
+    """
+    POST /becario/academico/documento/eliminar
+
+    Deletes a specific academic document by its tipo_documento key.
+    Expects form field 'tipo_documento' with one of:
+        Programa, CartaCompromiso, Inscripcion.
+    """
+    user_id = obtener_usuario_actual()
+    tipo_documento = request.form.get("tipo_documento", "").strip()
+
+    if tipo_documento not in TIPOS_DOCUMENTO:
+        flash(f"Tipo de documento inválido: '{tipo_documento}'.", "error")
+        return redirect(url_for("becario.editar_formulario_academico"))
+
+    repo = SQLAlchemyBecarioRepository(g.db_session)
+    storage = SupabaseStorageServiceImpl()
+
+    try:
+        use_case = CU03_EliminarDocumentoAcademico(repo, storage)
+        use_case.ejecutar(user_id, tipo_documento)
+        flash(f"Documento '{tipo_documento}' eliminado con éxito.", "success")
+    except ValueError as e:
+        flash(str(e), "error")
+
+    return redirect(url_for("becario.editar_formulario_academico"))
+
