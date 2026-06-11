@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel del Becario — FONBEC{% endblock %}</title>
+    <style>
+        /* ---- Reset & Base ---- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ---- Sidebar ---- */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e94560;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav a {
+            padding: 1rem 1.5rem;
+            color: #b0b0c0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border-left: 4px solid #e94560;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            color: #888;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ---- Main Content ---- */
+        .main-wrapper {
+            flex-grow: 1;
+            margin-left: 250px; /* offset for sidebar */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background-color: #ffffff;
+            height: 60px;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .topbar-user {
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .content {
+            padding: 2rem;
+            flex-grow: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ---- Shared Utilities ---- */
+        .card {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Flash Messages */
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+        .flashes li {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .flashes .error { background-color: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .flashes .success { background-color: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+
+        {% block extra_styles %}{% endblock %}
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            FONBEC
+        </div>
+        <nav class="sidebar-nav">
+            {% block sidebar %}
+            {% endblock %}
+        </nav>
+        <div class="sidebar-footer">
+            &copy; 2026 FONBEC
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-user">{% block topbar_user %}{% endblock %}</div>
+        </header>
+        
+        <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

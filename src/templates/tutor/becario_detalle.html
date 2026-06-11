@@ -1,0 +1,268 @@
+{% extends "shared/dashboard_base.html" %}
+
+{% block title %}Detalle del Becario — FONBEC{% endblock %}
+
+{% block topbar_user %}Modo Tutor{% endblock %}
+
+{% block sidebar %}
+<a href="{{ url_for('tutor.dashboard') }}" class="active">⬅ Volver al Listado</a>
+<a href="#">📅 Tutorías (Próximamente)</a>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+        .dashboard-grid {
+            grid-template-columns: 2fr 1fr;
+        }
+    }
+
+    .widget-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .profile-header {
+        margin-bottom: 1rem;
+    }
+
+    .profile-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .detail-item {
+        background-color: #f9fafb;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .detail-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+        font-size: 1rem;
+        color: #111827;
+        font-weight: 500;
+    }
+
+    /* Estado y Placeholder Botón */
+    .status-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px dashed #cbd5e1;
+    }
+
+    .status-text {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+
+    .btn-placeholder {
+        background-color: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        border: none;
+        display: inline-block;
+    }
+
+    /* Tarjetas de Contacto Reutilizadas */
+    .contact-card {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .contact-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .contact-role {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4f46e5;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .contact-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .contact-info {
+        font-size: 0.875rem;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-whatsapp {
+        display: inline-block;
+        background-color: #25d366;
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-align: center;
+        transition: background-color 0.2s;
+        margin-top: 0.5rem;
+        border: none;
+    }
+
+    .btn-whatsapp:hover {
+        background-color: #128c7e;
+    }
+
+    .empty-contact {
+        color: #6b7280;
+        font-style: italic;
+        font-size: 0.875rem;
+        padding: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Columna Principal -->
+    <div class="widget-container">
+        <!-- Tarjeta de Perfil -->
+        <div class="card">
+            <div class="profile-header">
+                <h1>{{ datos.perfil_becario.nombre }} {{ datos.perfil_becario.apellido }}</h1>
+                <p style="color: #6b7280; font-size: 0.9rem;">ID: {{ id_usuario }}</p>
+            </div>
+            
+            <h2 class="card-header" style="font-size: 1.1rem; border-bottom: none; margin-bottom: 0;">Datos Básicos</h2>
+            <div class="profile-details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Edad</div>
+                    <div class="detail-value">{{ datos.perfil_becario.edad or 'No especificada' }} años</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Sexo</div>
+                    <div class="detail-value">{{ datos.perfil_becario.sexo or 'No especificado' }}</div>
+                </div>
+                <div class="detail-item" style="grid-column: 1 / -1;">
+                    <div class="detail-label">Dirección</div>
+                    <div class="detail-value">{{ datos.perfil_becario.direccion or 'No especificada' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Auditoría -->
+        <div class="card" id="cu08-audit-section">
+            <h2 class="card-header">🎓 Estado Académico</h2>
+            <div class="status-section">
+                <div class="status-text">
+                    <p><strong>Estado Actual:</strong> Pendiente de Auditoría (Mock)</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.25rem;">El módulo de validación documental se habilitará en la siguiente fase.</p>
+                </div>
+                <a href="{{ url_for('tutor.visualizar_auditoria_academica', id_becario=id_usuario) }}" 
+                   style="background-color: #4f46e5; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600;">
+                    Auditar Datos Académicos
+                </a>
+            </div>
+        </div>
+
+        <!-- Tarjeta Calendario -->
+        <div class="card">
+            <h2 class="card-header">📅 Calendario de Tutorías</h2>
+            <div style="padding: 2rem; text-align: center; color: #9ca3af; background-color: #f9fafb; border-radius: 0.5rem; border: 1px dashed #d1d5db;">
+                <p>Próximamente: Fechas importantes y reuniones programadas.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna Lateral -->
+    <div class="widget-container">
+        <div class="card">
+            <h2 class="card-header">📞 Contactos Clave</h2>
+
+            <!-- Tarjeta Becario -->
+            <div class="contact-card">
+                <span class="contact-role">Becario</span>
+                <span class="contact-name">{{ datos.perfil_becario.nombre }} {{ datos.perfil_becario.apellido }}</span>
+                <span class="contact-info">📧 {{ datos.perfil_becario.email or 'Sin email' }}</span>
+                {% if datos.perfil_becario.telefono %}
+                    <a href="https://wa.me/{{ datos.perfil_becario.telefono }}" target="_blank" class="btn-whatsapp">Contactar por WhatsApp</a>
+                {% else %}
+                    <span class="empty-contact">Teléfono no registrado.</span>
+                {% endif %}
+            </div>
+
+            <!-- Tarjeta Mediador -->
+            <div class="contact-card">
+                <span class="contact-role">Mediador Asignado</span>
+                {% if datos.mediador_asignado %}
+                    <span class="contact-name">{{ datos.mediador_asignado.nombre }} {{ datos.mediador_asignado.apellido }}</span>
+                    <span class="contact-info">📧 {{ datos.mediador_asignado.email or 'Sin email' }}</span>
+                    {% if datos.mediador_asignado.telefono %}
+                        <a href="https://wa.me/{{ datos.mediador_asignado.telefono }}" target="_blank" class="btn-whatsapp">Contactar por WhatsApp</a>
+                    {% else %}
+                        <span class="empty-contact">Teléfono no registrado.</span>
+                    {% endif %}
+                {% else %}
+                    <span class="empty-contact">Sin mediador asignado.</span>
+                {% endif %}
+            </div>
+
+            <!-- Tarjeta Padrino -->
+            <div class="contact-card">
+                <span class="contact-role">Padrino Asignado</span>
+                {% if datos.padrino_asignado %}
+                    <span class="contact-name">{{ datos.padrino_asignado.nombre }} {{ datos.padrino_asignado.apellido }}</span>
+                    <span class="contact-info">📧 {{ datos.padrino_asignado.email or 'Sin email' }}</span>
+                    {% if datos.padrino_asignado.telefono %}
+                        <a href="https://wa.me/{{ datos.padrino_asignado.telefono }}" target="_blank" class="btn-whatsapp">Contactar por WhatsApp</a>
+                    {% else %}
+                        <span class="empty-contact">Teléfono no registrado.</span>
+                    {% endif %}
+                {% else %}
+                    <span class="empty-contact">Sin padrino asignado.</span>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

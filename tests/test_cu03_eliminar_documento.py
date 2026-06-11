@@ -90,7 +90,7 @@ class TestCU03EliminarDocumentoAcademico(unittest.TestCase):
         self.use_case = CU03_EliminarDocumentoAcademico(self.repo, self.storage)
 
     def test_eliminar_documento_exitoso(self):
-        """Should remove the document from domain and call storage delete."""
+        """Should remove the document from src.domain and call storage delete."""
         self.assertEqual(len(self.becario.datos_academicos.lista_documentos), 2)
 
         result = self.use_case.ejecutar("bec-123", "Programa")

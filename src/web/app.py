@@ -60,7 +60,9 @@ def create_app() -> Flask:
 
     # --- Register Blueprints ---
     from src.web.routes.becario import becario_bp
+    from src.web.routes.tutor import tutor_bp
     app.register_blueprint(becario_bp)
+    app.register_blueprint(tutor_bp)
 
     # --- Default Route ---
     from flask import redirect, url_for

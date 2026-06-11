@@ -1,0 +1,153 @@
+{% extends "shared/dashboard_base.html" %}
+
+{% block title %}Auditoría Académica — FONBEC{% endblock %}
+
+{% block topbar_user %}Modo Tutor{% endblock %}
+
+{% block sidebar %}
+<a href="{{ url_for('tutor.dashboard') }}">⬅ Volver al Listado</a>
+<a href="{{ url_for('tutor.becario_detalle', id_usuario=id_usuario) }}">👤 Detalle del Becario</a>
+<a href="#" class="active">🎓 Auditar Datos Académicos</a>
+{% endblock %}
+
+{% block content %}
+<style>
+    .card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        background-color: #E5E7EB;
+        color: #374151;
+    }
+    .badge-approved { background-color: #D1FAE5; color: #065F46; }
+    .badge-pending { background-color: #FEF3C7; color: #92400E; }
+    .badge-incomplete { background-color: #FEE2E2; color: #991B1B; }
+</style>
+<div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; max-width: 1200px;">
+    
+    <!-- Encabezado -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E5E7EB; padding-bottom: 1rem;">
+        <h1 style="margin: 0; font-size: 1.8rem; color: #1F2937;">Auditoría Académica</h1>
+        <span style="font-size: 1rem; color: #4B5563;">Becario: <strong>{{ perfil.nombre }} {{ perfil.apellido }}</strong></span>
+    </div>
+
+    <!-- Feedback Mensajes Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; 
+                    {% if category == 'error' %}background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;
+                    {% elif category == 'success' %}background-color: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7;
+                    {% else %}background-color: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD;{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        
+        <!-- Columna Izquierda: Información Académica (Modo Lectura) -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Datos Académicos (Reutilizados) -->
+            <div class="card">
+                <h2 style="margin-top: 0; color: #4F46E5; font-size: 1.5rem; border-bottom: 2px solid #E5E7EB; padding-bottom: 1rem; margin-bottom: 1.5rem;">Datos Básicos</h2>
+                {% include 'shared/partials/_datos_academicos.html' %}
+            </div>
+
+            <!-- Documentos Académicos (Reutilizados) -->
+            <div class="card">
+                <h2 style="margin-top: 0; color: #4F46E5; font-size: 1.5rem; border-bottom: 2px solid #E5E7EB; padding-bottom: 1rem; margin-bottom: 1.5rem;">Documentos Adjuntos</h2>
+                {% include 'shared/partials/_documentos_academicos.html' %}
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Controles de Auditoría -->
+        <div>
+            <div class="card" style="position: sticky; top: 1.5rem;">
+                <h2 style="margin-top: 0; color: #1F2937; font-size: 1.3rem; border-bottom: 2px solid #E5E7EB; padding-bottom: 1rem; margin-bottom: 1.5rem;">Decisión de Auditoría</h2>
+                
+                {% if datos.estado_verificacion == 'Aprobado' %}
+                    <div style="background-color: #ECFDF5; border: 1px solid #A7F3D0; padding: 1rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1.5rem;">
+                        <span style="font-size: 2rem;">✅</span>
+                        <p style="color: #065F46; font-weight: 600; margin: 0.5rem 0;">Información Aprobada</p>
+                        <p style="color: #047857; font-size: 0.875rem;">El expediente académico ha sido verificado.</p>
+                    </div>
+
+                    {% if datos.observaciones %}
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Observación Registrada:</label>
+                        <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; padding: 0.75rem; border-radius: 0.375rem; color: #4B5563; font-size: 0.95rem;">
+                            {{ datos.observaciones }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                {% elif datos.estado_verificacion == 'Pendiente_Revision' %}
+                    <form method="POST" action="{{ url_for('tutor.procesar_auditoria_academica', id_becario=id_usuario) }}" id="audit-form">
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="observaciones" style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                Observaciones (Requeridas para rechazar)
+                            </label>
+                            <textarea id="observaciones" name="observaciones" rows="4" 
+                                style="width: 100%; border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.75rem; font-family: inherit; font-size: 0.95rem; box-sizing: border-box;"
+                                placeholder="Indique qué documentos faltan o qué información debe corregirse..."
+                                oninput="validarBotones()">{{ datos.observaciones or '' }}</textarea>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button type="submit" name="decision" value="aprobar" 
+                                style="background-color: #10B981; color: white; padding: 0.75rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10B981'">
+                                ✓ Aprobar Datos Académicos
+                            </button>
+                            
+                            <button type="submit" name="decision" value="rechazar" id="btn-rechazar"
+                                style="background-color: #EF4444; color: white; padding: 0.75rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;"
+                                onmouseover="if(!this.disabled) this.style.backgroundColor='#DC2626'" onmouseout="if(!this.disabled) this.style.backgroundColor='#EF4444'">
+                                ✕ Solicitar Modificaciones
+                            </button>
+                        </div>
+                    </form>
+
+                    <script>
+                        function validarBotones() {
+                            const textarea = document.getElementById('observaciones');
+                            const btnRechazar = document.getElementById('btn-rechazar');
+                            if (textarea.value.trim() === '') {
+                                btnRechazar.disabled = true;
+                                btnRechazar.style.opacity = '0.5';
+                                btnRechazar.style.cursor = 'not-allowed';
+                            } else {
+                                btnRechazar.disabled = false;
+                                btnRechazar.style.opacity = '1';
+                                btnRechazar.style.cursor = 'pointer';
+                            }
+                        }
+                        // Inicializar al cargar
+                        validarBotones();
+                    </script>
+                {% else %}
+                    <div style="background-color: #F3F4F6; border: 1px dashed #D1D5DB; padding: 1rem; border-radius: 0.5rem; text-align: center; margin-bottom: 1.5rem;">
+                        <span style="font-size: 2rem;">⏳</span>
+                        <p style="color: #4B5563; font-weight: 600; margin: 0.5rem 0;">Auditoría No Disponible</p>
+                        <p style="color: #6B7280; font-size: 0.875rem;">El expediente se encuentra en estado <strong>{{ datos.estado_verificacion or 'Vacío' }}</strong>. Solo se puede auditar cuando el becario envíe sus datos (Pendiente de Revisión).</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

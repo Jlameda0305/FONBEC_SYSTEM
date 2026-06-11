@@ -132,6 +132,9 @@ class TestLlenarFormularioAcademico(unittest.TestCase):
             "anio_en_curso": 2,
             "materias_a_cursar": ["Matemática I"],
         })
+        becario.datos_academicos.agregar_documento(DocumentoAcademico("Programa", "r.pdf", datetime.now()))
+        becario.datos_academicos.agregar_documento(DocumentoAcademico("CartaCompromiso", "r.pdf", datetime.now()))
+        becario.datos_academicos.agregar_documento(DocumentoAcademico("Inscripcion", "r.pdf", datetime.now()))
         self.assertEqual(
             becario.datos_academicos.estado_verificacion,
             EstadoVerificacion.PENDIENTE_REVISION,
@@ -246,6 +249,11 @@ class TestAuditarDatosAcademicos(unittest.TestCase):
             anio_en_curso=2,
             materias_a_cursar=["Matemática I"],
             estado_verificacion=EstadoVerificacion.PENDIENTE_REVISION,
+            lista_documentos=[
+                DocumentoAcademico("Programa", "r.pdf", datetime.now()),
+                DocumentoAcademico("CartaCompromiso", "r.pdf", datetime.now()),
+                DocumentoAcademico("Inscripcion", "r.pdf", datetime.now()),
+            ]
         )
         return becario
 

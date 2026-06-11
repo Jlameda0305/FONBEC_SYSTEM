@@ -130,7 +130,7 @@ class TestMockAuthService(unittest.TestCase):
         from src.application.mock_auth_service import obtener_usuario_actual
         resultado = obtener_usuario_actual()
         self.assertIsInstance(resultado, str)
-        self.assertEqual(resultado, "bec-001")
+        self.assertEqual(resultado, "bec-002")
 
 
 if __name__ == "__main__":

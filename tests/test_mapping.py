@@ -14,10 +14,14 @@ class TestMapping(unittest.TestCase):
     def setUp(self):
         # Ensure clean state before each test
         clear_mappers()
+        import src.infrastructure.mapping
+        src.infrastructure.mapping._mapped = False
 
     def tearDown(self):
         # Clean up mappers after each test
         clear_mappers()
+        import src.infrastructure.mapping
+        src.infrastructure.mapping._mapped = False
 
     def test_iniciar_mapeo_executes_without_errors(self):
         """

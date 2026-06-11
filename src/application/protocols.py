@@ -8,7 +8,34 @@ these abstractions, never on concrete repositories.
 
 from typing import Optional, Protocol
 
-from src.domain.models import Becario
+from src.domain.models import Becario, Tutor
+
+
+class TutorRepositoryProtocol(Protocol):
+    """
+    Abstract contract for accessing Tutor persistence.
+    """
+
+    def obtener_por_id(self, tutor_id: str) -> Optional[Tutor]:
+        """
+        Retrieve a Tutor aggregate by its unique user ID.
+
+        Args:
+            tutor_id: The unique identifier of the Tutor.
+
+        Returns:
+            The Tutor instance if found, None otherwise.
+        """
+        ...
+
+    def guardar(self, tutor: Tutor) -> None:
+        """
+        Persist the Tutor aggregate back to the storage backend.
+
+        Args:
+            tutor: The Tutor instance to save.
+        """
+        ...
 
 
 class BecarioRepositoryProtocol(Protocol):

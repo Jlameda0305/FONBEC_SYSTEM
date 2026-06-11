@@ -9,8 +9,41 @@ from typing import Optional
 
 from sqlalchemy.orm import Session, joinedload
 
-from src.application.protocols import BecarioRepositoryProtocol
-from src.domain.models import Becario
+from src.application.protocols import BecarioRepositoryProtocol, TutorRepositoryProtocol
+from src.domain.models import Becario, Tutor
+
+
+class SQLAlchemyTutorRepository(TutorRepositoryProtocol):
+    """
+    Concrete implementation of TutorRepositoryProtocol using SQLAlchemy.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self.session = session
+
+    def obtener_por_id(self, tutor_id: str) -> Optional[Tutor]:
+        """
+        Retrieve a Tutor by its user ID. Eagerly loads its list of Becarios 
+        and their respective DatosAcademicos to prevent N+1 queries.
+        """
+        return (
+            self.session.query(Tutor)
+            .options(
+                joinedload(Tutor.lista_becarios)
+                .joinedload(Becario.datos_academicos)
+            )
+            .filter_by(id_usuario=tutor_id)
+            .first()
+        )
+
+    def guardar(self, tutor: Tutor) -> None:
+        """
+        Persists the Tutor aggregate back to the storage backend.
+        Because of the cascade relationships, this synchronizes the Becarios 
+        and their nested compositions.
+        """
+        self.session.add(tutor)
+        self.session.commit()
 
 
 class SQLAlchemyBecarioRepository(BecarioRepositoryProtocol):

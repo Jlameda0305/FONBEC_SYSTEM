@@ -17,6 +17,9 @@ from src.application.use_cases.CU03_LlenarActualizarFormularioAcademico import (
 from src.application.use_cases.CU03_EliminarDocumentoAcademico import (
     CU03_EliminarDocumentoAcademico,
 )
+from src.application.use_cases.CU02_ContactarReferente import (
+    ObtenerDatosReferentesUseCase,
+)
 from src.infrastructure.repositories import SQLAlchemyBecarioRepository
 from src.infrastructure.storage.supabase_storage import SupabaseStorageServiceImpl
 
@@ -24,6 +27,33 @@ from src.infrastructure.storage.supabase_storage import SupabaseStorageServiceIm
 TIPOS_DOCUMENTO = ["Programa", "CartaCompromiso", "Inscripcion"]
 
 becario_bp = Blueprint("becario", __name__, url_prefix="/becario")
+
+
+@becario_bp.route("/", methods=["GET"])
+def index():
+    """Redirects base /becario to the dashboard."""
+    return redirect(url_for("becario.dashboard"))
+
+
+@becario_bp.route("/dashboard", methods=["GET"])
+def dashboard():
+    """
+    GET /becario/dashboard
+    
+    Renders the main dashboard. Retrieves the referentes data (Tutor, Mediador, Padrino)
+    via CU02.
+    """
+    user_id = obtener_usuario_actual()
+    repo = SQLAlchemyBecarioRepository(g.db_session)
+    use_case = ObtenerDatosReferentesUseCase(repo)
+    
+    try:
+        referentes = use_case.execute(user_id)
+    except ValueError as e:
+        flash(str(e), "error")
+        referentes = {"tutor": None, "mediador": None, "padrino": None}
+        
+    return render_template("becario/dashboard.html", referentes=referentes)
 
 
 @becario_bp.route("/academico", methods=["GET"])

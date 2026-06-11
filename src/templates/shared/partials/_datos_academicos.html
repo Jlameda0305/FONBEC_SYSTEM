@@ -1,0 +1,63 @@
+<table style="width: 100%; border-collapse: collapse;">
+    <tbody>
+        {% if datos.estado_verificacion is defined %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Estado de Verificación</td>
+            <td style="padding: 0.75rem 0;">
+                {% if 'Aprobado' in datos.estado_verificacion %}
+                    <span class="badge badge-approved">{{ datos.estado_verificacion }}</span>
+                {% elif 'Pendiente' in datos.estado_verificacion %}
+                    <span class="badge badge-pending">{{ datos.estado_verificacion }}</span>
+                {% elif 'Incompleto' in datos.estado_verificacion %}
+                    <span class="badge badge-incomplete">{{ datos.estado_verificacion }}</span>
+                {% else %}
+                    <span class="badge">{{ datos.estado_verificacion }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endif %}
+
+        {% if datos.nombre_carrera is defined %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 0.75rem 0; font-weight: 600; color: #555; width: 40%;">Carrera</td>
+            <td style="padding: 0.75rem 0;">{{ datos.nombre_carrera }}</td>
+        </tr>
+        {% endif %}
+
+        {% if datos.anio_ingreso is defined %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Año de Ingreso</td>
+            <td style="padding: 0.75rem 0;">{{ datos.anio_ingreso }}</td>
+        </tr>
+        {% endif %}
+
+        {% if datos.anio_en_curso is defined %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Año en Curso</td>
+            <td style="padding: 0.75rem 0;">{{ datos.anio_en_curso }}</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+{% if datos.materias_a_cursar is defined and datos.materias_a_cursar %}
+<div style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 0.5rem;">Materias a Cursar</h3>
+    <ul style="list-style: none; padding: 0;">
+        {% for materia in datos.materias_a_cursar %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">📘 {{ materia }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if datos.materias_adeudadas is defined and datos.materias_adeudadas %}
+<div style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 0.5rem;">Materias Adeudadas</h3>
+    <ul style="list-style: none; padding: 0;">
+        {% for materia in datos.materias_adeudadas %}
+        <li style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">📕 {{ materia }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}

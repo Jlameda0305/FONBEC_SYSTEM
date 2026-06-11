@@ -120,6 +120,7 @@ tabla_datos_academicos = Table(
     Column("materias_adeudadas", ARRAY(String), nullable=False, default=[]),
     Column("estado_verificacion", Enum(EstadoVerificacion), nullable=False),
     Column("observaciones", String, nullable=True),
+    Column("fecha_observacion", DateTime, nullable=True),
 )
 
 tabla_documentos_academicos = Table(

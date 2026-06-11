@@ -27,12 +27,18 @@ from .schema import (
 )
 from .schema import mapper_registry
 
+_mapped = False
 
 def iniciar_mapeo() -> None:
     """
     Executes SQLAlchemy map_imperatively() to link classes and tables.
     Can be called once at application startup.
     """
+    global _mapped
+    if _mapped:
+        return
+    _mapped = True
+
     # 1. Independent entities
     mapper_registry.map_imperatively(Padrino, tabla_padrinos)
     
@@ -62,6 +68,7 @@ def iniciar_mapeo() -> None:
         "lista_documentos": relationship(
             DocumentoAcademico,
             cascade="all, delete-orphan",
+            lazy="joined",
         )
     })
 
@@ -91,15 +98,18 @@ def iniciar_mapeo() -> None:
         "puntero_tutor": relationship(
             Tutor,
             back_populates="lista_becarios",
-            foreign_keys=[tabla_becarios.c.tutor_id]
+            foreign_keys=[tabla_becarios.c.tutor_id],
+            lazy="joined"
         ),
         "puntero_mediador": relationship(
             Mediador,
             back_populates="lista_becarios",
-            foreign_keys=[tabla_becarios.c.mediador_id]
+            foreign_keys=[tabla_becarios.c.mediador_id],
+            lazy="joined"
         ),
         "puntero_padrino": relationship(
             Padrino,
-            foreign_keys=[tabla_becarios.c.padrino_id]
+            foreign_keys=[tabla_becarios.c.padrino_id],
+            lazy="joined"
         ),
     })

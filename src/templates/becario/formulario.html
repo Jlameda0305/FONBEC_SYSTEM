@@ -1,234 +1,188 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FONBEC - Formulario Académico</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+{% extends "shared/dashboard_base.html" %}
 
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg-color: #F3F4F6;
-            --surface: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
-            --danger: #EF4444;
-            --success: #10B981;
-        }
+{% block topbar_user %}Modo Becario{% endblock %}
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-        }
+{% block sidebar %}
+<a href="{{ url_for('becario.dashboard') }}">📊 Panel Principal</a>
+<a href="{{ url_for('becario.visualizar_academico') }}" class="active">🎓 Datos Académicos</a>
+{% endblock %}
+{% block title %}Formulario Académico — FONBEC{% endblock %}
 
-        .container {
-            background-color: var(--surface);
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 600px;
-        }
+{% block extra_styles %}
+<style>
+    :root {
+        --primary: #4F46E5;
+        --primary-hover: #4338CA;
+        --border: #E5E7EB;
+        --danger: #EF4444;
+        --success: #10B981;
+    }
 
-        h2 {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.5rem;
-            font-weight: 600;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-        }
+    .form-container {
+        background-color: #ffffff;
+        padding: 2.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
 
-        .flashes {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 1.5rem 0;
-        }
+    .form-container h2 {
+        margin-top: 0;
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 600;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
 
-        .flashes li {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
 
-        .flashes .error {
-            background-color: #FEE2E2;
-            color: #991B1B;
-            border-left: 4px solid var(--danger);
-        }
+    .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #1F2937;
+    }
 
-        .flashes .success {
-            background-color: #D1FAE5;
-            color: #065F46;
-            border-left: 4px solid var(--success);
-        }
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
 
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
+    .form-group input[type="text"]:focus,
+    .form-group input[type="number"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
 
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
+    .help-text {
+        display: block;
+        font-size: 0.875rem;
+        color: #6B7280;
+        margin-top: 0.25rem;
+    }
 
-        input[type="text"],
-        input[type="number"],
-        input[type="file"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
+    .btn-submit {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.15s ease, transform 0.1s ease;
+        margin-top: 1rem;
+    }
 
-        input[type="text"]:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
+    .btn-submit:hover {
+        background-color: var(--primary-hover);
+    }
+    
+    .btn-submit:active {
+        transform: scale(0.98);
+    }
+</style>
+{% endblock %}
 
-        .help-text {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
+{% block content %}
+<div class="form-container">
+    <h2>Llenar / Actualizar Formulario Académico</h2>
 
-        .btn-submit {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.15s ease, transform 0.1s ease;
-            margin-top: 1rem;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
-        }
-        
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Llenar / Actualizar Formulario Académico</h2>
-
-        {% set req_docs = [
-          ('Programa', 'Programa de la Carrera'),
-          ('CartaCompromiso', 'Carta de Compromiso'),
-          ('Inscripcion', 'Inscripción al Año en Curso')
-        ] %}
-        
-        {% if datos.documentos is defined %}
-          {% for key, name in req_docs %}
-            {% if key in datos.documentos %}
-              <form id="delete-form-{{ key }}" action="{{ url_for('becario.eliminar_documento_academico') }}" method="POST" style="display: none;">
-                  <input type="hidden" name="tipo_documento" value="{{ key }}">
-              </form>
-            {% endif %}
-          {% endfor %}
+    {% set req_docs = [
+      ('Programa', 'Programa de la Carrera'),
+      ('CartaCompromiso', 'Carta de Compromiso'),
+      ('Inscripcion', 'Inscripción al Año en Curso')
+    ] %}
+    
+    {% if datos.documentos is defined %}
+      {% for key, name in req_docs %}
+        {% if key in datos.documentos %}
+          <form id="delete-form-{{ key }}" action="{{ url_for('becario.eliminar_documento_academico') }}" method="POST" style="display: none;">
+              <input type="hidden" name="tipo_documento" value="{{ key }}">
+          </form>
         {% endif %}
+      {% endfor %}
+    {% endif %}
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <ul class="flashes">
-            {% for category, message in messages %}
-              <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="nombre_carrera">Carrera:</label>
+            <input type="text" id="nombre_carrera" name="nombre_carrera" value="{{ datos.get('nombre_carrera', '') }}" required placeholder="Ej. Ingeniería en Sistemas">
+        </div>
 
-        <form method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="nombre_carrera">Carrera:</label>
-                <input type="text" id="nombre_carrera" name="nombre_carrera" value="{{ datos.get('nombre_carrera', '') }}" required placeholder="Ej. Ingeniería en Sistemas">
-            </div>
+        <div class="form-group">
+            <label for="anio_ingreso">Año de Ingreso:</label>
+            <input type="number" id="anio_ingreso" name="anio_ingreso" value="{{ datos.get('anio_ingreso', '') }}" required placeholder="Ej. 2021">
+        </div>
 
-            <div class="form-group">
-                <label for="anio_ingreso">Año de Ingreso:</label>
-                <input type="number" id="anio_ingreso" name="anio_ingreso" value="{{ datos.get('anio_ingreso', '') }}" required placeholder="Ej. 2021">
-            </div>
+        <div class="form-group">
+            <label for="anio_en_curso">Año en Curso:</label>
+            <input type="number" id="anio_en_curso" name="anio_en_curso" value="{{ datos.get('anio_en_curso', '') }}" required placeholder="Ej. 4">
+        </div>
 
-            <div class="form-group">
-                <label for="anio_en_curso">Año en Curso:</label>
-                <input type="number" id="anio_en_curso" name="anio_en_curso" value="{{ datos.get('anio_en_curso', '') }}" required placeholder="Ej. 4">
-            </div>
+        <div class="form-group">
+            <label for="materias_a_cursar">Materias a Cursar:</label>
+            <input type="text" id="materias_a_cursar" name="materias_a_cursar" value="{{ ', '.join(datos.get('materias_a_cursar', [])) }}" required placeholder="Matemática I, Física II...">
+            <span class="help-text">Separadas por coma.</span>
+        </div>
 
-            <div class="form-group">
-                <label for="materias_a_cursar">Materias a Cursar:</label>
-                <input type="text" id="materias_a_cursar" name="materias_a_cursar" value="{{ ', '.join(datos.get('materias_a_cursar', [])) }}" required placeholder="Matemática I, Física II...">
-                <span class="help-text">Separadas por coma.</span>
-            </div>
+        <div class="form-group">
+            <label for="materias_adeudadas">Materias Adeudadas:</label>
+            <input type="text" id="materias_adeudadas" name="materias_adeudadas" value="{{ ', '.join(datos.get('materias_adeudadas', [])) }}" placeholder="Química, Álgebra...">
+            <span class="help-text">Opcional. Separadas por coma.</span>
+        </div>
 
-            <div class="form-group">
-                <label for="materias_adeudadas">Materias Adeudadas:</label>
-                <input type="text" id="materias_adeudadas" name="materias_adeudadas" value="{{ ', '.join(datos.get('materias_adeudadas', [])) }}" placeholder="Química, Álgebra...">
-                <span class="help-text">Opcional. Separadas por coma.</span>
-            </div>
-
-            <!-- INICIO CARGA DE DOCUMENTOS -->
-            <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px solid var(--border);">
-                <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Adjuntar Documentos</h3>
-                <p class="help-text" style="margin-bottom: 1.5rem;">Puedes subir archivos PDF (máximo 5MB cada uno).</p>
-                
-                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                {% for key, name in req_docs %}
-                    <div style="background-color: {% if datos.documentos is defined and key in datos.documentos %}#F0FDF4{% else %}#F9FAFB{% endif %}; border: 1px solid {% if datos.documentos is defined and key in datos.documentos %}#86EFAC{% else %}var(--border){% endif %}; border-radius: 0.75rem; padding: 1.25rem;">
-                        <label style="font-weight: 600; color: var(--text-main); font-size: 1rem; margin-bottom: {% if datos.documentos is defined and key in datos.documentos %}0.75rem{% else %}0.5rem{% endif %};">{{ name }}</label>
-                        
-                        {% if datos.documentos is defined and key in datos.documentos %}
-                            <div style="display: flex; align-items: center; justify-content: space-between; background-color: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #E5E7EB; margin-bottom: 1rem;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="font-size: 1.25rem;">✅</span>
-                                    <div>
-                                        <div style="font-size: 0.875rem; font-weight: 600; color: #065F46;">Archivo Cargado</div>
-                                        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ datos.documentos[key].fecha_carga[:10] if datos.documentos[key].fecha_carga else 'Recientemente' }}</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <a href="{{ datos.documentos[key].ruta_archivo }}" target="_blank" style="padding: 0.4rem 0.75rem; background-color: #EEF2FF; color: var(--primary); text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#E0E7FF'" onmouseout="this.style.backgroundColor='#EEF2FF'">Ver</a>
-                                    <button type="submit" form="delete-form-{{ key }}" title="Eliminar documento" style="padding: 0.4rem 0.75rem; background-color: #FEF2F2; color: var(--danger); border: none; cursor: pointer; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#FEE2E2'" onmouseout="this.style.backgroundColor='#FEF2F2'">Borrar</button>
+        <!-- INICIO CARGA DE DOCUMENTOS -->
+        <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px solid var(--border);">
+            <h3 style="margin-top: 0; color: #1F2937; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Adjuntar Documentos</h3>
+            <p class="help-text" style="margin-bottom: 1.5rem;">Puedes subir archivos PDF (máximo 5MB cada uno).</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% for key, name in req_docs %}
+                <div class="form-group" style="background-color: {% if datos.documentos is defined and key in datos.documentos %}#F0FDF4{% else %}#F9FAFB{% endif %}; border: 1px solid {% if datos.documentos is defined and key in datos.documentos %}#86EFAC{% else %}#E5E7EB{% endif %}; border-radius: 0.75rem; padding: 1.25rem;">
+                    <label style="font-weight: 600; color: #1F2937; font-size: 1rem; margin-bottom: {% if datos.documentos is defined and key in datos.documentos %}0.75rem{% else %}0.5rem{% endif %};">{{ name }}</label>
+                    
+                    {% if datos.documentos is defined and key in datos.documentos %}
+                        <div style="display: flex; align-items: center; justify-content: space-between; background-color: white; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #E5E7EB; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.25rem;">✅</span>
+                                <div>
+                                    <div style="font-size: 0.875rem; font-weight: 600; color: #065F46;">Archivo Cargado</div>
+                                    <div style="font-size: 0.75rem; color: #6B7280;">{{ datos.documentos[key].fecha_carga[:10] if datos.documentos[key].fecha_carga else 'Recientemente' }}</div>
                                 </div>
                             </div>
-                            <label for="{{ key }}" style="font-size: 0.875rem; color: var(--text-muted); font-weight: normal; margin-bottom: 0.25rem;">Subir una nueva versión (opcional):</label>
-                        {% endif %}
-                        
-                        <input type="file" id="{{ key }}" name="{{ key }}" accept="application/pdf" style="background-color: white; border: 1px dashed var(--border); padding: 1rem; cursor: pointer;">
-                    </div>
-                {% endfor %}
+                            <div style="display: flex; gap: 0.5rem;">
+                                <a href="{{ datos.documentos[key].ruta_archivo }}" target="_blank" style="padding: 0.4rem 0.75rem; background-color: #EEF2FF; color: var(--primary); text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#E0E7FF'" onmouseout="this.style.backgroundColor='#EEF2FF'">Ver</a>
+                                <button type="button" onclick="document.getElementById('delete-form-{{ key }}').submit()" title="Eliminar documento" style="padding: 0.4rem 0.75rem; background-color: #FEF2F2; color: var(--danger); border: none; cursor: pointer; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#FEE2E2'" onmouseout="this.style.backgroundColor='#FEF2F2'">Borrar</button>
+                            </div>
+                        </div>
+                        <label for="{{ key }}" style="font-size: 0.875rem; color: #6B7280; font-weight: normal; margin-bottom: 0.25rem;">Subir una nueva versión (opcional):</label>
+                    {% endif %}
+                    
+                    <input type="file" id="{{ key }}" name="{{ key }}" accept="application/pdf" style="background-color: white; border: 1px dashed var(--border); padding: 1rem; cursor: pointer;">
                 </div>
+            {% endfor %}
             </div>
-            <!-- FIN CARGA DE DOCUMENTOS -->
+        </div>
+        <!-- FIN CARGA DE DOCUMENTOS -->
 
-            <button type="submit" class="btn-submit">Guardar Formulario</button>
-        </form>
-    </div>
-</body>
-</html>
+        <button type="submit" class="btn-submit">Guardar Formulario</button>
+    </form>
+</div>
+{% endblock %}

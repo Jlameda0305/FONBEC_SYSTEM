@@ -1,0 +1,28 @@
+{% set req_docs = [
+  ('Programa', 'Programa de la carrera'),
+  ('CartaCompromiso', 'Carta de compromiso'),
+  ('Inscripcion', 'Inscripción al año en curso')
+] %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+    {% for key, name in req_docs %}
+    <div style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 0.75rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+        <div style="margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.25rem;">📄</span>
+                <h4 style="margin: 0; color: #374151; font-weight: 600; font-size: 1rem; line-height: 1.3;">{{ name }}</h4>
+            </div>
+            {% if datos.documentos is defined and key in datos.documentos %}
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background-color: #D1FAE5; color: #065F46; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">✅ Subido</span>
+            {% else %}
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; background-color: #FEF3C7; color: #92400E; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">⏳ Pendiente</span>
+            {% endif %}
+        </div>
+        
+        {% if datos.documentos is defined and key in datos.documentos %}
+            <a href="{{ datos.documentos[key].ruta_archivo }}" target="_blank" style="display: block; text-align: center; background-color: white; color: #4F46E5; border: 1px solid #4F46E5; padding: 0.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 500; font-size: 0.875rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#EEF2FF';" onmouseout="this.style.backgroundColor='white';">Descargar Documento</a>
+        {% else %}
+            <div style="display: block; text-align: center; background-color: #F3F4F6; color: #9CA3AF; border: 1px dashed #D1D5DB; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.875rem;">Archivo no disponible</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>

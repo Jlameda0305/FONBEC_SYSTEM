@@ -15,8 +15,8 @@ import unittest
 # Add src to the path so domain can be imported directly
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from domain.enums import EstadoVerificacion
-from domain.models import DatosAcademicos, DocumentoAcademico
+from src.domain.enums import EstadoVerificacion
+from src.domain.models import DatosAcademicos, DocumentoAcademico
 from datetime import datetime
 
 
@@ -91,6 +91,11 @@ class TestValidarCompletitud(unittest.TestCase):
             anio_ingreso=2023,
             anio_en_curso=2,
             materias_a_cursar=["Matemática I", "Programación"],
+            lista_documentos=[
+                DocumentoAcademico("Programa", "r.pdf", datetime.now()),
+                DocumentoAcademico("CartaCompromiso", "r.pdf", datetime.now()),
+                DocumentoAcademico("Inscripcion", "r.pdf", datetime.now()),
+            ]
         )
         self.assertTrue(datos.validar_completitud())
 

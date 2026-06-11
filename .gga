@@ -1,0 +1,26 @@
+# Gentleman Guardian Angel Configuration
+
+# AI Provider (required)
+# Configurado para usar Open Code (ideal para rutear a modelos como DeepSeek).
+# Si necesitas un modelo específico dentro de OpenCode, puedes usar el formato:
+# PROVIDER="opencode:deepseek-coder" o similar, según la doc de Gentle-AI.
+PROVIDER="opencode"
+
+# File patterns to include in review (comma-separated)
+# Incluye Python (backend), HTML (tus templates de Jinja), MD y PUML (para el diseño y reglas)
+FILE_PATTERNS="*.py,*.html,*.md,*.puml"
+
+# File patterns to exclude from review (comma-separated)
+# Ignora la caché de Python, entornos virtuales y archivos temporales de tu editor de texto
+EXCLUDE_PATTERNS="*__pycache__*,*.kate-swp,venv/*,.venv/*,.env"
+
+# File containing code review rules
+# Apuntando a tu archivo en singular para que lo detecte sin que tengas que renombrarlo
+RULES_FILE="AGENT.md"
+
+# Strict mode: fail if AI response is ambiguous
+STRICT_MODE="true"
+
+# Timeout in seconds for AI provider response
+# 300 segundos (5 minutos) está perfecto para procesar el monolito de models.py
+TIMEOUT="300"
