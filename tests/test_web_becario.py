@@ -22,18 +22,18 @@ class TestWebBecarioAcademico(unittest.TestCase):
 
     def test_ruta_retorna_200(self) -> None:
         """GET /becario/academico returns 200 OK."""
-        response = self.client.get("/becario/academico")
+        response = self.client.get("/becario/academico?force_user=bec-002")
         self.assertEqual(response.status_code, 200)
 
     def test_html_contiene_titulo(self) -> None:
         """The rendered HTML contains the page title."""
-        response = self.client.get("/becario/academico")
+        response = self.client.get("/becario/academico?force_user=bec-002")
         html = response.data.decode("utf-8")
         self.assertIn("Datos Académicos", html)
 
     def test_html_contiene_datos_del_becario(self) -> None:
         """The rendered HTML contains academic data fields structure."""
-        response = self.client.get("/becario/academico")
+        response = self.client.get("/becario/academico?force_user=bec-002")
         html = response.data.decode("utf-8")
         # Check that the layout renders the keys
         self.assertIn("Carrera", html)
@@ -41,13 +41,13 @@ class TestWebBecarioAcademico(unittest.TestCase):
 
     def test_html_contiene_estado_verificacion(self) -> None:
         """The rendered HTML contains the verification status badge."""
-        response = self.client.get("/becario/academico")
+        response = self.client.get("/becario/academico?force_user=bec-002")
         html = response.data.decode("utf-8")
         self.assertIn("badge", html)
 
     def test_html_contiene_estructura_base(self) -> None:
         """The rendered HTML extends the base template (has header, footer)."""
-        response = self.client.get("/becario/academico")
+        response = self.client.get("/becario/academico?force_user=bec-002")
         html = response.data.decode("utf-8")
         self.assertIn("FONBEC", html)
         self.assertIn("footer", html)

@@ -27,4 +27,4 @@ def obtener_usuario_actual() -> str:
             return session["user_id"]
 
     # 3. Fallback por defecto si no hay sesión
-    return "bec-002"
+    return "admin-001"

@@ -6,9 +6,9 @@ to satisfy the Dependency Inversion Principle. Use Cases depend on
 these abstractions, never on concrete repositories.
 """
 
-from typing import Optional, Protocol
+from typing import Optional, Protocol, List, Dict, Any
 
-from src.domain.models import Becario, Tutor
+from src.domain.models import Becario, Tutor, Usuario
 
 
 class TutorRepositoryProtocol(Protocol):
@@ -107,5 +107,32 @@ class IStorageServiceProtocol(Protocol):
 
         Raises:
             Exception: If the storage backend reports an error.
+        """
+        ...
+
+
+class UsuarioRepositoryProtocol(Protocol):
+    """
+    Abstract contract for querying multiple users (actors) with pagination and filtering.
+    """
+
+    def listar_usuarios(
+        self,
+        limite: int,
+        offset: int,
+        rol: Optional[str] = None,
+        busqueda: Optional[str] = None,
+    ) -> List[Usuario]:
+        """
+        Retrieves a paginated list of actors matching the criteria.
+
+        Args:
+            limite: Maximum number of records to return.
+            offset: Number of records to skip.
+            rol: Filter by specific role (e.g., 'becario', 'tutor').
+            busqueda: Case-insensitive partial match on name, surname, or email.
+
+        Returns:
+            A list of Usuario (or its subclasses) instances.
         """
         ...

@@ -64,6 +64,22 @@ tabla_tutores = Table(
     Column("rol", String, nullable=False, default="tutor"),
 )
 
+tabla_administradores = Table(
+    "administradores",
+    metadata,
+    # Inherited from Usuario
+    Column("id_usuario", String, primary_key=True),
+    Column("nombre", String, nullable=False),
+    Column("apellido", String, nullable=False),
+    Column("email", String, nullable=False),
+    Column("telefono", String, nullable=False),
+    Column("edad", Integer, nullable=False),
+    Column("sexo", String, nullable=False),
+    Column("direccion", String, nullable=False),
+    Column("password_hash", String, nullable=False),
+    Column("rol", String, nullable=False, default="administrador"),
+)
+
 tabla_mediadores = Table(
     "mediadores",
     metadata,

@@ -45,6 +45,23 @@ class Usuario(ABC):
         """Reset password. Stub — no .puml for this CU."""
         raise NotImplementedError
 
+    def to_dict(self) -> dict:
+        """
+        Serialize base user attributes safely without triggering recursive loops.
+        Subclasses can override this if they need specific data.
+        """
+        return {
+            "id_usuario": self.id_usuario,
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "email": self.email,
+            "telefono": self.telefono,
+            "edad": self.edad,
+            "sexo": self.sexo,
+            "direccion": self.direccion,
+            "rol": self.rol
+        }
+
     @abstractmethod
     def visualizar_datos_academicos(self) -> dict:
         """

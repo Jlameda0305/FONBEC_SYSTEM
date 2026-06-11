@@ -38,12 +38,7 @@ def create_app() -> Flask:
     # --- Database Initialization ---
     # Initialize the imperative mapping and sync tables once at startup.
     with app.app_context():
-        try:
-            init_db()
-        except SystemExit:
-            # init_db may call sys.exit on failure; in test contexts
-            # the mapping might already be initialized.
-            pass
+        init_db()
 
     # --- Request Lifecycle: Database Session ---
     @app.before_request
@@ -61,8 +56,10 @@ def create_app() -> Flask:
     # --- Register Blueprints ---
     from src.web.routes.becario import becario_bp
     from src.web.routes.tutor import tutor_bp
+    from src.web.routes.admin import admin_bp
     app.register_blueprint(becario_bp)
     app.register_blueprint(tutor_bp)
+    app.register_blueprint(admin_bp)
 
     # --- Default Route ---
     from flask import redirect, url_for

@@ -14,6 +14,7 @@ from src.domain.models import (
     Padrino,
     Tutor,
     Tutoria,
+    Administrador,
 )
 from .schema import (
     tabla_becarios,
@@ -24,6 +25,7 @@ from .schema import (
     tabla_padrinos,
     tabla_tutores,
     tabla_tutorias,
+    tabla_administradores,
 )
 from .schema import mapper_registry
 
@@ -41,6 +43,7 @@ def iniciar_mapeo() -> None:
 
     # 1. Independent entities
     mapper_registry.map_imperatively(Padrino, tabla_padrinos)
+    mapper_registry.map_imperatively(Administrador, tabla_administradores)
     
     # We must map Referentes with their reverse relationship to Becario.
     # Since Becario is mapped later, we use string references for the relationship class.
@@ -88,10 +91,12 @@ def iniciar_mapeo() -> None:
         "lista_tutorias": relationship(
             Tutoria,
             cascade="all, delete-orphan",
+            lazy="joined"
         ),
         "lista_envios_cartas": relationship(
             EnvioCarta,
             cascade="all, delete-orphan",
+            lazy="joined"
         ),
         
         # Punteros (Associations)

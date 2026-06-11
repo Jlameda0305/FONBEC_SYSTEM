@@ -9,8 +9,8 @@ from typing import Optional
 
 from sqlalchemy.orm import Session, joinedload
 
-from src.application.protocols import BecarioRepositoryProtocol, TutorRepositoryProtocol
-from src.domain.models import Becario, Tutor
+from src.application.protocols import BecarioRepositoryProtocol, TutorRepositoryProtocol, UsuarioRepositoryProtocol
+from src.domain.models import Becario, Tutor, Mediador, Administrador, Padrino, Usuario
 
 
 class SQLAlchemyTutorRepository(TutorRepositoryProtocol):
@@ -95,3 +95,56 @@ class SQLAlchemyBecarioRepository(BecarioRepositoryProtocol):
         """
         self.session.add(becario)
         self.session.commit()
+
+
+class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
+    """
+    Concrete implementation of UsuarioRepositoryProtocol using SQLAlchemy.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self.session = session
+
+    def listar_usuarios(
+        self,
+        limite: int,
+        offset: int,
+        rol: Optional[str] = None,
+        busqueda: Optional[str] = None,
+    ) -> list[Usuario]:
+        """
+        Retrieves actors paginated. Since Concrete Table Inheritance is used,
+        the role MUST be provided to determine which physical table to query.
+        """
+        from sqlalchemy import or_
+        
+        if not rol:
+            raise ValueError("El parámetro 'rol' es obligatorio para listar usuarios.")
+
+        clases_map = {
+            "becario": Becario,
+            "tutor": Tutor,
+            "mediador": Mediador,
+            "administrador": Administrador,
+            "padrino": Padrino
+        }
+
+        cls = clases_map.get(rol.lower())
+        if not cls:
+            raise ValueError(f"Rol '{rol}' no soportado.")
+
+        query = self.session.query(cls)
+
+        if busqueda:
+            termino = f"%{busqueda}%"
+            query = query.filter(
+                or_(
+                    cls.nombre.ilike(termino),
+                    cls.apellido.ilike(termino),
+                    cls.email.ilike(termino)
+                )
+            )
+
+        # Applying Limit and Offset strictly to avoid Eager Loading massive memory bloat
+        return query.offset(offset).limit(limite).all()
+

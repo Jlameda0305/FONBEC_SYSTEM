@@ -7,7 +7,7 @@ Contains zero business logic — only wiring and rendering.
 
 from flask import Blueprint, g, render_template, request, redirect, url_for, flash
 
-from src.application.mock_auth_service import obtener_usuario_actual
+from src.web.mock_auth_service import obtener_usuario_actual
 from src.application.use_cases.CU04_VisualizarDatosAcademicos import (
     CU04_VisualizarDatosAcademicos,
 )

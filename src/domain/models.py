@@ -14,6 +14,7 @@ from src.domain.actors.abstract_actor import Usuario, Referente
 from src.domain.actors.becario import Becario
 from src.domain.actors.tutor import Tutor
 from src.domain.actors.mediador import Mediador
+from src.domain.actors.administrador import Administrador
 
 from src.domain.domain_entities.padrino import Padrino
 from src.domain.domain_entities.datos_academicos import DatosAcademicos
@@ -27,6 +28,7 @@ __all__ = [
     "Becario",
     "Tutor",
     "Mediador",
+    "Administrador",
     "Padrino",
     "DatosAcademicos",
     "DocumentoAcademico",

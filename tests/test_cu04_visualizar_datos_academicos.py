@@ -127,10 +127,10 @@ class TestMockAuthService(unittest.TestCase):
 
     def test_obtener_usuario_actual_retorna_string(self) -> None:
         """obtener_usuario_actual() returns a hardcoded becario_id."""
-        from src.application.mock_auth_service import obtener_usuario_actual
+        from src.web.mock_auth_service import obtener_usuario_actual
         resultado = obtener_usuario_actual()
         self.assertIsInstance(resultado, str)
-        self.assertEqual(resultado, "bec-002")
+        self.assertEqual(resultado, "admin-001")
 
 
 if __name__ == "__main__":

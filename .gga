@@ -16,7 +16,7 @@ EXCLUDE_PATTERNS="*__pycache__*,*.kate-swp,venv/*,.venv/*,.env"
 
 # File containing code review rules
 # Apuntando a tu archivo en singular para que lo detecte sin que tengas que renombrarlo
-RULES_FILE="AGENT.md"
+RULES_FILE="AGENTS.md"
 
 # Strict mode: fail if AI response is ambiguous
 STRICT_MODE="true"

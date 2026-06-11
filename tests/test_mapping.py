@@ -35,7 +35,7 @@ class TestMapping(unittest.TestCase):
 
         # Verify that all expected tables are in metadata
         expected_tables = {
-            "padrinos", "tutores", "mediadores", "becarios",
+            "padrinos", "tutores", "mediadores", "becarios", "administradores",
             "datos_academicos", "documentos_academicos", "tutorias", "envios_cartas"
         }
         self.assertEqual(expected_tables, set(metadata.tables.keys()))

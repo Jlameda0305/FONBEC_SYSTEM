@@ -5,7 +5,7 @@ Acts as a pure adapter between the HTTP layer and the Tutor Application Use Case
 
 from flask import Blueprint, g, render_template, request, redirect, url_for, flash
 
-from src.application.mock_auth_service import obtener_usuario_actual
+from src.web.mock_auth_service import obtener_usuario_actual
 from src.application.use_cases.CU05_Tutor_ListarBecarios import ListarBecariosTutorUseCase
 from src.application.use_cases.CU06_Tutor_ObtenerDatosBecario import ObtenerDatosBecarioUseCase
 from src.application.use_cases.CU08_Tutor_AuditarDatosAcademicos import AuditarDatosAcademicosUseCase
