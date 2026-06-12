@@ -15,9 +15,8 @@
     <link type="text/css" href="{{ url_for('static', filename='assets/css/fonbec-custom.css') }}" rel="stylesheet">
     {% block stylesheets %}{% endblock %}
   </head>
-  <body>
-    {% include 'includes/sidenav.html' ignore missing %}
-    <div class="main-content" id="panel">
+  <body class="bg-secondary">
+    <div class="main-content" id="panel" style="margin-left: 0 !important;">
       {% include 'includes/navigation.html' ignore missing %}
       {% include 'includes/_flash_messages.html' ignore missing %}
       {% block content %}{% endblock %}

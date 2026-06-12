@@ -3,7 +3,7 @@
 {% block title %}Panel de Administración — FONBEC{% endblock %}
 
 {% block content %}
-<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+<div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
   <div class="container-fluid">
     <div class="header-body">
       <h6 class="h2 text-white d-inline-block mb-0">Directorio de Actores del Sistema</h6>
@@ -20,28 +20,20 @@
         </div>
         <div class="card-body">
           <form method="GET" action="{{ url_for('admin.dashboard') }}">
-            <div class="row">
-              <div class="col-md-5">
-                <div class="form-group">
+            <!-- Si viene del menú, mantenemos el filtro oculto -->
+            {% if filtro_rol %}
+            <input type="hidden" name="filtro_rol" value="{{ filtro_rol }}">
+            {% endif %}
+            <div class="row align-items-center">
+              <div class="col-md-9">
+                <div class="form-group mb-0">
                   <label class="form-control-label" for="busqueda">Buscar por nombre, apellido o email</label>
-                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative" placeholder="Término de búsqueda..." value="{{ busqueda }}">
+                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative bg-secondary" placeholder="Término de búsqueda..." value="{{ busqueda }}">
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="form-control-label" for="filtro_rol">Rol de Usuario</label>
-                  <select id="filtro_rol" name="filtro_rol" class="form-control form-control-alternative">
-                    <option value="becario" {% if filtro_rol == 'becario' %}selected{% endif %}>Becarios</option>
-                    <option value="tutor" {% if filtro_rol == 'tutor' %}selected{% endif %}>Tutores</option>
-                    <option value="mediador" {% if filtro_rol == 'mediador' %}selected{% endif %}>Mediadores</option>
-                    <option value="padrino" {% if filtro_rol == 'padrino' %}selected{% endif %}>Padrinos</option>
-                    <option value="administrador" {% if filtro_rol == 'administrador' %}selected{% endif %}>Administradores</option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-3 d-flex align-items-center">
+              <div class="col-md-3">
                 <input type="hidden" name="pagina" value="1">
-                <button type="submit" class="btn btn-primary mt-4">Aplicar Filtros</button>
+                <button type="submit" class="btn btn-primary mt-4 w-100">Aplicar Búsqueda</button>
               </div>
             </div>
           </form>
@@ -56,19 +48,43 @@
           <table class="table align-items-center table-flush">
             <thead class="thead-light">
               <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Nombre Completo</th>
-                <th scope="col">Email</th>
-                <th scope="col">Rol</th>
-                <th scope="col">Acciones</th>
+                <th scope="col" class="text-primary">Número</th>
+                <th scope="col" class="text-primary">Nombre Completo</th>
+                <th scope="col" class="text-primary">Edad</th>
+                <th scope="col" class="text-primary">Sexo</th>
+                {% if filtro_rol == 'becario' %}
+                <th scope="col" class="text-primary">Estado Académico</th>
+                {% else %}
+                <th scope="col" class="text-primary">Rol</th>
+                {% endif %}
+                <th scope="col" class="text-primary">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {% for actor in actores %}
               <tr>
-                <td>{{ actor.id_usuario }}</td>
-                <td>{{ actor.nombre }} {{ actor.apellido }}</td>
-                <td>{{ actor.email }}</td>
+                <td>{{ loop.index + (pagina_actual - 1) * 10 }}</td>
+                <td>
+                  {{ actor.nombre }} {{ actor.apellido }}
+                  <div class="text-sm text-muted">{{ actor.email }}</div>
+                </td>
+                <td>{{ actor.edad }} años</td>
+                <td>{{ actor.sexo | capitalize }}</td>
+                
+                {% if filtro_rol == 'becario' %}
+                <td>
+                  {% set estado = actor.datos_academicos.estado_verificacion.value if actor.datos_academicos else 'Sin datos' %}
+                  {% set badge_class = 'badge-secondary' %}
+                  {% if estado == 'aprobado' %}{% set badge_class = 'badge-success' %}
+                  {% elif estado == 'incompleto' %}{% set badge_class = 'badge-warning' %}
+                  {% elif estado == 'pendiente_revision' %}{% set badge_class = 'badge-info' %}
+                  {% elif estado == 'pendiente_modificar' %}{% set badge_class = 'badge-danger' %}{% endif %}
+                  <span class="badge badge-dot mr-4">
+                    <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
+                    <span class="status">{{ estado | replace('_', ' ') | title }}</span>
+                  </span>
+                </td>
+                {% else %}
                 <td>
                   {% set badge_class = 'badge-primary' %}
                   {% if actor.rol == 'becario' %}{% set badge_class = 'badge-success' %}
@@ -80,6 +96,7 @@
                     <span class="status">{{ actor.rol | capitalize }}</span>
                   </span>
                 </td>
+                {% endif %}
                 <td>
                   <div class="d-flex align-items-center">
                     {% if actor.rol == 'becario' %}
