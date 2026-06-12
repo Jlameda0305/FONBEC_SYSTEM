@@ -170,7 +170,11 @@
                     <td>{{ actor.email }}</td>
                     <td><span class="badge">{{ actor.rol }}</span></td>
                     <td>
-                        <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" disabled>Ver Detalle</button>
+                        {% if actor.rol == 'becario' %}
+                            <a href="{{ url_for('admin.gestionar_vinculaciones', id_becario=actor.id_usuario) }}" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; text-decoration: none; display: inline-block;">Vinculaciones</a>
+                        {% else %}
+                            <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" disabled>Ver Detalle</button>
+                        {% endif %}
                     </td>
                 </tr>
                 {% else %}

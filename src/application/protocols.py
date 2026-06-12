@@ -140,6 +140,12 @@ class UsuarioRepositoryProtocol(Protocol):
         """
         ...
 
+    def obtener_por_id(self, id_usuario: str) -> Optional[Usuario]:
+        """
+        Retrieve a generic Usuario by its ID.
+        """
+        ...
+
 class PadrinoRepositoryProtocol(Protocol):
     """
     Abstract contract for accessing Padrino persistence.

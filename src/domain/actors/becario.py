@@ -106,6 +106,11 @@ class Becario(Usuario):
         Raises:
             ValueError: If estado_verificacion is APROBADO (RN-02).
         """
+        if self.datos_academicos.estado_verificacion == EstadoVerificacion.APROBADO:
+            raise ValueError(
+                "Los datos académicos han sido aprobados y no pueden modificarse"
+            )
+            
         da = self.datos_academicos
         da.actualizar_datos(**datos)
         da.revaluar_estado()
@@ -137,3 +142,32 @@ class Becario(Usuario):
         if self.puntero_mediador is None:
             raise ValueError("No posee mediador asignado")
         return self.puntero_mediador.get_datos_contacto()
+
+    # --- Métodos de Gestión de Vinculaciones (CU-ADM-03) ---
+    
+    def asignar_tutor(self, tutor: 'Tutor') -> None:
+        from .tutor import Tutor
+        if not isinstance(tutor, Tutor):
+            raise TypeError("El objeto provisto no es de clase Tutor")
+        self.puntero_tutor = tutor
+
+    def desasignar_tutor(self) -> None:
+        self.puntero_tutor = None
+
+    def asignar_mediador(self, mediador: 'Mediador') -> None:
+        from .mediador import Mediador
+        if not isinstance(mediador, Mediador):
+            raise TypeError("El objeto provisto no es de clase Mediador")
+        self.puntero_mediador = mediador
+
+    def desasignar_mediador(self) -> None:
+        self.puntero_mediador = None
+
+    def asignar_padrino(self, padrino: 'Padrino') -> None:
+        # Padrino is already imported at the top of the file
+        if not isinstance(padrino, Padrino):
+            raise TypeError("El objeto provisto no es de clase Padrino")
+        self.puntero_padrino = padrino
+
+    def desasignar_padrino(self) -> None:
+        self.puntero_padrino = None

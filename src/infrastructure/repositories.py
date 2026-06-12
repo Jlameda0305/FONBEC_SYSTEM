@@ -111,6 +111,13 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
     def __init__(self, session: Session) -> None:
         self.session = session
 
+    def obtener_por_id(self, id_usuario: str) -> Optional[Usuario]:
+        for cls in [Becario, Tutor, Mediador, Administrador]:
+            user = self.session.query(cls).filter_by(id_usuario=id_usuario).first()
+            if user:
+                return user
+        return None
+
     def listar_usuarios(
         self,
         limite: int,

@@ -2,12 +2,32 @@
 Administrador HTTP Controller (Flask Blueprint).
 """
 
-from flask import Blueprint, g, render_template, request
+import logging
+from flask import Blueprint, g, render_template, request, flash, redirect, url_for
+
 from src.web.auth_utils import requiere_rol
-from src.infrastructure.repositories import SQLAlchemyUsuarioRepository
+from src.infrastructure.repositories import (
+    SQLAlchemyUsuarioRepository,
+    SQLAlchemyPadrinoRepository,
+    SQLAlchemyBecarioRepository
+)
 from src.application.use_cases.CU05_Admin_ListarActores import ListarActoresUseCase
+from src.application.use_cases.CU04_Admin_GestionarPadrinos import GestionarPadrinosUseCase
+from src.application.use_cases.CU03_Admin_GestionarVinculaciones import GestionarVinculacionesUseCase
+
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+def get_padrinos_use_case():
+    repo = SQLAlchemyPadrinoRepository(g.db_session)
+    return GestionarPadrinosUseCase(repo)
+
+def get_vinculaciones_use_case():
+    becario_repo = SQLAlchemyBecarioRepository(g.db_session)
+    usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
+    padrino_repo = SQLAlchemyPadrinoRepository(g.db_session)
+    return GestionarVinculacionesUseCase(becario_repo, usuario_repo, padrino_repo)
 
 
 @admin_bp.route("/dashboard", methods=["GET"])
@@ -18,7 +38,6 @@ def dashboard():
     
     Dashboard panel for Administrador. Lists system actors (CU-ADM-05).
     """
-    # 1. Recuperar parámetros con defaults seguros
     try:
         pagina = int(request.args.get("pagina", 1))
     except ValueError:
@@ -27,27 +46,22 @@ def dashboard():
     busqueda = request.args.get("busqueda", "").strip() or None
     filtro_rol = request.args.get("filtro_rol", "becario").strip().lower()
 
-    # 2. Instanciar Infraestructura y Caso de Uso
     repo = SQLAlchemyUsuarioRepository(g.db_session)
     use_case = ListarActoresUseCase(repo)
 
-    # 3. Ejecutar el Caso de Uso (g.usuario_actual inyectado por el decorador)
     try:
         actores = use_case.ejecutar(
             actor_admin=g.usuario_actual,
             tipo_actor=filtro_rol,
             pagina=pagina,
-            limite=10,  # 10 por página por defecto para el panel
+            limite=10,
             busqueda=busqueda
         )
     except Exception as e:
-        import logging
-        from flask import flash
         logging.error(f"CU-ADM-05: Fallo al listar actores. Detalles: {str(e)}")
         flash("Ocurrió un error al cargar los usuarios desde la base de datos.", "error")
         actores = []
 
-    # 4. Renderizar vista con la data
     return render_template(
         "admin/dashboard.html",
         actores=actores,
@@ -56,14 +70,6 @@ def dashboard():
         filtro_rol=filtro_rol
     )
 
-
-from flask import flash, redirect, url_for
-from src.infrastructure.repositories import SQLAlchemyPadrinoRepository
-from src.application.use_cases.CU04_Admin_GestionarPadrinos import GestionarPadrinosUseCase
-
-def get_padrinos_use_case():
-    repo = SQLAlchemyPadrinoRepository(g.db_session)
-    return GestionarPadrinosUseCase(repo)
 
 @admin_bp.route("/padrinos", methods=["GET"])
 @requiere_rol("administrador")
@@ -75,7 +81,6 @@ def listar_padrinos():
         
     busqueda = request.args.get("busqueda", "").strip() or None
 
-    # Usamos ListarActoresUseCase para listar padrinos paginados
     repo = SQLAlchemyUsuarioRepository(g.db_session)
     use_case = ListarActoresUseCase(repo)
     
@@ -143,7 +148,6 @@ def editar_padrino(id_padrino):
         except Exception as e:
             flash(f"Error al actualizar: {str(e)}", "error")
     
-    # GET or POST (if error)
     padrino = uc.obtener(actor_admin=g.usuario_actual, id_padrino=id_padrino)
     if not padrino:
         flash("El padrino no existe.", "error")
@@ -165,3 +169,91 @@ def eliminar_padrino(id_padrino):
         flash("Ocurrió un error inesperado al eliminar el padrino.", "error")
         
     return redirect(url_for("admin.listar_padrinos"))
+
+
+@admin_bp.route("/becarios/<id_becario>/vinculaciones", methods=["GET"])
+@requiere_rol("administrador")
+def gestionar_vinculaciones(id_becario):
+    becario_repo = SQLAlchemyBecarioRepository(g.db_session)
+    becario = becario_repo.obtener_por_id(id_becario)
+    
+    if not becario:
+        flash("Becario no encontrado.", "error")
+        return redirect(url_for("admin.dashboard"))
+        
+    usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
+    listar_uc = ListarActoresUseCase(usuario_repo)
+    
+    # Resolving Architectural Violation: Use UseCase instead of raw DB queries
+    try:
+        tutores_disponibles = listar_uc.ejecutar(
+            actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000
+        )
+        mediadores_disponibles = listar_uc.ejecutar(
+            actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000
+        )
+        padrinos_disponibles = listar_uc.ejecutar(
+            actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000
+        )
+    except Exception as e:
+        logging.error(f"Error cargando actores disponibles: {str(e)}")
+        flash("Error al cargar actores disponibles.", "error")
+        tutores_disponibles = []
+        mediadores_disponibles = []
+        padrinos_disponibles = []
+    
+    return render_template(
+        "admin/becario_vinculaciones.html",
+        becario=becario,
+        tutores=tutores_disponibles,
+        mediadores=mediadores_disponibles,
+        padrinos=padrinos_disponibles
+    )
+
+@admin_bp.route("/becarios/<id_becario>/vinculaciones/vincular", methods=["POST"])
+@requiere_rol("administrador")
+def vincular_actor(id_becario):
+    tipo_vinculacion = request.form.get("tipo_vinculacion")
+    id_objetivo = request.form.get("id_objetivo")
+    
+    if not id_objetivo:
+        flash("Debe seleccionar un actor para vincular.", "error")
+        return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
+        
+    uc = get_vinculaciones_use_case()
+    
+    try:
+        uc.asignar_vinculo(
+            actor_admin=g.usuario_actual,
+            id_becario=id_becario,
+            tipo_vinculacion=tipo_vinculacion,
+            id_objetivo=id_objetivo
+        )
+        flash(f"{tipo_vinculacion.capitalize()} asignado correctamente.", "success")
+    except ValueError as e:
+        flash(str(e), "error")
+    except TypeError as e:
+        flash(f"Error de dominio: {str(e)}", "error")
+    except Exception as e:
+        flash(f"Error inesperado al vincular: {str(e)}", "error")
+        
+    return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
+
+@admin_bp.route("/becarios/<id_becario>/vinculaciones/desvincular/<tipo_vinculacion>", methods=["POST"])
+@requiere_rol("administrador")
+def desvincular_actor(id_becario, tipo_vinculacion):
+    uc = get_vinculaciones_use_case()
+    
+    try:
+        uc.desasignar_vinculo(
+            actor_admin=g.usuario_actual,
+            id_becario=id_becario,
+            tipo_vinculacion=tipo_vinculacion
+        )
+        flash(f"Vinculación de {tipo_vinculacion} removida correctamente.", "success")
+    except ValueError as e:
+        flash(str(e), "error")
+    except Exception as e:
+        flash(f"Error al desvincular: {str(e)}", "error")
+        
+    return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
