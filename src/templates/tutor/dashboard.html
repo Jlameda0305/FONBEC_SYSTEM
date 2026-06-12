@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<div class="container-fluid mt--7">
+<div class="container-fluid mt--5">
   <div class="row">
     <!-- Próximas Tutorías -->
     <div class="col-xl-4 col-lg-5 mb-5 mb-lg-0">
@@ -35,65 +35,8 @@
           <h3 class="mb-0"><i class="ni ni-single-02 mr-2 text-info"></i> Mis Becarios Asignados <span class="badge badge-pill badge-info ml-2">{{ becarios|length }}</span></h3>
         </div>
         
-        <div class="table-responsive">
-          <table class="table align-items-center table-flush">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col" class="text-primary">Nombre y Apellido</th>
-                <th scope="col" class="text-primary">Edad</th>
-                <th scope="col" class="text-primary">Estado de Datos</th>
-                <th scope="col" class="text-primary">Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for becario in becarios %}
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="icon icon-shape bg-info text-white rounded-circle shadow mr-3" style="width: 2rem; height: 2rem;">
-                      <i class="fas fa-user" style="font-size: 0.875rem;"></i>
-                    </div>
-                    <span class="mb-0 text-sm font-weight-bold">{{ becario.nombre }} {{ becario.apellido }}</span>
-                  </div>
-                </td>
-                <td>{{ becario.edad }} años</td>
-                <td>
-                  {% set estado = becario.estado_verificacion|lower %}
-                  {% set badge_class = 'badge-secondary' %}
-                  {% if estado == 'aprobado' %}
-                    {% set badge_class = 'badge-success' %}
-                  {% elif estado == 'pendiente_revision' or estado == 'pendiente_modificar' %}
-                    {% set badge_class = 'badge-warning' %}
-                  {% elif estado == 'incompleto' or estado == 'vacio' %}
-                    {% set badge_class = 'badge-danger' %}
-                  {% endif %}
-                  <span class="badge badge-dot mr-4">
-                    <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
-                    <span class="status">{{ becario.estado_verificacion | replace('_', ' ') | title }}</span>
-                  </span>
-                </td>
-                <td>
-                  <a href="{{ url_for('tutor.becario_detalle', id_usuario=becario.id_usuario) }}" class="btn btn-sm btn-info">
-                    <i class="fas fa-search mr-1"></i> Seleccionar
-                  </a>
-                </td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="4" class="text-center py-5">
-                  <div class="text-center">
-                    <div class="icon icon-shape bg-secondary text-muted rounded-circle shadow mb-4" style="width: 4rem; height: 4rem;">
-                      <i class="fas fa-inbox" style="font-size: 1.5rem;"></i>
-                    </div>
-                    <h4 class="text-muted mb-2">Sin becarios asignados</h4>
-                    <p class="text-muted text-sm mx-auto mb-0" style="max-width: 400px;">Actualmente no posees becarios asignados a tu cartera. Por favor, aguarda a que el equipo de administración realice la vinculación.</p>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+        {% set lista_becarios = becarios %}
+        {% include 'shared/partials/_lista_becarios.html' %}
       </div>
     </div>
   </div>

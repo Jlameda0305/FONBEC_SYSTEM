@@ -1,5 +1,5 @@
 """
-Use Case 06 (Partial) - Tutor: Listar Becarios Asignados
+Use Case 05 - Tutor: Listar Becarios Asignados
 
 Recibe el ID del Tutor, accede a la base de datos a través de su Repositorio,
 y devuelve una lista formateada con los datos de sus becarios a cargo,
@@ -9,7 +9,7 @@ incluyendo el estado de sus datos académicos para facilitar la auditoría.
 from typing import List, Dict, Any
 
 from src.application.protocols import TutorRepositoryProtocol
-
+from src.domain.actors.becario import Becario
 
 class ListarBecariosTutorUseCase:
     """
@@ -27,7 +27,7 @@ class ListarBecariosTutorUseCase:
             tutor_id: UUID del tutor en sesión.
 
         Returns:
-            Una lista de diccionarios con la información de los becarios asignados.
+            Una lista de diccionarios (DTOs) con los datos del becario.
             
         Raises:
             ValueError: Si el tutor no existe en la base de datos.
@@ -36,21 +36,21 @@ class ListarBecariosTutorUseCase:
         if not tutor:
             raise ValueError("Tutor no encontrado o no autorizado")
 
-        becarios_list = []
-        for becario in tutor.lista_becarios:
-            datos_contacto = becario.get_datos_contacto()
+        resultados = []
+        for b in tutor.lista_becarios:
+            dto = b.to_dict()
             
-            # Extract state from DatosAcademicos ensuring it doesn't crash if None (though it shouldn't be)
-            estado_verificacion = "Desconocido"
-            if becario.datos_academicos:
-                estado_verificacion = becario.datos_academicos.estado_verificacion.value
+            # The domain entity guarantees these attributes exist, but we handle the Enum value extraction
+            dto['estado_verificacion'] = b.estado_verificacion.value if getattr(b, 'estado_verificacion', None) else None
+            
+            if b.datos_academicos:
+                da = b.datos_academicos
+                dto['datos_academicos'] = {
+                    'estado_verificacion': da.estado_verificacion.value if getattr(da, 'estado_verificacion', None) else None
+                }
+            else:
+                dto['datos_academicos'] = None
                 
-            becarios_list.append({
-                "id_usuario": becario.id_usuario,
-                "nombre": becario.nombre,
-                "apellido": becario.apellido,
-                "edad": getattr(becario, 'edad', 'N/A'),
-                "estado_verificacion": estado_verificacion
-            })
-            
-        return becarios_list
+            resultados.append(dto)
+
+        return resultados

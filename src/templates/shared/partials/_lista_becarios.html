@@ -1,0 +1,74 @@
+<div class="table-responsive">
+  <table class="table align-items-center table-flush">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col" class="text-primary">Número</th>
+        <th scope="col" class="text-primary">Nombre Completo</th>
+        <th scope="col" class="text-primary">Edad</th>
+        <th scope="col" class="text-primary">Sexo</th>
+        <th scope="col" class="text-primary">Estado Académico</th>
+        <th scope="col" class="text-primary">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for becario in lista_becarios %}
+      <tr>
+        <td>
+          {% if pagina_actual %}
+            {{ loop.index + (pagina_actual - 1) * 10 }}
+          {% else %}
+            {{ loop.index }}
+          {% endif %}
+        </td>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="icon icon-shape bg-info text-white rounded-circle shadow mr-3" style="width: 2rem; height: 2rem;">
+              <i class="fas fa-user" style="font-size: 0.875rem;"></i>
+            </div>
+            <span class="mb-0 text-sm font-weight-bold">{{ becario.nombre }} {{ becario.apellido }}</span>
+          </div>
+        </td>
+        <td>{{ becario.edad }} años</td>
+        <td>{{ becario.sexo | capitalize }}</td>
+        <td>
+          {% set estado = 'sin_datos' %}
+          {% if becario.datos_academicos %}
+            {% set estado = becario.datos_academicos.estado_verificacion.value if becario.datos_academicos.estado_verificacion is mapping else becario.datos_academicos.estado_verificacion %}
+            {% if estado is not string %}{% set estado = estado.value if estado is not string else estado %}{% endif %}
+            {% if estado is undefined or not estado %}{% set estado = 'sin_datos' %}{% endif %}
+          {% elif becario.estado_verificacion %}
+            {% set estado = becario.estado_verificacion | lower %}
+          {% endif %}
+          
+          {% set badge_class = 'badge-secondary' %}
+          {% if estado == 'aprobado' %}{% set badge_class = 'badge-success' %}
+          {% elif estado == 'incompleto' %}{% set badge_class = 'badge-warning' %}
+          {% elif estado == 'pendiente_revision' %}{% set badge_class = 'badge-info' %}
+          {% elif estado == 'pendiente_modificar' %}{% set badge_class = 'badge-danger' %}{% endif %}
+          <span class="badge badge-dot mr-4">
+            <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
+            <span class="status">{{ estado | replace('_', ' ') | title }}</span>
+          </span>
+        </td>
+        <td>
+          <a href="{{ url_for('admin.detalle_becario', id_becario=becario.id_usuario) if g.usuario_actual.rol == 'administrador' else url_for('tutor.becario_detalle', id_usuario=becario.id_usuario) }}" class="btn btn-sm btn-info">
+            <i class="fas fa-search mr-1"></i> Ver Detalles
+          </a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center py-5">
+          <div class="text-center">
+            <div class="icon icon-shape bg-secondary text-muted rounded-circle shadow mb-4" style="width: 4rem; height: 4rem;">
+              <i class="fas fa-inbox" style="font-size: 1.5rem;"></i>
+            </div>
+            <h4 class="text-muted mb-2">No se encontraron becarios</h4>
+            <p class="text-muted text-sm mx-auto mb-0" style="max-width: 400px;">No hay registros de becarios para mostrar.</p>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

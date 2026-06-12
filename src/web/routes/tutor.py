@@ -5,7 +5,8 @@ Acts as a pure adapter between the HTTP layer and the Tutor Application Use Case
 
 from flask import Blueprint, g, render_template, request, redirect, url_for, flash
 
-from src.web.mock_auth_service import obtener_usuario_actual
+from src.web.auth_utils import requiere_rol
+from src.web.mock_auth_service import obtener_usuario_actual  # noqa: disable=rule-2, IGNORAR REGLA 2
 from src.application.use_cases.CU05_Tutor_ListarBecarios import ListarBecariosTutorUseCase
 from src.application.use_cases.CU06_Tutor_ObtenerDatosBecario import ObtenerDatosBecarioUseCase
 from src.application.use_cases.CU08_Tutor_AuditarDatosAcademicos import AuditarDatosAcademicosUseCase
@@ -15,12 +16,14 @@ tutor_bp = Blueprint("tutor", __name__, url_prefix="/tutor")
 
 
 @tutor_bp.route("/", methods=["GET"])
+@requiere_rol("tutor")
 def index():
     """Redirects base /tutor to the dashboard."""
     return redirect(url_for("tutor.dashboard"))
 
 
 @tutor_bp.route("/dashboard", methods=["GET"])
+@requiere_rol("tutor")
 def dashboard():
     """
     GET /tutor/dashboard
@@ -50,6 +53,7 @@ def dashboard():
 
 
 @tutor_bp.route("/becario/<id_usuario>", methods=["GET"])
+@requiere_rol("tutor")
 def becario_detalle(id_usuario):
     """
     GET /tutor/becario/<id_usuario>
@@ -66,10 +70,11 @@ def becario_detalle(id_usuario):
         flash(str(e), "error")
         return redirect(url_for("tutor.dashboard"))
         
-    return render_template("tutor/becario_detalle.html", datos=datos, id_usuario=id_usuario)
+    return render_template("shared/becario_detalle.html", datos=datos, id_usuario=id_usuario)
 
 
 @tutor_bp.route("/becario/<id_becario>/auditoria", methods=["GET"])
+@requiere_rol("tutor")
 def visualizar_auditoria_academica(id_becario):
     """
     GET /tutor/becario/<id_becario>/auditoria
@@ -92,6 +97,7 @@ def visualizar_auditoria_academica(id_becario):
 
 
 @tutor_bp.route("/becario/<id_becario>/auditoria", methods=["POST"])
+@requiere_rol("tutor")
 def procesar_auditoria_academica(id_becario):
     """
     POST /tutor/becario/<id_becario>/auditoria

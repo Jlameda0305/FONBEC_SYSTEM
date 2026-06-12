@@ -14,7 +14,6 @@ from src.infrastructure.repositories import (
 from src.application.use_cases.CU05_Admin_ListarActores import ListarActoresUseCase
 from src.application.use_cases.CU04_Admin_GestionarPadrinos import GestionarPadrinosUseCase
 from src.application.use_cases.CU03_Admin_GestionarVinculaciones import GestionarVinculacionesUseCase
-from src.application.use_cases.CU06_Admin_VerDatosAcademicos import VerDatosAcademicosUseCase
 
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -37,7 +36,18 @@ def dashboard():
     """
     GET /admin/dashboard
     
-    Dashboard panel for Administrador. Lists system actors (CU-ADM-05).
+    Panel vacío, se implementará más adelante.
+    """
+    return render_template("admin/dashboard.html")
+
+
+@admin_bp.route("/directorio/<rol>", methods=["GET"])
+@requiere_rol("administrador")
+def directorio_rol(rol):
+    """
+    GET /admin/directorio/<rol>
+    
+    Lista actores del sistema por rol (CU-ADM-05).
     """
     try:
         pagina = int(request.args.get("pagina", 1))
@@ -45,7 +55,7 @@ def dashboard():
         pagina = 1
         
     busqueda = request.args.get("busqueda", "").strip() or None
-    filtro_rol = request.args.get("filtro_rol", "becario").strip().lower()
+    filtro_rol = rol.strip().lower()
 
     repo = SQLAlchemyUsuarioRepository(g.db_session)
     use_case = ListarActoresUseCase(repo)
@@ -64,7 +74,7 @@ def dashboard():
         actores = []
 
     return render_template(
-        "admin/dashboard.html",
+        "admin/actores_lista.html",
         actores=actores,
         pagina_actual=pagina,
         busqueda=busqueda or "",
@@ -172,9 +182,13 @@ def eliminar_padrino(id_padrino):
     return redirect(url_for("admin.listar_padrinos"))
 
 
-@admin_bp.route("/becarios/<id_becario>/vinculaciones", methods=["GET"])
+@admin_bp.route("/becarios/<id_becario>/detalle", methods=["GET"])
 @requiere_rol("administrador")
-def gestionar_vinculaciones(id_becario):
+def detalle_becario(id_becario):
+    """
+    GET /admin/becarios/<id_becario>/detalle
+    Muestra la página unificada de detalles del becario (Perfil, Vinculaciones y Académico).
+    """
     becario_repo = SQLAlchemyBecarioRepository(g.db_session)
     becario = becario_repo.obtener_por_id(id_becario)
     
@@ -185,17 +199,10 @@ def gestionar_vinculaciones(id_becario):
     usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
     listar_uc = ListarActoresUseCase(usuario_repo)
     
-    # Resolving Architectural Violation: Use UseCase instead of raw DB queries
     try:
-        tutores_disponibles = listar_uc.ejecutar(
-            actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000
-        )
-        mediadores_disponibles = listar_uc.ejecutar(
-            actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000
-        )
-        padrinos_disponibles = listar_uc.ejecutar(
-            actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000
-        )
+        tutores_disponibles = listar_uc.ejecutar(actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000)
+        mediadores_disponibles = listar_uc.ejecutar(actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000)
+        padrinos_disponibles = listar_uc.ejecutar(actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000)
     except Exception as e:
         logging.error(f"Error cargando actores disponibles: {str(e)}")
         flash("Error al cargar actores disponibles.", "error")
@@ -204,7 +211,7 @@ def gestionar_vinculaciones(id_becario):
         padrinos_disponibles = []
     
     return render_template(
-        "admin/becario_vinculaciones.html",
+        "shared/becario_detalle.html",
         becario=becario,
         tutores=tutores_disponibles,
         mediadores=mediadores_disponibles,
@@ -219,7 +226,7 @@ def vincular_actor(id_becario):
     
     if not id_objetivo:
         flash("Debe seleccionar un actor para vincular.", "error")
-        return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
+        return redirect(url_for("admin.detalle_becario", id_becario=id_becario))
         
     uc = get_vinculaciones_use_case()
     
@@ -238,7 +245,7 @@ def vincular_actor(id_becario):
     except Exception as e:
         flash(f"Error inesperado al vincular: {str(e)}", "error")
         
-    return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
+    return redirect(url_for("admin.detalle_becario", id_becario=id_becario))
 
 @admin_bp.route("/becarios/<id_becario>/vinculaciones/desvincular/<tipo_vinculacion>", methods=["POST"])
 @requiere_rol("administrador")
@@ -257,39 +264,5 @@ def desvincular_actor(id_becario, tipo_vinculacion):
     except Exception as e:
         flash(f"Error al desvincular: {str(e)}", "error")
         
-    return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
+    return redirect(url_for("admin.detalle_becario", id_becario=id_becario))
 
-def get_ver_datos_academicos_use_case():
-    becario_repo = SQLAlchemyBecarioRepository(g.db_session)
-    return VerDatosAcademicosUseCase(becario_repo)
-
-def get_becario_repository():
-    return SQLAlchemyBecarioRepository(g.db_session)
-
-@admin_bp.route("/becarios/<id_becario>/academico", methods=["GET"])
-@requiere_rol("administrador")
-def visualizar_academico(id_becario):
-    uc = get_ver_datos_academicos_use_case()
-    
-    try:
-        datos = uc.ejecutar(actor_admin=g.usuario_actual, id_becario=id_becario)
-        
-        # Necesitamos el becario (nombre, etc) para el header de la página
-        becario_repo = get_becario_repository()
-        becario = becario_repo.obtener_por_id(id_becario)
-        
-        return render_template(
-            "admin/becario_academico.html",
-            becario=becario,
-            datos=datos
-        )
-    except PermissionError as e:
-        flash(str(e), "error")
-        return redirect(url_for("admin.dashboard"))
-    except ValueError as e:
-        flash(str(e), "error")
-        return redirect(url_for("admin.dashboard"))
-    except Exception as e:
-        logging.error(f"Error al visualizar datos académicos: {str(e)}")
-        flash("Ocurrió un error inesperado al visualizar los datos académicos.", "error")
-        return redirect(url_for("admin.dashboard"))

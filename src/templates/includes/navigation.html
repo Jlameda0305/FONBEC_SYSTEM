@@ -5,7 +5,8 @@
       <!-- Dropdown menu replacing Sidenav -->
       <ul class="navbar-nav align-items-center">
         <li class="nav-item dropdown">
-          <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
             <div class="media align-items-center">
               <span class="avatar avatar-sm rounded-circle bg-light shadow-sm">
                 <i class="fas fa-bars text-primary" style="font-size: 1rem;"></i>
@@ -17,59 +18,60 @@
               <h6 class="text-overflow m-0">Navegación FONBEC</h6>
             </div>
             <div class="dropdown-divider"></div>
-            
+
             {% if g.usuario_actual and g.usuario_actual.rol == 'administrador' %}
-              <a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
-                <i class="ni ni-tv-2 text-primary"></i> Dashboard
-              </a>
-              <a class="dropdown-item" href="{{ url_for('admin.dashboard', filtro_rol='becario') }}">
-                <i class="ni ni-single-02 text-info"></i> Becarios
-              </a>
-              <a class="dropdown-item" href="{{ url_for('admin.dashboard', filtro_rol='tutor') }}">
-                <i class="ni ni-badge text-success"></i> Tutores
-              </a>
-              <a class="dropdown-item" href="{{ url_for('admin.dashboard', filtro_rol='mediador') }}">
-                <i class="ni ni-world-2 text-warning"></i> Mediadores
-              </a>
-              <a class="dropdown-item" href="{{ url_for('admin.listar_padrinos') }}">
-                <i class="ni ni-heart-2 text-danger"></i> Padrinos
-              </a>
+            <a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
+              <i class="ni ni-tv-2 text-primary"></i> Dashboard
+            </a>
+            <a class="dropdown-item" href="{{ url_for('admin.directorio_rol', rol='becario') }}">
+              <i class="fas fa-user text-info"></i> Becarios
+            </a>
+            <a class="dropdown-item" href="{{ url_for('admin.directorio_rol', rol='tutor') }}">
+              <i class="fas fa-user-tie text-success"></i> Tutores
+            </a>
+            <a class="dropdown-item" href="{{ url_for('admin.directorio_rol', rol='mediador') }}">
+              <i class="fas fa-handshake text-warning"></i> Mediadores
+            </a>
+            <a class="dropdown-item" href="{{ url_for('admin.listar_padrinos') }}">
+              <i class="fas fa-heart text-danger"></i> Padrinos
+            </a>
             {% elif g.usuario_actual and g.usuario_actual.rol == 'tutor' %}
-              <a class="dropdown-item" href="{{ url_for('tutor.dashboard') }}">
-                <i class="ni ni-tv-2 text-primary"></i> Mi Panel
-              </a>
-              <a class="dropdown-item" href="{{ url_for('tutor.dashboard') }}">
-                <i class="ni ni-single-02 text-info"></i> Mis Becarios
-              </a>
+            <a class="dropdown-item" href="{{ url_for('tutor.dashboard') }}">
+              <i class="ni ni-tv-2 text-primary"></i> Mi Panel
+            </a>
+            <a class="dropdown-item" href="{{ url_for('tutor.dashboard') }}">
+              <i class="ni ni-single-02 text-info"></i> Mis Becarios
+            </a>
             {% elif g.usuario_actual and g.usuario_actual.rol == 'becario' %}
-              <a class="dropdown-item" href="{{ url_for('becario.dashboard') }}">
-                <i class="ni ni-tv-2 text-primary"></i> Mi Panel
-              </a>
-              <a class="dropdown-item" href="{{ url_for('becario.academico') }}">
-                <i class="ni ni-hat-3 text-info"></i> Datos Académicos
-              </a>
+            <a class="dropdown-item" href="{{ url_for('becario.dashboard') }}">
+              <i class="ni ni-tv-2 text-primary"></i> Mi Panel
+            </a>
+            <a class="dropdown-item" href="{{ url_for('becario.academico') }}">
+              <i class="ni ni-hat-3 text-info"></i> Datos Académicos
+            </a>
             {% endif %}
           </div>
         </li>
       </ul>
 
       <!-- Brand -->
-      <a class="h4 mb-0 text-primary text-uppercase d-none d-lg-inline-block ml-4" href="#">
+      <a class="h4 mb-0 text-primary text-uppercase d-inline-block ml-3" href="#">
         {% block title_nav %}FONBEC{% endblock %}
       </a>
     </div>
-    
+
     <!-- User -->
-    <ul class="navbar-nav align-items-center d-none d-md-flex">
+    <ul class="navbar-nav align-items-center d-flex">
       <li class="nav-item dropdown">
-        <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
           <div class="media align-items-center">
             <div class="media-body mr-2 d-none d-lg-block text-right">
               <span class="mb-0 text-sm font-weight-bold text-dark">
                 {% if g.usuario_actual %}
-                  {{ g.usuario_actual.nombre }} {{ g.usuario_actual.apellido }}
+                {{ g.usuario_actual.nombre }} {{ g.usuario_actual.apellido }}
                 {% else %}
-                  Usuario
+                Usuario
                 {% endif %}
               </span>
             </div>

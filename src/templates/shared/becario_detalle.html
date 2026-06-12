@@ -1,0 +1,243 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Gestión de becario — FONBEC{% endblock %}
+
+{% block content %}
+<div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0">Gestión de becario</h6>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--5">
+  {% set actor = becario if becario else datos.perfil_becario %}
+  {% set id_bec = becario.id_usuario if becario else id_usuario %}
+  
+  <div class="row mb-4">
+    <div class="col-12">
+      {% set show_actions = false %}
+      {% include 'shared/partials/_actor_card.html' %}
+    </div>
+  </div>
+
+  {% if g.usuario_actual.rol in ['administrador', 'tutor'] %}
+  <!-- SECCIÓN: Vinculaciones -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="mb-0">Vinculaciones</h3>
+        </div>
+        <div class="card-body bg-secondary">
+          <div class="row">
+            <!-- Tarjeta Tutor (Solo Administrador) -->
+            {% if g.usuario_actual.rol == 'administrador' %}
+            <div class="col-xl-4 col-lg-6 mb-4">
+              <div class="card shadow h-100">
+                <div class="card-header bg-transparent border-0 pb-0">
+                  <h4 class="mb-0 text-muted text-uppercase text-xs font-weight-bold">Tutor Asignado</h4>
+                </div>
+                <div class="card-body pt-3 d-flex flex-column justify-content-between">
+                  {% if becario.puntero_tutor %}
+                    <div class="mb-4 d-flex align-items-center">
+                      <div class="icon icon-shape bg-success text-white rounded-circle shadow mr-3" style="width: 2rem; height: 2rem;">
+                        <i class="fas fa-user-tie" style="font-size: 0.875rem;"></i>
+                      </div>
+                      <div>
+                        <h4 class="mb-0">{{ becario.puntero_tutor.nombre }} {{ becario.puntero_tutor.apellido }}</h4>
+                        <a href="mailto:{{ becario.puntero_tutor.email }}" class="text-sm text-muted">{{ becario.puntero_tutor.email }}</a>
+                      </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin.desvincular_actor', id_becario=becario.id_usuario, tipo_vinculacion='tutor') }}" onsubmit="return confirm('¿Estás seguro de remover la vinculación con el Tutor?');">
+                      <button type="submit" class="btn btn-sm btn-danger w-100">Desvincular Tutor</button>
+                    </form>
+                  {% else %}
+                    <div class="mb-4">
+                      <p class="text-sm text-muted font-italic">No tiene tutor asignado.</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin.vincular_actor', id_becario=becario.id_usuario) }}">
+                      <input type="hidden" name="tipo_vinculacion" value="tutor">
+                      <div class="form-group mb-2">
+                        <select name="id_objetivo" class="form-control form-control-sm" required>
+                          <option value="" disabled selected>Seleccione...</option>
+                          {% for t in tutores %}
+                            <option value="{{ t.id_usuario }}">{{ t.nombre }} {{ t.apellido }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-sm btn-primary w-100">Vincular Tutor</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Tarjeta Mediador -->
+            {% set mediador = becario.puntero_mediador if g.usuario_actual.rol == 'administrador' else datos.mediador_asignado %}
+            <div class="col-xl-4 col-lg-6 mb-4">
+              <div class="card shadow h-100">
+                <div class="card-header bg-transparent border-0 pb-0">
+                  <h4 class="mb-0 text-muted text-uppercase text-xs font-weight-bold">Mediador Asignado</h4>
+                </div>
+                <div class="card-body pt-3 d-flex flex-column justify-content-between">
+                  {% if mediador %}
+                    <div class="mb-4 d-flex align-items-center">
+                      <div class="icon icon-shape bg-warning text-white rounded-circle shadow mr-3" style="width: 2rem; height: 2rem;">
+                        <i class="fas fa-handshake" style="font-size: 0.875rem;"></i>
+                      </div>
+                      <div>
+                        <h4 class="mb-0">{{ mediador.nombre }} {{ mediador.apellido }}</h4>
+                        <a href="mailto:{{ mediador.email }}" class="text-sm text-muted">{{ mediador.email }}</a>
+                      </div>
+                    </div>
+                    {% if g.usuario_actual.rol == 'administrador' %}
+                    <form method="POST" action="{{ url_for('admin.desvincular_actor', id_becario=becario.id_usuario, tipo_vinculacion='mediador') }}" onsubmit="return confirm('¿Estás seguro de remover la vinculación con el Mediador?');">
+                      <button type="submit" class="btn btn-sm btn-danger w-100">Desvincular Mediador</button>
+                    </form>
+                    {% endif %}
+                  {% else %}
+                    <div class="mb-4">
+                      <p class="text-sm text-muted font-italic">No tiene mediador asignado.</p>
+                    </div>
+                    {% if g.usuario_actual.rol == 'administrador' %}
+                    <form method="POST" action="{{ url_for('admin.vincular_actor', id_becario=becario.id_usuario) }}">
+                      <input type="hidden" name="tipo_vinculacion" value="mediador">
+                      <div class="form-group mb-2">
+                        <select name="id_objetivo" class="form-control form-control-sm" required>
+                          <option value="" disabled selected>Seleccione...</option>
+                          {% for m in mediadores %}
+                            <option value="{{ m.id_usuario }}">{{ m.nombre }} {{ m.apellido }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-sm btn-primary w-100">Vincular Mediador</button>
+                    </form>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta Padrino -->
+            {% set padrino = becario.puntero_padrino if g.usuario_actual.rol == 'administrador' else datos.padrino_asignado %}
+            <div class="col-xl-4 col-lg-6 mb-4">
+              <div class="card shadow h-100">
+                <div class="card-header bg-transparent border-0 pb-0">
+                  <h4 class="mb-0 text-muted text-uppercase text-xs font-weight-bold">Padrino Asignado</h4>
+                </div>
+                <div class="card-body pt-3 d-flex flex-column justify-content-between">
+                  {% if padrino %}
+                    <div class="mb-4 d-flex align-items-center">
+                      <div class="icon icon-shape bg-danger text-white rounded-circle shadow mr-3" style="width: 2rem; height: 2rem;">
+                        <i class="fas fa-heart" style="font-size: 0.875rem;"></i>
+                      </div>
+                      <div>
+                        <h4 class="mb-0">{{ padrino.nombre }} {{ padrino.apellido }}</h4>
+                        <a href="mailto:{{ padrino.email }}" class="text-sm text-muted">{{ padrino.email }}</a>
+                      </div>
+                    </div>
+                    {% if g.usuario_actual.rol == 'administrador' %}
+                    <form method="POST" action="{{ url_for('admin.desvincular_actor', id_becario=becario.id_usuario, tipo_vinculacion='padrino') }}" onsubmit="return confirm('¿Estás seguro de remover la vinculación con el Padrino?');">
+                      <button type="submit" class="btn btn-sm btn-danger w-100">Desvincular Padrino</button>
+                    </form>
+                    {% endif %}
+                  {% else %}
+                    <div class="mb-4">
+                      <p class="text-sm text-muted font-italic">No tiene padrino asignado.</p>
+                    </div>
+                    {% if g.usuario_actual.rol == 'administrador' %}
+                    <form method="POST" action="{{ url_for('admin.vincular_actor', id_becario=becario.id_usuario) }}">
+                      <input type="hidden" name="tipo_vinculacion" value="padrino">
+                      <div class="form-group mb-2">
+                        <select name="id_objetivo" class="form-control form-control-sm" required>
+                          <option value="" disabled selected>Seleccione...</option>
+                          {% for p in padrinos %}
+                            <option value="{{ p.id_padrino }}">{{ p.nombre }} {{ p.apellido }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-sm btn-primary w-100">Vincular Padrino</button>
+                    </form>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- SECCIÓN: Supervisión Académica -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Supervisión Académica</h3>
+          
+          {% if g.usuario_actual.rol == 'tutor' %}
+          <a href="{{ url_for('tutor.visualizar_auditoria_academica', id_becario=id_bec) }}" class="btn btn-sm btn-primary">
+            <i class="fas fa-clipboard-check mr-2"></i> Auditar
+          </a>
+          {% endif %}
+        </div>
+        <div class="card-body bg-secondary pt-0">
+          {% if becario %}
+            {% set estado_verificacion = becario.datos_academicos.estado_verificacion.value if becario.datos_academicos else (becario.estado_verificacion | lower) %}
+            {% set d_academicos = becario.datos_academicos %}
+          {% else %}
+            {% set estado_verificacion = datos.datos_academicos.estado_verificacion | lower if datos.datos_academicos else 'pendiente_revision' %}
+            {% set d_academicos = datos.datos_academicos %}
+          {% endif %}
+          
+          {% if g.usuario_actual.rol == 'administrador' and estado_verificacion != 'aprobado' %}
+            <div class="card shadow border-danger border mt-4">
+              <div class="card-body text-center py-5">
+                <div class="icon icon-shape bg-danger text-white rounded-circle shadow mb-4 mx-auto" style="width: 4rem; height: 4rem;">
+                  <i class="fas fa-lock" style="font-size: 1.5rem;"></i>
+                </div>
+                <h3 class="text-danger mb-3">Acceso Restringido</h3>
+                <p class="text-muted mx-auto mb-4" style="max-width: 600px;">
+                  El perfil académico se encuentra actualmente bajo revisión. Por reglas de auditoría (RN-ADM-06), el detalle completo y los documentos son de acceso exclusivo para el <strong>Tutor asignado</strong> y el Becario hasta que el estado alcance la aprobación definitiva.
+                </p>
+                <span class="badge badge-pill badge-danger py-2 px-4" style="font-size: 0.9rem;">
+                  Estado Actual: {{ estado_verificacion | replace('_', ' ') | title }}
+                </span>
+              </div>
+            </div>
+          {% else %}
+            {% if d_academicos %}
+              {% with datos = d_academicos %}
+                {% include 'shared/partials/_datos_academicos.html' %}
+                <div class="mt-4">
+                  {% include 'shared/partials/_documentos_academicos.html' %}
+                </div>
+              {% endwith %}
+            {% else %}
+              <div class="text-center py-5">
+                <div class="icon icon-shape bg-secondary text-muted rounded-circle shadow mb-4 mx-auto" style="width: 4rem; height: 4rem;">
+                  <i class="fas fa-folder-open" style="font-size: 1.5rem;"></i>
+                </div>
+                <h4 class="text-muted mb-2">Sin Datos Académicos</h4>
+                <p class="text-muted text-sm mx-auto mb-0" style="max-width: 400px;">El becario aún no ha cargado información académica.</p>
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12 text-center">
+      <a href="javascript:history.back()" class="btn btn-secondary"><i class="fas fa-arrow-left mr-2"></i>Volver</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -57,7 +57,7 @@
             {% endif %}
 
           {% elif datos.estado_verificacion == 'Pendiente_Revision' %}
-            <form method="POST" action="{{ url_for('tutor.procesar_auditoria_academica', id_becario=id_usuario) }}" id="audit-form">
+            <form method="POST" action="{{ url_for('tutor.procesar_auditoria_academica', id_becario=becario.id_usuario) }}" id="audit-form">
               <div class="form-group">
                 <label class="form-control-label" for="observaciones">
                   Observaciones <small class="text-muted">(Requeridas para rechazar)</small>

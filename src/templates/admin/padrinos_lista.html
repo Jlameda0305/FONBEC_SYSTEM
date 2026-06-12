@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<div class="container-fluid mt--7">
+<div class="container-fluid mt--5">
   <div class="row">
     <div class="col">
       <div class="card shadow">
@@ -27,7 +27,7 @@
               <div class="col-md-8">
                 <div class="form-group mb-0">
                   <label class="form-control-label" for="busqueda">Buscar padrino</label>
-                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative" placeholder="Nombre, apellido o email..." value="{{ busqueda }}">
+                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative bg-secondary" placeholder="Nombre, apellido o email..." value="{{ busqueda }}">
                 </div>
               </div>
               <div class="col-md-4 d-flex align-items-end">
@@ -43,46 +43,10 @@
         <div class="card-header border-0">
           <h3 class="mb-0">Resultados</h3>
         </div>
-        <div class="table-responsive">
-          <table class="table align-items-center table-flush">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col" class="text-primary">Nombre Completo</th>
-                <th scope="col" class="text-primary">Email</th>
-                <th scope="col" class="text-primary">Teléfono</th>
-                <th scope="col" class="text-primary">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for padrino in padrinos %}
-              <tr>
-                <td>{{ padrino.nombre }} {{ padrino.apellido }}</td>
-                <td>{{ padrino.email }}</td>
-                <td>{{ padrino.telefono }}</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <a href="{{ url_for('admin.editar_padrino', id_padrino=padrino.id_padrino) }}" class="btn btn-sm btn-warning mr-2" title="Editar"><i class="fas fa-pen"></i></a>
-                    
-                    <a href="mailto:{{ padrino.email }}" class="btn btn-sm btn-primary mr-2" title="Enviar Email"><i class="fas fa-envelope"></i></a>
-                    
-                    {% if padrino.telefono %}
-                    <a href="https://wa.me/{{ padrino.telefono|replace('+', '')|replace(' ', '') }}" target="_blank" class="btn btn-sm btn-success mr-2" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                    {% endif %}
-                    
-                    <form method="POST" action="{{ url_for('admin.eliminar_padrino', id_padrino=padrino.id_padrino) }}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este padrino? Esta acción no se puede deshacer.');">
-                      <button type="submit" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="4" class="text-center text-muted py-5">No se encontraron padrinos.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+          {% set referentes = padrinos %}
+          {% set tipo_referente = 'padrino' %}
+          {% set is_paginated = true %}
+          {% include 'admin/partials/_lista_referentes.html' %}
         
         <div class="card-footer py-4">
           <nav aria-label="...">

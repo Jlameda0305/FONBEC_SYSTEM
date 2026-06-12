@@ -3,25 +3,33 @@
   {% set badge_class = 'badge-primary' %}
   {% set rol_label = actor.rol | default('Actor') | capitalize %}
   
-  {% if actor.__class__.__name__ == 'Becario' or (actor.rol and actor.rol == 'becario') %}
+  {% set act_rol = actor.rol if actor.rol is defined else (actor.get('rol') if actor is mapping else '') %}
+  {% set act_rol = act_rol | lower %}
+  
+  {% if act_rol == 'becario' %}
     {% set icon_class = 'ni-single-02' %}
     {% set badge_class = 'badge-success' %}
     {% set rol_label = 'Becario' %}
-  {% elif actor.__class__.__name__ == 'Tutor' or (actor.rol and actor.rol == 'tutor') %}
+  {% elif act_rol == 'tutor' %}
     {% set icon_class = 'ni-badge' %}
     {% set badge_class = 'badge-info' %}
     {% set rol_label = 'Tutor' %}
-  {% elif actor.__class__.__name__ == 'Mediador' or (actor.rol and actor.rol == 'mediador') %}
+  {% elif act_rol == 'mediador' %}
     {% set icon_class = 'ni-world-2' %}
     {% set badge_class = 'badge-warning' %}
     {% set rol_label = 'Mediador' %}
-  {% elif actor.__class__.__name__ == 'Padrino' or (actor.rol and actor.rol == 'padrino') %}
+  {% elif act_rol == 'padrino' %}
     {% set icon_class = 'ni-heart-2' %}
     {% set badge_class = 'badge-danger' %}
     {% set rol_label = 'Padrino' %}
-  {% elif actor.rol and actor.rol == 'administrador' %}
+  {% elif act_rol == 'administrador' %}
     {% set icon_class = 'ni-settings-gear-65' %}
     {% set badge_class = 'badge-primary' %}
+  {% else %}
+    {# Fallback for DTOs that might not specify a role but we know they are Becarios by context #}
+    {% set icon_class = 'ni-single-02' %}
+    {% set badge_class = 'badge-success' %}
+    {% set rol_label = 'Becario' %}
   {% endif %}
 
   <div class="card-body">
@@ -36,37 +44,36 @@
     </div>
 
     <div class="px-2">
-      <p class="text-sm mb-2">
-        <i class="fas fa-envelope text-muted mr-2"></i>
-        {% if actor.email %}
-          <a href="mailto:{{ actor.email }}" class="text-body">{{ actor.email }}</a>
-        {% else %}
-          <span class="text-muted">Sin información</span>
-        {% endif %}
-      </p>
+      {% if actor.email %}
+        <a href="mailto:{{ actor.email }}" class="btn btn-outline-primary btn-sm mb-2 w-100 text-left d-flex align-items-center">
+          <i class="fas fa-envelope mr-2"></i> {{ actor.email }}
+        </a>
+      {% endif %}
+      
+      {% if actor.telefono %}
+        <a href="https://wa.me/{{ actor.telefono | replace('+', '') | replace(' ', '') }}" target="_blank" class="btn btn-outline-success btn-sm mb-3 w-100 text-left d-flex align-items-center">
+          <i class="fab fa-whatsapp mr-2"></i> {{ actor.telefono }}
+        </a>
+      {% endif %}
       
       <p class="text-sm mb-2">
-        <i class="fas fa-phone text-muted mr-2"></i>
-        {% if actor.telefono %}
-          <a href="https://wa.me/{{ actor.telefono | replace('+', '') | replace(' ', '') }}" target="_blank" class="text-body">{{ actor.telefono }}</a>
-        {% else %}
-          <span class="text-muted">Sin información</span>
-        {% endif %}
-      </p>
-      
-      <p class="text-sm mb-2">
-        <i class="fas fa-map-marker-alt text-muted mr-2"></i>
+        <i class="fas fa-map-marker-alt text-muted mr-2 w-20 text-center"></i>
         <span class="text-body">{{ actor.direccion | default('Sin información') }}</span>
       </p>
       
+      <p class="text-sm mb-2">
+        {% if actor.sexo == 'M' %}
+          <i class="fas fa-mars text-muted mr-2 w-20 text-center"></i> Masculino
+        {% elif actor.sexo == 'F' %}
+          <i class="fas fa-venus text-muted mr-2 w-20 text-center"></i> Femenino
+        {% else %}
+          <i class="fas fa-genderless text-muted mr-2 w-20 text-center"></i> {{ actor.sexo | default('Sin información') }}
+        {% endif %}
+      </p>
+
       <p class="text-sm mb-0">
-        <i class="fas fa-user text-muted mr-2"></i>
-        <span class="text-body">
-          {{ actor.edad | default('--') }} años, 
-          {% if actor.sexo == 'M' %}Masculino
-          {% elif actor.sexo == 'F' %}Femenino
-          {% else %}{{ actor.sexo | default('Sin información') }}{% endif %}
-        </span>
+        <i class="fas fa-birthday-cake text-muted mr-2 w-20 text-center"></i>
+        <span class="text-body">{{ actor.edad | default('--') }} años</span>
       </p>
     </div>
   </div>

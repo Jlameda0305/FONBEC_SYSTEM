@@ -6,139 +6,22 @@
 <div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
   <div class="container-fluid">
     <div class="header-body">
-      <h6 class="h2 text-white d-inline-block mb-0">Directorio de Actores del Sistema</h6>
+      <h6 class="h2 text-white d-inline-block mb-0">Panel Principal</h6>
     </div>
   </div>
 </div>
 
-<div class="container-fluid mt--7">
+<div class="container-fluid mt--5">
   <div class="row">
     <div class="col">
       <div class="card shadow">
         <div class="card-header border-0">
-          <h3 class="mb-0">Filtros y Búsqueda</h3>
+          <h3 class="mb-0">Resumen del Sistema</h3>
         </div>
         <div class="card-body">
-          <form method="GET" action="{{ url_for('admin.dashboard') }}">
-            <!-- Si viene del menú, mantenemos el filtro oculto -->
-            {% if filtro_rol %}
-            <input type="hidden" name="filtro_rol" value="{{ filtro_rol }}">
-            {% endif %}
-            <div class="row align-items-center">
-              <div class="col-md-9">
-                <div class="form-group mb-0">
-                  <label class="form-control-label" for="busqueda">Buscar por nombre, apellido o email</label>
-                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative bg-secondary" placeholder="Término de búsqueda..." value="{{ busqueda }}">
-                </div>
-              </div>
-              <div class="col-md-3">
-                <input type="hidden" name="pagina" value="1">
-                <button type="submit" class="btn btn-primary mt-4 w-100">Aplicar Búsqueda</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-      
-      <div class="card shadow mt-4">
-        <div class="card-header border-0">
-          <h3 class="mb-0">Resultados</h3>
-        </div>
-        <div class="table-responsive">
-          <table class="table align-items-center table-flush">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col" class="text-primary">Número</th>
-                <th scope="col" class="text-primary">Nombre Completo</th>
-                <th scope="col" class="text-primary">Edad</th>
-                <th scope="col" class="text-primary">Sexo</th>
-                {% if filtro_rol == 'becario' %}
-                <th scope="col" class="text-primary">Estado Académico</th>
-                {% else %}
-                <th scope="col" class="text-primary">Rol</th>
-                {% endif %}
-                <th scope="col" class="text-primary">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for actor in actores %}
-              <tr>
-                <td>{{ loop.index + (pagina_actual - 1) * 10 }}</td>
-                <td>
-                  {{ actor.nombre }} {{ actor.apellido }}
-                  <div class="text-sm text-muted">{{ actor.email }}</div>
-                </td>
-                <td>{{ actor.edad }} años</td>
-                <td>{{ actor.sexo | capitalize }}</td>
-                
-                {% if filtro_rol == 'becario' %}
-                <td>
-                  {% set estado = actor.datos_academicos.estado_verificacion.value if actor.datos_academicos else 'Sin datos' %}
-                  {% set badge_class = 'badge-secondary' %}
-                  {% if estado == 'aprobado' %}{% set badge_class = 'badge-success' %}
-                  {% elif estado == 'incompleto' %}{% set badge_class = 'badge-warning' %}
-                  {% elif estado == 'pendiente_revision' %}{% set badge_class = 'badge-info' %}
-                  {% elif estado == 'pendiente_modificar' %}{% set badge_class = 'badge-danger' %}{% endif %}
-                  <span class="badge badge-dot mr-4">
-                    <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
-                    <span class="status">{{ estado | replace('_', ' ') | title }}</span>
-                  </span>
-                </td>
-                {% else %}
-                <td>
-                  {% set badge_class = 'badge-primary' %}
-                  {% if actor.rol == 'becario' %}{% set badge_class = 'badge-success' %}
-                  {% elif actor.rol == 'tutor' %}{% set badge_class = 'badge-info' %}
-                  {% elif actor.rol == 'mediador' %}{% set badge_class = 'badge-warning' %}
-                  {% elif actor.rol == 'padrino' %}{% set badge_class = 'badge-danger' %}{% endif %}
-                  <span class="badge badge-dot mr-4">
-                    <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
-                    <span class="status">{{ actor.rol | capitalize }}</span>
-                  </span>
-                </td>
-                {% endif %}
-                <td>
-                  <div class="d-flex align-items-center">
-                    {% if actor.rol == 'becario' %}
-                      <a href="{{ url_for('admin.gestionar_vinculaciones', id_becario=actor.id_usuario) }}" class="btn btn-sm btn-info" title="Vinculaciones"><i class="ni ni-vector"></i></a>
-                      <a href="{{ url_for('admin.visualizar_academico', id_becario=actor.id_usuario) }}" class="btn btn-sm btn-warning" title="Supervisión Académica"><i class="ni ni-hat-3"></i></a>
-                    {% endif %}
-                    <a href="mailto:{{ actor.email }}" class="btn btn-sm btn-primary" title="Enviar Email"><i class="fas fa-envelope"></i></a>
-                    {% if actor.telefono %}
-                    <a href="https://wa.me/{{ actor.telefono|replace('+', '')|replace(' ', '') }}" target="_blank" class="btn btn-sm btn-success" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                    {% endif %}
-                  </div>
-                </td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="5" class="text-center text-muted py-5">No se encontraron actores con los filtros aplicados.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="card-footer py-4">
-          <nav aria-label="...">
-            <ul class="pagination justify-content-end mb-0">
-              <li class="page-item {% if pagina_actual <= 1 %}disabled{% endif %}">
-                <a class="page-link" href="{% if pagina_actual > 1 %}{{ url_for('admin.dashboard', pagina=pagina_actual - 1, busqueda=busqueda, filtro_rol=filtro_rol) }}{% else %}#{% endif %}" tabindex="-1">
-                  <i class="fas fa-angle-left"></i>
-                  <span class="sr-only">Anterior</span>
-                </a>
-              </li>
-              <li class="page-item active">
-                <a class="page-link" href="#">{{ pagina_actual }}</a>
-              </li>
-              <li class="page-item {% if actores|length < 10 %}disabled{% endif %}">
-                <a class="page-link" href="{% if actores|length == 10 %}{{ url_for('admin.dashboard', pagina=pagina_actual + 1, busqueda=busqueda, filtro_rol=filtro_rol) }}{% else %}#{% endif %}">
-                  <i class="fas fa-angle-right"></i>
-                  <span class="sr-only">Siguiente</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+          <p class="text-muted text-center py-5">
+            Módulo en construcción. Aquí se mostrarán estadísticas y accesos rápidos en el futuro.
+          </p>
         </div>
       </div>
     </div>

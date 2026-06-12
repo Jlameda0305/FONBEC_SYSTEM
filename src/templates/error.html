@@ -1,9 +1,27 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block title %}Error — FONBEC{% endblock %}
 
 {% block content %}
-<div class="card empty-state">
-    <p>⚠️ {{ message }}</p>
+<div class="header bg-gradient-danger pb-6 pt-5 pt-md-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0">Atención</h6>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--5">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow border-0 text-center py-5">
+        <div class="icon icon-shape bg-danger text-white rounded-circle shadow mb-4 mx-auto" style="width: 4rem; height: 4rem;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+        </div>
+        <h3 class="text-danger mb-2">Ha ocurrido un error</h3>
+        <p class="text-muted text-sm mx-auto mb-0" style="max-width: 400px;">{{ message }}</p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

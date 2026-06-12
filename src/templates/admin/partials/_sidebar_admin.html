@@ -1,3 +1,0 @@
-<!-- _sidebar_admin.html -->
-<a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">👥 Gestión de Actores</a>
-<a href="{{ url_for('admin.listar_padrinos') }}" class="{% if request.endpoint and request.endpoint.startswith('admin.') and 'padrino' in request.endpoint %}active{% endif %}">🤝 Gestión de Padrinos</a>

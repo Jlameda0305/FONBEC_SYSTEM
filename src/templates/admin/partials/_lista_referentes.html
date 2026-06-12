@@ -1,0 +1,89 @@
+<div class="table-responsive">
+  <table class="table align-items-center table-flush">
+    <thead class="thead-light">
+      <tr>
+        {% if is_paginated %}
+        <th scope="col" class="text-primary">Número</th>
+        {% endif %}
+        <th scope="col" class="text-primary">Nombre Completo</th>
+        <th scope="col" class="text-primary">Email</th>
+        <th scope="col" class="text-primary">Teléfono</th>
+        {% if tipo_referente in ['tutor', 'mediador'] %}
+        <th scope="col" class="text-primary">Becarios Asignados</th>
+        {% endif %}
+        <th scope="col" class="text-primary">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for actor in referentes %}
+      <tr>
+        {% if is_paginated %}
+        <td>{{ loop.index + (pagina_actual - 1) * 10 }}</td>
+        {% endif %}
+        <td>
+          <div class="d-flex align-items-center">
+            {% set icon_class = 'fas fa-heart' %}
+            {% set bg_class = 'bg-danger' %}
+            {% set rol = actor.rol | default(tipo_referente) %}
+            
+            {% if rol == 'tutor' %}
+              {% set icon_class = 'fas fa-user-tie' %}
+              {% set bg_class = 'bg-success' %}
+            {% elif rol == 'mediador' %}
+              {% set icon_class = 'fas fa-handshake' %}
+              {% set bg_class = 'bg-warning' %}
+            {% endif %}
+            
+            <div class="icon icon-shape {{ bg_class }} text-white rounded-circle shadow mr-3" style="width: 2rem; height: 2rem;">
+              <i class="{{ icon_class }}" style="font-size: 0.875rem;"></i>
+            </div>
+            <span class="mb-0 text-sm font-weight-bold">{{ actor.nombre }} {{ actor.apellido }}</span>
+          </div>
+        </td>
+        <td>{{ actor.email }}</td>
+        <td>{{ actor.telefono if actor.telefono else '-' }}</td>
+        
+        {% if tipo_referente in ['tutor', 'mediador'] %}
+        <td>
+          <span class="badge badge-pill badge-info">
+            {{ actor.lista_becarios | length if actor.lista_becarios else 0 }} becarios
+          </span>
+        </td>
+        {% endif %}
+        
+        <td>
+          <div class="d-flex align-items-center">
+            {% if tipo_referente == 'padrino' %}
+              <a href="{{ url_for('admin.editar_padrino', id_padrino=actor.id_padrino) }}" class="btn btn-sm btn-warning mr-2" title="Editar"><i class="fas fa-pen"></i></a>
+            {% endif %}
+            
+            <a href="mailto:{{ actor.email }}" class="btn btn-sm btn-primary {% if tipo_referente == 'padrino' %}mr-2{% endif %}" title="Enviar Email"><i class="fas fa-envelope"></i></a>
+            
+            {% if actor.telefono %}
+            <a href="https://wa.me/{{ actor.telefono|replace('+', '')|replace(' ', '') }}" target="_blank" class="btn btn-sm btn-success {% if tipo_referente == 'padrino' %}mr-2{% endif %}" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            {% endif %}
+            
+            {% if tipo_referente == 'padrino' %}
+            <form method="POST" action="{{ url_for('admin.eliminar_padrino', id_padrino=actor.id_padrino) }}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este padrino? Esta acción no se puede deshacer.');">
+              <button type="submit" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center text-muted py-5">
+          <div class="text-center">
+            <div class="icon icon-shape bg-secondary text-muted rounded-circle shadow mb-4" style="width: 4rem; height: 4rem;">
+              <i class="fas fa-inbox" style="font-size: 1.5rem;"></i>
+            </div>
+            <h4 class="text-muted mb-2">No hay resultados</h4>
+            <p class="text-muted text-sm mx-auto mb-0" style="max-width: 400px;">No se encontraron referentes con los filtros aplicados.</p>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

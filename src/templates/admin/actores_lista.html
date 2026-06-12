@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Panel de Administración — FONBEC{% endblock %}
+
+{% block content %}
+<div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0">Listado de {% if filtro_rol == 'tutor' or filtro_rol == 'mediador' %}{{ filtro_rol | capitalize }}es{% else %}{{ filtro_rol | capitalize }}s{% endif %}</h6>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--5">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Filtros y Búsqueda</h3>
+        </div>
+        <div class="card-body">
+          <form method="GET" action="{{ url_for('admin.directorio_rol', rol=filtro_rol) }}">
+            <!-- El filtro_rol ya va en la URL -->
+            <div class="row align-items-center">
+              <div class="col-md-9">
+                <div class="form-group mb-0">
+                  <label class="form-control-label" for="busqueda">Buscar por nombre, apellido o email</label>
+                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative bg-secondary" placeholder="Término de búsqueda..." value="{{ busqueda }}">
+                </div>
+              </div>
+              <div class="col-md-3">
+                <input type="hidden" name="pagina" value="1">
+                <button type="submit" class="btn btn-primary mt-4 w-100">Aplicar Búsqueda</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="card shadow mt-4">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Resultados</h3>
+        </div>
+        {% if filtro_rol == 'becario' %}
+          {% set lista_becarios = actores %}
+          {% include 'shared/partials/_lista_becarios.html' %}
+        {% else %}
+          {% set referentes = actores %}
+          {% set tipo_referente = filtro_rol %}
+          {% set is_paginated = true %}
+          {% include 'admin/partials/_lista_referentes.html' %}
+        {% endif %}
+        
+        <div class="card-footer py-4">
+          <nav aria-label="...">
+            <ul class="pagination justify-content-end mb-0">
+              <li class="page-item {% if pagina_actual <= 1 %}disabled{% endif %}">
+                <a class="page-link" href="{% if pagina_actual > 1 %}{{ url_for('admin.directorio_rol', pagina=pagina_actual - 1, busqueda=busqueda, rol=filtro_rol) }}{% else %}#{% endif %}" tabindex="-1">
+                  <i class="fas fa-angle-left"></i>
+                  <span class="sr-only">Anterior</span>
+                </a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="#">{{ pagina_actual }}</a>
+              </li>
+              <li class="page-item {% if actores|length < 10 %}disabled{% endif %}">
+                <a class="page-link" href="{% if actores|length == 10 %}{{ url_for('admin.directorio_rol', pagina=pagina_actual + 1, busqueda=busqueda, rol=filtro_rol) }}{% else %}#{% endif %}">
+                  <i class="fas fa-angle-right"></i>
+                  <span class="sr-only">Siguiente</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
