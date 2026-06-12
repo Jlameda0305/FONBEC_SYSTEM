@@ -1,63 +1,82 @@
-<table style="width: 100%; border-collapse: collapse;">
-    <tbody>
+<div class="card shadow">
+  <div class="card-header bg-transparent border-0">
+    <h3 class="mb-0"><i class="ni ni-hat-3 mr-2 text-primary"></i> Información Académica</h3>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-items-center table-flush">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" style="width: 40%">Campo</th>
+          <th scope="col">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
         {% if datos.estado_verificacion is defined %}
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Estado de Verificación</td>
-            <td style="padding: 0.75rem 0;">
-                {% if 'Aprobado' in datos.estado_verificacion %}
-                    <span class="badge badge-approved">{{ datos.estado_verificacion }}</span>
-                {% elif 'Pendiente' in datos.estado_verificacion %}
-                    <span class="badge badge-pending">{{ datos.estado_verificacion }}</span>
-                {% elif 'Incompleto' in datos.estado_verificacion %}
-                    <span class="badge badge-incomplete">{{ datos.estado_verificacion }}</span>
-                {% else %}
-                    <span class="badge">{{ datos.estado_verificacion }}</span>
-                {% endif %}
-            </td>
+        <tr>
+          <td><span class="text-muted font-weight-bold">Estado de Verificación</span></td>
+          <td>
+            {% set badge_class = 'badge-primary' %}
+            {% if 'Aprobado' in datos.estado_verificacion %}
+              {% set badge_class = 'badge-success' %}
+            {% elif 'Pendiente' in datos.estado_verificacion %}
+              {% set badge_class = 'badge-warning' %}
+            {% elif 'Incompleto' in datos.estado_verificacion %}
+              {% set badge_class = 'badge-danger' %}
+            {% endif %}
+            <span class="badge badge-pill {{ badge_class }}">{{ datos.estado_verificacion }}</span>
+          </td>
         </tr>
         {% endif %}
 
         {% if datos.nombre_carrera is defined %}
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 0.75rem 0; font-weight: 600; color: #555; width: 40%;">Carrera</td>
-            <td style="padding: 0.75rem 0;">{{ datos.nombre_carrera }}</td>
+        <tr>
+          <td><span class="text-muted font-weight-bold">Carrera</span></td>
+          <td>{{ datos.nombre_carrera }}</td>
         </tr>
         {% endif %}
 
         {% if datos.anio_ingreso is defined %}
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Año de Ingreso</td>
-            <td style="padding: 0.75rem 0;">{{ datos.anio_ingreso }}</td>
+        <tr>
+          <td><span class="text-muted font-weight-bold">Año de Ingreso</span></td>
+          <td>{{ datos.anio_ingreso }}</td>
         </tr>
         {% endif %}
 
         {% if datos.anio_en_curso is defined %}
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 0.75rem 0; font-weight: 600; color: #555;">Año en Curso</td>
-            <td style="padding: 0.75rem 0;">{{ datos.anio_en_curso }}</td>
+        <tr>
+          <td><span class="text-muted font-weight-bold">Año en Curso</span></td>
+          <td>{{ datos.anio_en_curso }}</td>
         </tr>
         {% endif %}
-    </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+  
+  {% if (datos.materias_a_cursar is defined and datos.materias_a_cursar) or (datos.materias_adeudadas is defined and datos.materias_adeudadas) %}
+  <div class="card-body border-top">
+    <div class="row">
+      {% if datos.materias_a_cursar is defined and datos.materias_a_cursar %}
+      <div class="col-md-6 mb-4 mb-md-0">
+        <h4 class="text-primary mb-3"><i class="ni ni-books mr-2"></i>Materias a Cursar</h4>
+        <ul class="list-group list-group-flush">
+          {% for materia in datos.materias_a_cursar %}
+          <li class="list-group-item px-0 py-2 text-sm">{{ materia }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
 
-{% if datos.materias_a_cursar is defined and datos.materias_a_cursar %}
-<div style="margin-top: 1.5rem;">
-    <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 0.5rem;">Materias a Cursar</h3>
-    <ul style="list-style: none; padding: 0;">
-        {% for materia in datos.materias_a_cursar %}
-        <li style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">📘 {{ materia }}</li>
-        {% endfor %}
-    </ul>
+      {% if datos.materias_adeudadas is defined and datos.materias_adeudadas %}
+      <div class="col-md-6">
+        <h4 class="text-danger mb-3"><i class="ni ni-collection mr-2"></i>Materias Adeudadas</h4>
+        <ul class="list-group list-group-flush">
+          {% for materia in datos.materias_adeudadas %}
+          <li class="list-group-item px-0 py-2 text-sm">{{ materia }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 </div>
-{% endif %}
-
-{% if datos.materias_adeudadas is defined and datos.materias_adeudadas %}
-<div style="margin-top: 1.5rem;">
-    <h3 style="font-size: 1.1rem; color: #374151; margin-bottom: 0.5rem;">Materias Adeudadas</h3>
-    <ul style="list-style: none; padding: 0;">
-        {% for materia in datos.materias_adeudadas %}
-        <li style="padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;">📕 {{ materia }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}

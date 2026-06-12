@@ -1,0 +1,100 @@
+<nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-md navbar-dark" id="sidenav-main">
+  <div class="container-fluid">
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidenav-collapse-main" aria-controls="sidenav-main" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- Brand -->
+    <a class="navbar-brand pt-0" href="/">
+      <img src="{{ url_for('static', filename='assets/img/brand/logo-fonbec.png') }}" class="navbar-brand-img" alt="FONBEC Logo">
+    </a>
+    <!-- Collapse -->
+    <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+      <!-- Collapse header -->
+      <div class="navbar-collapse-header d-md-none">
+        <div class="row">
+          <div class="col-6 collapse-brand">
+            <a href="/">
+              <img src="{{ url_for('static', filename='assets/img/brand/logo-fonbec.png') }}" alt="FONBEC Logo">
+            </a>
+          </div>
+          <div class="col-6 collapse-close">
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#sidenav-collapse-main" aria-controls="sidenav-main" aria-expanded="false" aria-label="Toggle sidenav">
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Navigation -->
+      <ul class="navbar-nav">
+        {% if g.usuario_actual and g.usuario_actual.rol == 'administrador' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+            <i class="ni ni-tv-2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.dashboard', filtro_rol='becario') }}">
+            <i class="ni ni-single-02"></i> Becarios
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.dashboard', filtro_rol='tutor') }}">
+            <i class="ni ni-badge"></i> Tutores
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.dashboard', filtro_rol='mediador') }}">
+            <i class="ni ni-world-2"></i> Mediadores
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.listar_padrinos') }}">
+            <i class="ni ni-heart-2"></i> Padrinos
+          </a>
+        </li>
+        {% elif g.usuario_actual and g.usuario_actual.rol == 'tutor' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('tutor.dashboard') }}">
+            <i class="ni ni-tv-2"></i> Mi Panel
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('tutor.dashboard') }}">
+            <i class="ni ni-single-02"></i> Mis Becarios
+          </a>
+        </li>
+        {% elif g.usuario_actual and g.usuario_actual.rol == 'becario' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('becario.dashboard') }}">
+            <i class="ni ni-tv-2"></i> Mi Panel
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('becario.academico') }}">
+            <i class="ni ni-hat-3"></i> Datos Académicos
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+      <!-- Divider -->
+      <hr class="my-3">
+      <!-- Logout -->
+      <ul class="navbar-nav mb-md-3">
+        {% if g.usuario_actual and g.usuario_actual.rol == 'administrador' %}
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="ni ni-settings-gear-65"></i> Configuración
+          </a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">
+            <i class="ni ni-user-run text-danger"></i> Cerrar Sesión
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

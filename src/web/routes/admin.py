@@ -14,6 +14,7 @@ from src.infrastructure.repositories import (
 from src.application.use_cases.CU05_Admin_ListarActores import ListarActoresUseCase
 from src.application.use_cases.CU04_Admin_GestionarPadrinos import GestionarPadrinosUseCase
 from src.application.use_cases.CU03_Admin_GestionarVinculaciones import GestionarVinculacionesUseCase
+from src.application.use_cases.CU06_Admin_VerDatosAcademicos import VerDatosAcademicosUseCase
 
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -257,3 +258,38 @@ def desvincular_actor(id_becario, tipo_vinculacion):
         flash(f"Error al desvincular: {str(e)}", "error")
         
     return redirect(url_for("admin.gestionar_vinculaciones", id_becario=id_becario))
+
+def get_ver_datos_academicos_use_case():
+    becario_repo = SQLAlchemyBecarioRepository(g.db_session)
+    return VerDatosAcademicosUseCase(becario_repo)
+
+def get_becario_repository():
+    return SQLAlchemyBecarioRepository(g.db_session)
+
+@admin_bp.route("/becarios/<id_becario>/academico", methods=["GET"])
+@requiere_rol("administrador")
+def visualizar_academico(id_becario):
+    uc = get_ver_datos_academicos_use_case()
+    
+    try:
+        datos = uc.ejecutar(actor_admin=g.usuario_actual, id_becario=id_becario)
+        
+        # Necesitamos el becario (nombre, etc) para el header de la página
+        becario_repo = get_becario_repository()
+        becario = becario_repo.obtener_por_id(id_becario)
+        
+        return render_template(
+            "admin/becario_academico.html",
+            becario=becario,
+            datos=datos
+        )
+    except PermissionError as e:
+        flash(str(e), "error")
+        return redirect(url_for("admin.dashboard"))
+    except ValueError as e:
+        flash(str(e), "error")
+        return redirect(url_for("admin.dashboard"))
+    except Exception as e:
+        logging.error(f"Error al visualizar datos académicos: {str(e)}")
+        flash("Ocurrió un error inesperado al visualizar los datos académicos.", "error")
+        return redirect(url_for("admin.dashboard"))

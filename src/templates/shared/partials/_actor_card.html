@@ -1,0 +1,81 @@
+<div class="card shadow">
+  {% set icon_class = 'ni-single-02' %}
+  {% set badge_class = 'badge-primary' %}
+  {% set rol_label = actor.rol | default('Actor') | capitalize %}
+  
+  {% if actor.__class__.__name__ == 'Becario' or (actor.rol and actor.rol == 'becario') %}
+    {% set icon_class = 'ni-single-02' %}
+    {% set badge_class = 'badge-success' %}
+    {% set rol_label = 'Becario' %}
+  {% elif actor.__class__.__name__ == 'Tutor' or (actor.rol and actor.rol == 'tutor') %}
+    {% set icon_class = 'ni-badge' %}
+    {% set badge_class = 'badge-info' %}
+    {% set rol_label = 'Tutor' %}
+  {% elif actor.__class__.__name__ == 'Mediador' or (actor.rol and actor.rol == 'mediador') %}
+    {% set icon_class = 'ni-world-2' %}
+    {% set badge_class = 'badge-warning' %}
+    {% set rol_label = 'Mediador' %}
+  {% elif actor.__class__.__name__ == 'Padrino' or (actor.rol and actor.rol == 'padrino') %}
+    {% set icon_class = 'ni-heart-2' %}
+    {% set badge_class = 'badge-danger' %}
+    {% set rol_label = 'Padrino' %}
+  {% elif actor.rol and actor.rol == 'administrador' %}
+    {% set icon_class = 'ni-settings-gear-65' %}
+    {% set badge_class = 'badge-primary' %}
+  {% endif %}
+
+  <div class="card-body">
+    <div class="d-flex align-items-center mb-4">
+      <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow mr-3">
+        <i class="ni {{ icon_class }}"></i>
+      </div>
+      <div>
+        <h3 class="mb-0">{{ actor.nombre | default('Sin información') }} {{ actor.apellido | default('') }}</h3>
+        <span class="badge badge-pill {{ badge_class }}">{{ rol_label }}</span>
+      </div>
+    </div>
+
+    <div class="px-2">
+      <p class="text-sm mb-2">
+        <i class="fas fa-envelope text-muted mr-2"></i>
+        {% if actor.email %}
+          <a href="mailto:{{ actor.email }}" class="text-body">{{ actor.email }}</a>
+        {% else %}
+          <span class="text-muted">Sin información</span>
+        {% endif %}
+      </p>
+      
+      <p class="text-sm mb-2">
+        <i class="fas fa-phone text-muted mr-2"></i>
+        {% if actor.telefono %}
+          <a href="https://wa.me/{{ actor.telefono | replace('+', '') | replace(' ', '') }}" target="_blank" class="text-body">{{ actor.telefono }}</a>
+        {% else %}
+          <span class="text-muted">Sin información</span>
+        {% endif %}
+      </p>
+      
+      <p class="text-sm mb-2">
+        <i class="fas fa-map-marker-alt text-muted mr-2"></i>
+        <span class="text-body">{{ actor.direccion | default('Sin información') }}</span>
+      </p>
+      
+      <p class="text-sm mb-0">
+        <i class="fas fa-user text-muted mr-2"></i>
+        <span class="text-body">
+          {{ actor.edad | default('--') }} años, 
+          {% if actor.sexo == 'M' %}Masculino
+          {% elif actor.sexo == 'F' %}Femenino
+          {% else %}{{ actor.sexo | default('Sin información') }}{% endif %}
+        </span>
+      </p>
+    </div>
+  </div>
+
+  {% if show_actions %}
+  <div class="card-footer bg-transparent border-0 pt-0 text-right">
+    <a href="mailto:{{ actor.email }}" class="btn btn-sm btn-primary">
+      <i class="fas fa-envelope mr-1"></i> Contactar
+    </a>
+  </div>
+  {% endif %}
+</div>

@@ -1,0 +1,28 @@
+/* src/static/assets/css/fonbec-custom.css */
+
+:root {
+    --color-primary:      #1A4B84;
+    --color-accent:       #F39200;
+    --color-bg-main:      #FFFFFF;
+    --color-bg-section:   #F7F7F7;
+    --color-bg-alt:       #F0F0F0;
+    --color-text-body:    #333333;
+    --color-text-muted:   #666666;
+    --color-text-inverse: #FFFFFF;
+}
+
+/* Override del color primario de Argon */
+.bg-gradient-primary,
+.btn-primary { background: var(--color-primary) !important; }
+
+/* Override del sidebar */
+.sidenav { background: var(--color-primary) !important; }
+.sidenav .nav-link.active { background: rgba(243, 146, 0, 0.15); }
+.sidenav .nav-link.active i { color: var(--color-accent) !important; }
+
+/* Override del color de acento (botones secundarios, badges) */
+.btn-warning,
+.badge-warning { background: var(--color-accent) !important; }
+
+/* Body background */
+body { background-color: var(--color-bg-section) !important; }

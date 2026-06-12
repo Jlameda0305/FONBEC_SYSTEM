@@ -217,6 +217,13 @@ class DatosAcademicos:
             }
             for doc in self.lista_documentos
         }
+        
+        documentos_requeridos_info = [
+            ("Programa", "Programa de la carrera"),
+            ("CartaCompromiso", "Carta de compromiso"),
+            ("Inscripcion", "Inscripción al año en curso")
+        ]
+        
         return {
             "nombre_carrera": self.nombre_carrera,
             "anio_ingreso": self.anio_ingreso,
@@ -227,4 +234,5 @@ class DatosAcademicos:
             "observaciones": self.observaciones,
             "fecha_observacion": self.fecha_observacion.isoformat() if self.fecha_observacion else None,
             "documentos": documentos,
+            "documentos_requeridos": documentos_requeridos_info,
         }

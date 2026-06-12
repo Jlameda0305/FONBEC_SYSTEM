@@ -1,209 +1,112 @@
-{% extends "shared/dashboard_base.html" %}
+{% extends "layouts/base.html" %}
 
 {% block title %}Padrinos — FONBEC{% endblock %}
 
-{% block topbar_user %}Modo Administrador{% endblock %}
-
-{% block sidebar %}
-    {% include 'admin/partials/_sidebar_admin.html' %}
-{% endblock %}
-
-{% block extra_styles %}
-<style>
-    .controls-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        background: #fff;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .search-group {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-end;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .form-group label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #4b5563;
-    }
-
-    .form-control {
-        padding: 0.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 0.95rem;
-        min-width: 250px;
-    }
-
-    .btn {
-        padding: 0.5rem 1rem;
-        background-color: #e94560;
-        color: white;
-        border: none;
-        border-radius: 0.375rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        text-decoration: none;
-        display: inline-block;
-    }
-
-    .btn:hover {
-        background-color: #cf3a52;
-    }
-
-    .btn-action {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-    }
-    
-    .btn-delete {
-        background-color: #ef4444;
-    }
-    
-    .btn-delete:hover {
-        background-color: #dc2626;
-    }
-
-    .table-container {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    th, td {
-        padding: 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    th {
-        background-color: #f9fafb;
-        font-weight: 600;
-        color: #4b5563;
-    }
-
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    tr:hover {
-        background-color: #f9fafb;
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .btn-secondary {
-        background-color: #6b7280;
-    }
-
-    .btn-secondary:hover {
-        background-color: #4b5563;
-    }
-    
-    .btn:disabled {
-        background-color: #d1d5db;
-        cursor: not-allowed;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="card">
-    <div class="card-header">Directorio de Padrinos</div>
-    
-    <!-- Filtros y Acciones -->
-    <div class="controls-bar">
-        <form method="GET" action="{{ url_for('admin.listar_padrinos') }}" class="search-group">
-            <div class="form-group">
-                <label for="busqueda">Buscar padrino</label>
-                <input type="text" id="busqueda" name="busqueda" class="form-control" placeholder="Nombre, apellido o email..." value="{{ busqueda }}">
-            </div>
-            
-            <input type="hidden" name="pagina" value="1">
-            <button type="submit" class="btn">Buscar</button>
-        </form>
-        
-        <div>
-            <a href="{{ url_for('admin.nuevo_padrino') }}" class="btn">+ Nuevo Padrino</a>
-        </div>
+<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0"><i class="ni ni-heart-2 mr-2"></i> Directorio de Padrinos</h6>
     </div>
+  </div>
+</div>
 
-    <!-- Tabla de Resultados -->
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre Completo</th>
-                    <th>Email</th>
-                    <th>Teléfono</th>
-                    <th>Acciones</th>
-                </tr>
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0 d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Filtros y Búsqueda</h3>
+          <a href="{{ url_for('admin.nuevo_padrino') }}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus mr-2"></i>Nuevo Padrino
+          </a>
+        </div>
+        <div class="card-body">
+          <form method="GET" action="{{ url_for('admin.listar_padrinos') }}">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="form-group mb-0">
+                  <label class="form-control-label" for="busqueda">Buscar padrino</label>
+                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative" placeholder="Nombre, apellido o email..." value="{{ busqueda }}">
+                </div>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <input type="hidden" name="pagina" value="1">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card shadow mt-4">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Resultados</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Nombre Completo</th>
+                <th scope="col">Email</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">Acciones</th>
+              </tr>
             </thead>
             <tbody>
-                {% for padrino in padrinos %}
-                <tr>
-                    <td>{{ padrino.nombre }} {{ padrino.apellido }}</td>
-                    <td>{{ padrino.email }}</td>
-                    <td>{{ padrino.telefono }}</td>
-                    <td style="display: flex; gap: 0.5rem;">
-                        <a href="{{ url_for('admin.editar_padrino', id_padrino=padrino.id_padrino) }}" class="btn btn-action">Editar</a>
-                        
-                        <!-- Formulario para Eliminar (POST method) -->
-                        <form method="POST" action="{{ url_for('admin.eliminar_padrino', id_padrino=padrino.id_padrino) }}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este padrino? Esta acción no se puede deshacer.');">
-                            <button type="submit" class="btn btn-action btn-delete">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="4" style="text-align: center; color: #6b7280; padding: 2rem;">No se encontraron padrinos.</td>
-                </tr>
-                {% endfor %}
+              {% for padrino in padrinos %}
+              <tr>
+                <td>{{ padrino.nombre }} {{ padrino.apellido }}</td>
+                <td>{{ padrino.email }}</td>
+                <td>{{ padrino.telefono }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <a href="{{ url_for('admin.editar_padrino', id_padrino=padrino.id_padrino) }}" class="btn btn-sm btn-warning mr-2" title="Editar"><i class="fas fa-pen"></i></a>
+                    
+                    <a href="mailto:{{ padrino.email }}" class="btn btn-sm btn-primary mr-2" title="Enviar Email"><i class="fas fa-envelope"></i></a>
+                    
+                    {% if padrino.telefono %}
+                    <a href="https://wa.me/{{ padrino.telefono|replace('+', '')|replace(' ', '') }}" target="_blank" class="btn btn-sm btn-success mr-2" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    {% endif %}
+                    
+                    <form method="POST" action="{{ url_for('admin.eliminar_padrino', id_padrino=padrino.id_padrino) }}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este padrino? Esta acción no se puede deshacer.');">
+                      <button type="submit" class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-5">No se encontraron padrinos.</td>
+              </tr>
+              {% endfor %}
             </tbody>
-        </table>
-    </div>
-
-    <!-- Paginación -->
-    <div class="pagination">
-        {% if pagina_actual > 1 %}
-            <a href="{{ url_for('admin.listar_padrinos', pagina=pagina_actual - 1, busqueda=busqueda) }}" class="btn btn-secondary">← Anterior</a>
-        {% else %}
-            <button class="btn btn-secondary" disabled>← Anterior</button>
-        {% endif %}
+          </table>
+        </div>
         
-        <span style="font-weight: 600; color: #4b5563;">Página {{ pagina_actual }}</span>
-        
-        {% if padrinos|length == 10 %}
-            <a href="{{ url_for('admin.listar_padrinos', pagina=pagina_actual + 1, busqueda=busqueda) }}" class="btn btn-secondary">Siguiente →</a>
-        {% else %}
-            <button class="btn btn-secondary" disabled>Siguiente →</button>
-        {% endif %}
+        <div class="card-footer py-4">
+          <nav aria-label="...">
+            <ul class="pagination justify-content-end mb-0">
+              <li class="page-item {% if pagina_actual <= 1 %}disabled{% endif %}">
+                <a class="page-link" href="{% if pagina_actual > 1 %}{{ url_for('admin.listar_padrinos', pagina=pagina_actual - 1, busqueda=busqueda) }}{% else %}#{% endif %}" tabindex="-1">
+                  <i class="fas fa-angle-left"></i>
+                  <span class="sr-only">Anterior</span>
+                </a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="#">{{ pagina_actual }}</a>
+              </li>
+              <li class="page-item {% if padrinos|length < 10 %}disabled{% endif %}">
+                <a class="page-link" href="{% if padrinos|length == 10 %}{{ url_for('admin.listar_padrinos', pagina=pagina_actual + 1, busqueda=busqueda) }}{% else %}#{% endif %}">
+                  <i class="fas fa-angle-right"></i>
+                  <span class="sr-only">Siguiente</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

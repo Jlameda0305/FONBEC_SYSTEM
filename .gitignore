@@ -1,3 +1,4 @@
+
 FONBEC_SYSTEM/
 .env
 .vscode/
@@ -6,3 +7,5 @@ __pycache__/
 openspec/
 AGENT.md
 temp_seed.py
+Argon template/
+Yo/

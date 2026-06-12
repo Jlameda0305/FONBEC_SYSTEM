@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}FONBEC{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600&display=swap">
+    <!-- Icons -->
+    <link href="{{ url_for('static', filename='assets/vendor/nucleo/css/nucleo.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='assets/vendor/@fortawesome/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <!-- Argon CSS -->
+    <link type="text/css" href="{{ url_for('static', filename='assets/css/argon.css') }}" rel="stylesheet">
+    <!-- FONBEC Custom CSS -->
+    <link type="text/css" href="{{ url_for('static', filename='assets/css/fonbec-custom.css') }}" rel="stylesheet">
+    {% block stylesheets %}{% endblock %}
+  </head>
+  <body>
+    {% include 'includes/sidenav.html' ignore missing %}
+    <div class="main-content" id="panel">
+      {% include 'includes/navigation.html' ignore missing %}
+      {% include 'includes/_flash_messages.html' ignore missing %}
+      {% block content %}{% endblock %}
+      {% include 'includes/footer.html' ignore missing %}
+    </div>
+    {% include 'includes/scripts.html' ignore missing %}
+    {% block javascripts %}{% endblock %}
+  </body>
+</html>
