@@ -1,0 +1,131 @@
+{% extends "shared/dashboard_base.html" %}
+
+{% block title %}
+    {% if padrino %}Editar Padrino{% else %}Nuevo Padrino{% endif %} — FONBEC
+{% endblock %}
+
+{% block topbar_user %}Modo Administrador{% endblock %}
+
+{% block sidebar %}
+    {% include 'admin/partials/_sidebar_admin.html' %}
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .form-control {
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #e94560;
+        box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.375rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background-color: #e94560;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #cf3a52;
+    }
+
+    .btn-secondary {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e5e7eb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card form-container">
+    <div class="card-header">
+        {% if padrino %}
+            Editar Padrino
+        {% else %}
+            Registrar Nuevo Padrino
+        {% endif %}
+    </div>
+
+    <!-- The form points to its current URL (GET/POST approach) -->
+    <form method="POST">
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required value="{{ padrino.nombre if padrino else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" name="apellido" class="form-control" required value="{{ padrino.apellido if padrino else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo Electrónico</label>
+            <input type="email" id="email" name="email" class="form-control" required value="{{ padrino.email if padrino else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="text" id="telefono" name="telefono" class="form-control" required value="{{ padrino.telefono if padrino else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" name="direccion" class="form-control" required value="{{ padrino.direccion if padrino else '' }}">
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('admin.listar_padrinos') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">
+                {% if padrino %}Guardar Cambios{% else %}Registrar Padrino{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

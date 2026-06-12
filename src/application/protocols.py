@@ -8,7 +8,10 @@ these abstractions, never on concrete repositories.
 
 from typing import Optional, Protocol, List, Dict, Any
 
-from src.domain.models import Becario, Tutor, Usuario
+from src.domain.actors.becario import Becario
+from src.domain.actors.tutor import Tutor
+from src.domain.actors.abstract_actor import Usuario
+from src.domain.domain_entities.padrino import Padrino
 
 
 class TutorRepositoryProtocol(Protocol):
@@ -134,5 +137,29 @@ class UsuarioRepositoryProtocol(Protocol):
 
         Returns:
             A list of Usuario (or its subclasses) instances.
+        """
+        ...
+
+class PadrinoRepositoryProtocol(Protocol):
+    """
+    Abstract contract for accessing Padrino persistence.
+    """
+
+    def crear_padrino(self, padrino: "Padrino") -> None:
+        """Create a new Padrino."""
+        ...
+
+    def obtener_padrino_por_id(self, id_padrino: str) -> Optional["Padrino"]:
+        """Retrieve a Padrino by ID."""
+        ...
+
+    def actualizar_padrino(self, padrino: "Padrino") -> None:
+        """Update an existing Padrino."""
+        ...
+
+    def eliminar_padrino(self, id_padrino: str) -> None:
+        """
+        Delete a Padrino by ID.
+        Must check for assigned Becarios and raise ValueError if any exist.
         """
         ...

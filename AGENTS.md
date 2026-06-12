@@ -13,7 +13,7 @@ Actuarás como un Arquitecto de Software y Desarrollador Senior en Python. Tu ob
 ## 3. Estructura de Directorios Obligatoria
 El código debe residir y respetar la siguiente estructura para garantizar el Desacoplamiento (Separation of Concerns):
 
-* `src/domain/`: Reglas de negocio puras (ej. `models.py`, `enums.py`). Clases de Python puras sin rastro de dependencias de Flask, SQLAlchemy o de la nube.
+* `src/domain/`: Reglas de negocio puras. Estructurado de forma modular mediante las carpetas `actors/` (ej. `administrador.py`, `becario.py`) y `domain_entities/` (ej. `padrino.py`). Clases de Python puras sin rastro de dependencias de Flask, SQLAlchemy o de la nube.
 * `src/application/`: Casos de Uso (`use_cases/`) e Interfaces/Protocolos (`protocols.py`). Los interactores dirigen el flujo y dependen estrictamente de los protocolos (Principio de Inversión de Dependencias).
 * `src/infrastructure/`: Implementaciones técnicas concretas. Repositorios SQL (`repositories.py`), mapeo imperativo de base de datos (`mapping.py`, `schema.py`), y servicios externos (`storage_service.py`).
 * `src/web/`: Capa HTTP/Presentación. Controladores de Flask, inyección de dependencias, parseo de Requests, inyección en plantillas y variables de sesión.

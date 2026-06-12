@@ -5,7 +5,7 @@
 {% block topbar_user %}Modo Administrador{% endblock %}
 
 {% block sidebar %}
-    <a href="{{ url_for('admin.dashboard') }}" class="active">👥 Gestión de Actores</a>
+    {% include 'admin/partials/_sidebar_admin.html' %}
 {% endblock %}
 
 {% block extra_styles %}

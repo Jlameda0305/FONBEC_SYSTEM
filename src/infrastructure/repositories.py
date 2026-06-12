@@ -9,8 +9,14 @@ from typing import Optional
 
 from sqlalchemy.orm import Session, joinedload
 
-from src.application.protocols import BecarioRepositoryProtocol, TutorRepositoryProtocol, UsuarioRepositoryProtocol
-from src.domain.models import Becario, Tutor, Mediador, Administrador, Padrino, Usuario
+from src.application.protocols import BecarioRepositoryProtocol, TutorRepositoryProtocol, UsuarioRepositoryProtocol, PadrinoRepositoryProtocol
+from src.domain.actors.becario import Becario
+from src.domain.actors.tutor import Tutor
+from src.domain.actors.mediador import Mediador
+from src.domain.actors.administrador import Administrador
+from src.domain.actors.abstract_actor import Usuario
+from src.domain.domain_entities.padrino import Padrino
+from src.infrastructure.schema import tabla_becarios
 
 
 class SQLAlchemyTutorRepository(TutorRepositoryProtocol):
@@ -147,4 +153,35 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
 
         # Applying Limit and Offset strictly to avoid Eager Loading massive memory bloat
         return query.offset(offset).limit(limite).all()
+
+class SQLAlchemyPadrinoRepository(PadrinoRepositoryProtocol):
+    """
+    Concrete implementation of PadrinoRepositoryProtocol using SQLAlchemy.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self.session = session
+
+    def crear_padrino(self, padrino: Padrino) -> None:
+        self.session.add(padrino)
+        self.session.commit()
+
+    def obtener_padrino_por_id(self, id_padrino: str) -> Optional[Padrino]:
+        return self.session.query(Padrino).filter_by(id_padrino=id_padrino).first()
+
+    def actualizar_padrino(self, padrino: Padrino) -> None:
+        self.session.add(padrino)
+        self.session.commit()
+
+    def eliminar_padrino(self, id_padrino: str) -> None:
+        # Check if any Becario uses this Padrino
+        # Since we use concrete table mapping, we query Becario directly
+        becarios_asignados = self.session.query(Becario).filter(tabla_becarios.c.padrino_id == id_padrino).count()
+        if becarios_asignados > 0:
+            raise ValueError("debes eliminar la relacion antes de eliminar al padrino")
+        
+        padrino = self.obtener_padrino_por_id(id_padrino)
+        if padrino:
+            self.session.delete(padrino)
+            self.session.commit()
 

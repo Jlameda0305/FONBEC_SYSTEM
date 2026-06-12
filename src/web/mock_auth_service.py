@@ -16,13 +16,7 @@ def obtener_usuario_actual() -> str:
     from flask import session, request, has_request_context
     
     if has_request_context():
-        # 1. Permite forzar el usuario por URL: ?force_user=tut-001
-        forced = request.args.get("force_user")
-        if forced:
-            session["user_id"] = forced
-            return forced
-            
-        # 2. Lee de la sesión HTTP (para soportar incognito / 2 navegadores)
+        # 1. Lee de la sesión HTTP (para soportar incognito / 2 navegadores)
         if session.get("user_id"):
             return session["user_id"]
 
