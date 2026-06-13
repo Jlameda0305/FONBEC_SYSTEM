@@ -1,19 +1,45 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <div class="container-fluid mt-3">
+    <div aria-live="polite" aria-atomic="true" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;">
       {% for category, message in messages %}
         {% set alert_class = 'alert-info' %}
-        {% if category == 'success' %}{% set alert_class = 'alert-success' %}
-        {% elif category == 'error' %}{% set alert_class = 'alert-danger' %}
-        {% elif category == 'warning' %}{% set alert_class = 'alert-warning' %}
+        {% set icon_class = 'fas fa-info-circle' %}
+        {% if category == 'success' %}
+          {% set alert_class = 'alert-success' %}
+          {% set icon_class = 'fas fa-check-circle' %}
+        {% elif category == 'error' %}
+          {% set alert_class = 'alert-danger' %}
+          {% set icon_class = 'fas fa-exclamation-circle' %}
+        {% elif category == 'warning' %}
+          {% set alert_class = 'alert-warning' %}
+          {% set icon_class = 'fas fa-exclamation-triangle' %}
         {% endif %}
-        <div class="alert {{ alert_class }} alert-dismissible fade show" role="alert">
-          <span class="alert-text">{{ message }}</span>
+        <div class="alert {{ alert_class }} alert-dismissible fade show shadow-lg mb-0" role="alert" style="min-width: 300px; animation: slideInRight 0.5s;">
+          <span class="alert-icon"><i class="{{ icon_class }}"></i></span>
+          <span class="alert-text ml-2">{{ message }}</span>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
       {% endfor %}
     </div>
+    <style>
+      @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    </style>
+    <script>
+      setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+          if (typeof $ !== 'undefined' && $.fn.alert) {
+            $(alert).alert('close');
+          } else {
+            alert.style.display = 'none';
+          }
+        });
+      }, 5000);
+    </script>
   {% endif %}
 {% endwith %}

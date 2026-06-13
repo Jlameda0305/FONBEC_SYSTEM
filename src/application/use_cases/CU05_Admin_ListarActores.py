@@ -28,7 +28,7 @@ class ListarActoresUseCase:
         pagina: int = 1,
         limite: int = 50,
         busqueda: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
+    ) -> Dict[str, Any]:
         """
         Ejecuta el caso de uso para listar actores paginados.
 
@@ -40,7 +40,7 @@ class ListarActoresUseCase:
             busqueda: Término de búsqueda opcional.
 
         Returns:
-            Una lista de diccionarios con los atributos puros de los actores.
+            Un diccionario con la lista de 'actores' y el 'total' de registros.
         """
         # 1. Validación de Seguridad (Pureza del Dominio)
         if not isinstance(actor_admin, Administrador):
@@ -52,7 +52,7 @@ class ListarActoresUseCase:
         offset = (pagina - 1) * limite
 
         # 3. Delegación al Repositorio (Capa de Aplicación orquestando infraestructura)
-        actores = self.repositorio.listar_usuarios(
+        actores, total = self.repositorio.listar_usuarios(
             limite=limite,
             offset=offset,
             rol=tipo_actor,
@@ -74,6 +74,12 @@ class ListarActoresUseCase:
                     }
                 else:
                     dto['datos_academicos'] = None
+            elif getattr(actor, 'rol', None) in ('tutor', 'mediador'):
+                lista = getattr(actor, 'lista_becarios', None)
+                dto['lista_becarios'] = [b.id_usuario for b in lista] if lista else []
             resultados.append(dto)
             
-        return resultados
+        return {
+            "actores": resultados,
+            "total": total
+        }

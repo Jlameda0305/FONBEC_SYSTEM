@@ -18,12 +18,13 @@ class ListarBecariosTutorUseCase:
     def __init__(self, repository: TutorRepositoryProtocol):
         self.repository = repository
 
-    def execute(self, tutor_id: str) -> List[Dict[str, Any]]:
+    def execute(self, tutor_id: str, busqueda: str = None) -> List[Dict[str, Any]]:
         """
         Ejecuta el caso de uso para listar becarios.
 
         Args:
             tutor_id: UUID del tutor en sesión.
+            busqueda: Término opcional para filtrar por nombre, apellido o email.
 
         Returns:
             Una lista de diccionarios (DTOs) con los datos del becario.
@@ -37,6 +38,13 @@ class ListarBecariosTutorUseCase:
 
         resultados = []
         for b in tutor.lista_becarios:
+            if busqueda:
+                termino = busqueda.lower()
+                nombre_completo = f"{b.nombre} {b.apellido}".lower()
+                email = b.email.lower()
+                if termino not in nombre_completo and termino not in email:
+                    continue
+
             dto = b.to_dict()
             
             # The domain entity guarantees these attributes exist, but we handle the Enum value extraction

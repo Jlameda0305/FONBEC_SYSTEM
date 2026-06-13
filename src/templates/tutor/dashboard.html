@@ -14,7 +14,7 @@
 <div class="container-fluid mt--5">
   <div class="row">
     <!-- Próximas Tutorías -->
-    <div class="col-xl-4 col-lg-5 mb-5 mb-lg-0">
+    <div class="col-12 mb-5 mb-lg-0">
       <div class="card shadow h-100">
         <div class="card-header bg-transparent">
           <h3 class="mb-0"><i class="ni ni-calendar-grid-58 mr-2 text-primary"></i> Próximas Tutorías</h3>
@@ -25,18 +25,6 @@
           </div>
           <p class="text-muted mb-0">No hay tutorías programadas para esta semana. <br><small>(Módulo en construcción)</small></p>
         </div>
-      </div>
-    </div>
-
-    <!-- Becarios Asignados -->
-    <div class="col-xl-8 col-lg-7">
-      <div class="card shadow">
-        <div class="card-header border-0">
-          <h3 class="mb-0"><i class="ni ni-single-02 mr-2 text-info"></i> Mis Becarios Asignados <span class="badge badge-pill badge-info ml-2">{{ becarios|length }}</span></h3>
-        </div>
-        
-        {% set lista_becarios = becarios %}
-        {% include 'shared/partials/_lista_becarios.html' %}
       </div>
     </div>
   </div>

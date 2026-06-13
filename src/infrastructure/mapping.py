@@ -5,17 +5,15 @@ Binds the pure Python domain classes to the SQLAlchemy Table definitions.
 
 from sqlalchemy.orm import relationship
 
-from src.domain.models import (
-    Becario,
-    DatosAcademicos,
-    DocumentoAcademico,
-    EnvioCarta,
-    Mediador,
-    Padrino,
-    Tutor,
-    Tutoria,
-    Administrador,
-)
+from src.domain.actors.becario import Becario
+from src.domain.actors.tutor import Tutor
+from src.domain.actors.mediador import Mediador
+from src.domain.actors.administrador import Administrador
+from src.domain.domain_entities.padrino import Padrino
+from src.domain.domain_entities.datos_academicos import DatosAcademicos
+from src.domain.domain_entities.documentos_academicos import DocumentoAcademico
+from src.domain.domain_entities.tutoria import Tutoria
+from src.domain.domain_entities.envio_carta import EnvioCarta
 from .schema import (
     tabla_becarios,
     tabla_datos_academicos,
@@ -51,7 +49,8 @@ def iniciar_mapeo() -> None:
         "lista_becarios": relationship(
             "Becario",
             back_populates="puntero_tutor",
-            foreign_keys=[tabla_becarios.c.tutor_id]
+            foreign_keys=[tabla_becarios.c.tutor_id],
+            lazy="selectin"
         )
     })
     
@@ -59,7 +58,8 @@ def iniciar_mapeo() -> None:
         "lista_becarios": relationship(
             "Becario",
             back_populates="puntero_mediador",
-            foreign_keys=[tabla_becarios.c.mediador_id]
+            foreign_keys=[tabla_becarios.c.mediador_id],
+            lazy="selectin"
         )
     })
 
@@ -85,8 +85,7 @@ def iniciar_mapeo() -> None:
         "datos_academicos": relationship(
             DatosAcademicos,
             uselist=False,
-            cascade="all, delete-orphan",
-            backref="becario"  # Implicit backref for foreign key mapping
+            cascade="all, delete-orphan"
         ),
         "lista_tutorias": relationship(
             Tutoria,

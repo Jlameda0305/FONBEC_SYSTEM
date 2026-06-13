@@ -31,24 +31,31 @@ def dashboard():
     Renders the main dashboard for the Tutor. 
     Retrieves the list of assigned Becarios via CU05.
     """
-    # Usando el mismo mock auth, aunque idealmente retornará el ID real del tutor en sesión
-    # En MVP podemos hardcodear un id si no hay mock para el tutor, o usar el actual
-    # Asumimos que obtener_usuario_actual() nos da el id del tutor logueado
-    user_id = obtener_usuario_actual()
+    # Por ahora el dashboard solo mostrará las próximas tutorías
+    # En el MVP esta sección se renderiza vacía
+    return render_template("tutor/dashboard.html")
+
+@tutor_bp.route("/mis-becarios", methods=["GET"])
+@requiere_rol("tutor")
+def mis_becarios():
+    """
+    GET /tutor/mis-becarios
     
-    # IMPORTANTE: Si estamos mockeando y user_id es de un becario, fallará. 
-    # Usaremos "tutor-1" para el mock si user_id no funciona, pero dejamos el código real
+    Renders the list of assigned Becarios via CU05.
+    """
+    user_id = obtener_usuario_actual()
+    busqueda = request.args.get("busqueda", "")
     
     repo = SQLAlchemyTutorRepository(g.db_session)
     use_case = ListarBecariosTutorUseCase(repo)
     
     try:
-        becarios_list = use_case.execute(user_id)
+        becarios_list = use_case.execute(user_id, busqueda=busqueda)
     except ValueError as e:
         flash(str(e), "error")
         becarios_list = []
         
-    return render_template("tutor/dashboard.html", becarios=becarios_list)
+    return render_template("tutor/mis_becarios.html", becarios=becarios_list, busqueda=busqueda)
 
 
 
@@ -73,27 +80,7 @@ def becario_detalle(id_usuario):
     return render_template("shared/becario_detalle.html", datos=datos, id_usuario=id_usuario)
 
 
-@tutor_bp.route("/becario/<id_becario>/auditoria", methods=["GET"])
-@requiere_rol("tutor")
-def visualizar_auditoria_academica(id_becario):
-    """
-    GET /tutor/becario/<id_becario>/auditoria
-    
-    Visualizes the academic data for auditing (CU08).
-    Reuses CU06 to obtain the basic data wrapper.
-    """
-    id_tutor = obtener_usuario_actual()
-    repo = SQLAlchemyTutorRepository(g.db_session)
-    use_case = ObtenerDatosBecarioUseCase(repo)
-    
-    try:
-        # CU06 returns a full payload including datos_academicos and documents
-        payload = use_case.execute(id_tutor, id_becario)
-    except ValueError as e:
-        flash(str(e), "error")
-        return redirect(url_for("tutor.dashboard"))
-        
-    return render_template("tutor/auditoria_academica.html", perfil=payload["perfil_becario"], datos=payload["datos_academicos"], id_usuario=id_becario)
+
 
 
 @tutor_bp.route("/becario/<id_becario>/auditoria", methods=["POST"])
@@ -120,5 +107,5 @@ def procesar_auditoria_academica(id_becario):
     except ValueError as e:
         flash(str(e), "error")
         
-    return redirect(url_for("tutor.visualizar_auditoria_academica", id_becario=id_becario))
+    return redirect(url_for("tutor.becario_detalle", id_usuario=id_becario))
 

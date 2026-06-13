@@ -14,39 +14,28 @@
 <div class="container-fluid mt--5">
   <div class="row">
     <div class="col">
-      <div class="card shadow">
-        <div class="card-header border-0">
-          <h3 class="mb-0">Filtros y Búsqueda</h3>
-        </div>
-        <div class="card-body">
-          <form method="GET" action="{{ url_for('admin.directorio_rol', rol=filtro_rol) }}">
-            <!-- El filtro_rol ya va en la URL -->
-            <div class="row align-items-center">
-              <div class="col-md-9">
-                <div class="form-group mb-0">
-                  <label class="form-control-label" for="busqueda">Buscar por nombre, apellido o email</label>
-                  <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative bg-secondary" placeholder="Término de búsqueda..." value="{{ busqueda }}">
-                </div>
-              </div>
-              <div class="col-md-3">
-                <input type="hidden" name="pagina" value="1">
-                <button type="submit" class="btn btn-primary mt-4 w-100">Aplicar Búsqueda</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+      {% include 'shared/partials/_filtro_busqueda.html' %}
       
       <div class="card shadow mt-4">
         <div class="card-header border-0">
           {% if filtro_rol == 'becario' %}
-            <h3 class="mb-0"><i class="ni ni-single-02 mr-2 text-info"></i> Resultado de becarios en el sistema <span class="badge badge-pill badge-info ml-2">{{ actores|length }}</span></h3>
+            <h3 class="mb-0"><i class="ni ni-single-02 mr-2 text-info"></i> Resultado de becarios en el sistema <span class="badge badge-pill badge-info ml-2">{{ total_actores }}</span></h3>
           {% elif filtro_rol == 'tutor' %}
-            <h3 class="mb-0"><i class="ni ni-badge mr-2 text-success"></i> Resultado de tutores en el sistema <span class="badge badge-pill badge-success ml-2">{{ actores|length }}</span></h3>
+            <h3 class="mb-0"><i class="ni ni-badge mr-2 text-success"></i> Resultado de tutores en el sistema <span class="badge badge-pill badge-success ml-2">{{ total_actores }}</span></h3>
           {% elif filtro_rol == 'mediador' %}
-            <h3 class="mb-0"><i class="ni ni-world-2 mr-2 text-warning"></i> Resultado de mediadores en el sistema <span class="badge badge-pill badge-warning ml-2">{{ actores|length }}</span></h3>
+            <h3 class="mb-0"><i class="ni ni-world-2 mr-2 text-warning"></i> Resultado de mediadores en el sistema <span class="badge badge-pill badge-warning ml-2">{{ total_actores }}</span></h3>
+          {% elif filtro_rol == 'padrino' %}
+            <h3 class="mb-0"><i class="ni ni-heart-2 mr-2 text-danger"></i> Resultado de padrinos en el sistema <span class="badge badge-pill badge-danger ml-2">{{ total_actores }}</span></h3>
           {% else %}
-            <h3 class="mb-0">Resultados <span class="badge badge-pill badge-secondary ml-2">{{ actores|length }}</span></h3>
+            <h3 class="mb-0">Resultados <span class="badge badge-pill badge-secondary ml-2">{{ total_actores }}</span></h3>
+          {% endif %}
+          
+          {% if filtro_rol == 'padrino' %}
+          <div class="mt-3">
+            <a href="{{ url_for('admin.nuevo_padrino') }}" class="btn btn-sm btn-primary">
+              <i class="fas fa-plus mr-2"></i>Nuevo Padrino
+            </a>
+          </div>
           {% endif %}
         </div>
         {% if filtro_rol == 'becario' %}

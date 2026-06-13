@@ -35,7 +35,7 @@ class TestCU05ListarActores(unittest.TestCase):
 
     def test_listar_actores_exito(self):
         # Configure mock to return one becario
-        self.mock_repo.listar_usuarios.return_value = [self.becario_mock]
+        self.mock_repo.listar_usuarios.return_value = ([self.becario_mock], 1)
 
         # Execute use case
         resultado = self.use_case.execute(
@@ -54,8 +54,9 @@ class TestCU05ListarActores(unittest.TestCase):
         )
 
         # Assert returned data is serialized
-        self.assertEqual(len(resultado), 1)
-        self.assertEqual(resultado[0]["id_usuario"], "bec-123")
+        self.assertEqual(len(resultado["actores"]), 1)
+        self.assertEqual(resultado["actores"][0]["id_usuario"], "bec-123")
+        self.assertEqual(resultado["total"], 1)
 
     def test_rechazar_no_administrador(self):
         # Pass a becario instead of an admin
@@ -66,7 +67,7 @@ class TestCU05ListarActores(unittest.TestCase):
             )
 
     def test_pagina_negativa_se_ajusta(self):
-        self.mock_repo.listar_usuarios.return_value = []
+        self.mock_repo.listar_usuarios.return_value = ([], 0)
         self.use_case.execute(self.admin, "tutor", pagina=-5, limite=20)
         
         # Pagina -5 is invalid, should default to page 1 -> offset 0

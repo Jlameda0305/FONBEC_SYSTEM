@@ -1,0 +1,23 @@
+<div class="card shadow mb-4">
+  <div class="card-header border-0">
+    <h3 class="mb-0">Filtros y Búsqueda</h3>
+  </div>
+  <div class="card-body">
+    <form method="GET" action="">
+      <div class="row align-items-center">
+        <div class="col-md-9">
+          <div class="form-group mb-0">
+            <label class="form-control-label" for="busqueda">Buscar por nombre, apellido o email</label>
+            <input type="text" id="busqueda" name="busqueda" class="form-control form-control-alternative bg-secondary" placeholder="Término de búsqueda..." value="{{ busqueda }}">
+          </div>
+        </div>
+        <div class="col-md-3">
+          {% if pagina_actual %}
+          <input type="hidden" name="pagina" value="1">
+          {% endif %}
+          <button type="submit" class="btn btn-primary mt-4 w-100">Aplicar Búsqueda</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

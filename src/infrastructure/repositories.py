@@ -159,7 +159,9 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
             )
 
         # Applying Limit and Offset strictly to avoid Eager Loading massive memory bloat
-        return query.offset(offset).limit(limite).all()
+        total = query.count()
+        resultados = query.offset(offset).limit(limite).all()
+        return resultados, total
 
 class SQLAlchemyPadrinoRepository(PadrinoRepositoryProtocol):
     """

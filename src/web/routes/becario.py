@@ -6,6 +6,7 @@ Contains zero business logic — only wiring and rendering.
 """
 
 from flask import Blueprint, g, render_template, request, redirect, url_for, flash
+from src.web.auth_utils import requiere_rol
 
 from src.web.mock_auth_service import obtener_usuario_actual
 from src.application.use_cases.CU04_VisualizarDatosAcademicos import (
@@ -30,12 +31,14 @@ becario_bp = Blueprint("becario", __name__, url_prefix="/becario")
 
 
 @becario_bp.route("/", methods=["GET"])
+@requiere_rol("becario")
 def index():
     """Redirects base /becario to the dashboard."""
     return redirect(url_for("becario.dashboard"))
 
 
 @becario_bp.route("/dashboard", methods=["GET"])
+@requiere_rol("becario")
 def dashboard():
     """
     GET /becario/dashboard
@@ -57,6 +60,7 @@ def dashboard():
 
 
 @becario_bp.route("/academico", methods=["GET"])
+@requiere_rol("becario")
 def visualizar_academico():
     """
     GET /becario/academico
@@ -74,12 +78,18 @@ def visualizar_academico():
     # 3. Execute the Use Case
     try:
         datos = use_case.ejecutar(user_id)
+        
+        # Obtener referentes (Tutor y Mediador)
+        use_case_ref = ObtenerDatosReferentesUseCase(repo)
+        referentes = use_case_ref.execute(user_id)
+        
     except ValueError as e:
         return render_template("error.html", message=str(e)), 404
 
-    return render_template("becario/academico.html", datos=datos)
+    return render_template("becario/academico.html", datos=datos, referentes=referentes)
 
 @becario_bp.route("/academico/editar", methods=["GET", "POST"])
+@requiere_rol("becario")
 def editar_formulario_academico():
     """
     GET /becario/academico/editar
@@ -134,6 +144,7 @@ def editar_formulario_academico():
 
 
 @becario_bp.route("/academico/documento/eliminar", methods=["POST"])
+@requiere_rol("becario")
 def eliminar_documento_academico():
     """
     POST /becario/academico/documento/eliminar

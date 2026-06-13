@@ -15,15 +15,16 @@
         <tr>
           <td><span class="text-muted font-weight-bold">Estado de Verificación</span></td>
           <td>
-            {% set badge_class = 'badge-primary' %}
-            {% if 'Aprobado' in datos.estado_verificacion %}
-              {% set badge_class = 'badge-success' %}
-            {% elif 'Pendiente' in datos.estado_verificacion %}
-              {% set badge_class = 'badge-warning' %}
-            {% elif 'Incompleto' in datos.estado_verificacion %}
-              {% set badge_class = 'badge-danger' %}
-            {% endif %}
-            <span class="badge badge-pill {{ badge_class }}">{{ datos.estado_verificacion }}</span>
+            {% set estado_lower = (datos.estado_verificacion or 'sin_datos') | lower %}
+            {% set badge_class = 'badge-dark' %}
+            {% if estado_lower == 'aprobado' %}{% set badge_class = 'badge-success' %}
+            {% elif estado_lower == 'incompleto' %}{% set badge_class = 'badge-warning' %}
+            {% elif estado_lower == 'pendiente_revision' %}{% set badge_class = 'badge-info' %}
+            {% elif estado_lower == 'pendiente_modificar' %}{% set badge_class = 'badge-danger' %}{% endif %}
+            <span class="badge badge-dot mr-4">
+              <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
+              <span class="status">{{ estado_lower | replace('_', ' ') | title }}</span>
+            </span>
           </td>
         </tr>
         {% endif %}

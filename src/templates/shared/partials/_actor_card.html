@@ -1,59 +1,67 @@
 <div class="card shadow">
-  {% set icon_class = 'ni-single-02' %}
-  {% set badge_class = 'badge-primary' %}
+  {% set icon_class = 'fas fa-user' %}
+  {% set color_class = 'primary' %}
   {% set rol_label = actor.rol | default('Actor') | capitalize %}
   
   {% set act_rol = actor.rol if actor.rol is defined else (actor.get('rol') if actor is mapping else '') %}
-  {% set act_rol = act_rol | lower %}
+  {% set act_rol = (act_rol | string | lower) if act_rol else '' %}
+  {% if act_rol in ['', 'none'] and default_rol %}
+    {% set act_rol = default_rol | lower %}
+  {% endif %}
   
   {% if act_rol == 'becario' %}
-    {% set icon_class = 'ni-single-02' %}
-    {% set badge_class = 'badge-success' %}
+    {% set icon_class = 'fas fa-user' %}
+    {% set color_class = 'info' %}
     {% set rol_label = 'Becario' %}
   {% elif act_rol == 'tutor' %}
-    {% set icon_class = 'ni-badge' %}
-    {% set badge_class = 'badge-info' %}
+    {% set icon_class = 'fas fa-user-tie' %}
+    {% set color_class = 'success' %}
     {% set rol_label = 'Tutor' %}
   {% elif act_rol == 'mediador' %}
-    {% set icon_class = 'ni-world-2' %}
-    {% set badge_class = 'badge-warning' %}
+    {% set icon_class = 'fas fa-handshake' %}
+    {% set color_class = 'warning' %}
     {% set rol_label = 'Mediador' %}
   {% elif act_rol == 'padrino' %}
-    {% set icon_class = 'ni-heart-2' %}
-    {% set badge_class = 'badge-danger' %}
+    {% set icon_class = 'fas fa-heart' %}
+    {% set color_class = 'danger' %}
     {% set rol_label = 'Padrino' %}
   {% elif act_rol == 'administrador' %}
-    {% set icon_class = 'ni-settings-gear-65' %}
-    {% set badge_class = 'badge-primary' %}
+    {% set icon_class = 'fas fa-user-shield' %}
+    {% set color_class = 'primary' %}
+    {% set rol_label = 'Administrador' %}
   {% else %}
-    {# Fallback for DTOs that might not specify a role but we know they are Becarios by context #}
-    {% set icon_class = 'ni-single-02' %}
-    {% set badge_class = 'badge-success' %}
-    {% set rol_label = 'Becario' %}
+    {# Fallback #}
+    {% set icon_class = 'fas fa-user' %}
+    {% set color_class = 'secondary' %}
+    {% set rol_label = act_rol | capitalize if act_rol else 'Actor' %}
   {% endif %}
 
   <div class="card-body">
     <div class="d-flex align-items-center mb-4">
-      <div class="icon icon-shape bg-gradient-primary text-white rounded-circle shadow mr-3">
-        <i class="ni {{ icon_class }}"></i>
+      <div class="icon icon-shape bg-{{ color_class }} text-white rounded-circle shadow mr-3">
+        <i class="{{ icon_class }}"></i>
       </div>
       <div>
         <h3 class="mb-0">{{ actor.nombre | default('Sin información') }} {{ actor.apellido | default('') }}</h3>
-        <span class="badge badge-pill {{ badge_class }}">{{ rol_label }}</span>
+        <span class="text-sm text-muted text-uppercase font-weight-bold">Rol: {{ rol_label | lower }}</span>
       </div>
     </div>
 
     <div class="px-2">
-      {% if actor.email %}
-        <a href="mailto:{{ actor.email }}" class="btn btn-outline-primary btn-sm mb-2 w-100 text-left d-flex align-items-center">
-          <i class="fas fa-envelope mr-2"></i> {{ actor.email }}
-        </a>
-      {% endif %}
-      
-      {% if actor.telefono %}
-        <a href="https://wa.me/{{ actor.telefono | replace('+', '') | replace(' ', '') }}" target="_blank" class="btn btn-outline-success btn-sm mb-3 w-100 text-left d-flex align-items-center">
-          <i class="fab fa-whatsapp mr-2"></i> {{ actor.telefono }}
-        </a>
+      {% if not hide_contact %}
+      <div class="mb-3 d-flex flex-column align-items-start">
+        {% if actor.email %}
+          <a href="mailto:{{ actor.email }}" class="btn btn-primary btn-sm mb-2 d-inline-flex align-items-center">
+            <i class="fas fa-envelope mr-2"></i> {{ actor.email }}
+          </a>
+        {% endif %}
+        
+        {% if actor.telefono %}
+          <a href="https://wa.me/{{ actor.telefono | replace('+', '') | replace(' ', '') }}" target="_blank" class="btn btn-success btn-sm mb-2 d-inline-flex align-items-center">
+            <i class="fab fa-whatsapp mr-2"></i> {{ actor.telefono }}
+          </a>
+        {% endif %}
+      </div>
       {% endif %}
       
       <p class="text-sm mb-2">
@@ -78,7 +86,11 @@
     </div>
   </div>
 
-  {% if show_actions %}
+  {% if action_html %}
+  <div class="card-footer bg-transparent border-0 pt-0">
+    {{ action_html | safe }}
+  </div>
+  {% elif show_actions %}
   <div class="card-footer bg-transparent border-0 pt-0 text-right">
     <a href="mailto:{{ actor.email }}" class="btn btn-sm btn-primary">
       <i class="fas fa-envelope mr-1"></i> Contactar

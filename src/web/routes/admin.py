@@ -62,21 +62,25 @@ def directorio_rol(rol):
     use_case = ListarActoresUseCase(repo)
 
     try:
-        actores = use_case.execute(
+        resultado_uc = use_case.execute(
             actor_admin=g.usuario_actual,
             tipo_actor=filtro_rol,
             pagina=pagina,
             limite=10,
             busqueda=busqueda
         )
+        actores = resultado_uc.get("actores", [])
+        total = resultado_uc.get("total", 0)
     except Exception as e:
         logging.error(f"CU-ADM-05: Fallo al listar actores. Detalles: {str(e)}")
         flash("Ocurrió un error al cargar los usuarios desde la base de datos.", "error")
         actores = []
+        total = 0
 
     return render_template(
         "admin/actores_lista.html",
         actores=actores,
+        total_actores=total,
         pagina_actual=pagina,
         busqueda=busqueda or "",
         filtro_rol=filtro_rol
@@ -97,22 +101,27 @@ def listar_padrinos():
     use_case = ListarActoresUseCase(repo)
     
     try:
-        padrinos = use_case.execute(
+        resultado_uc = use_case.execute(
             actor_admin=g.usuario_actual,
             tipo_actor="padrino",
             pagina=pagina,
             limite=10,
             busqueda=busqueda
         )
+        padrinos = resultado_uc.get("actores", [])
+        total = resultado_uc.get("total", 0)
     except Exception as e:
         flash("Error al cargar la lista de padrinos.", "error")
         padrinos = []
+        total = 0
 
     return render_template(
-        "admin/padrinos_lista.html",
-        padrinos=padrinos,
+        "admin/actores_lista.html",
+        actores=padrinos,
+        total_actores=total,
         pagina_actual=pagina,
-        busqueda=busqueda or ""
+        busqueda=busqueda or "",
+        filtro_rol="padrino"
     )
 
 

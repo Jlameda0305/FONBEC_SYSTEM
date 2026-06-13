@@ -19,7 +19,7 @@ class TestWebPadrinos(unittest.TestCase):
             sess["user_id"] = "admin-001"
         response = self.client.get("/admin/padrinos")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Directorio de Padrinos", response.data)
+        self.assertIn(b"Listado de Padrinos", response.data)
 
     def test_nuevo_padrino_get(self):
         with self.client.session_transaction() as sess:

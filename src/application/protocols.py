@@ -125,7 +125,7 @@ class UsuarioRepositoryProtocol(Protocol):
         offset: int,
         rol: Optional[str] = None,
         busqueda: Optional[str] = None,
-    ) -> List[Usuario]:
+    ) -> tuple[List[Usuario], int]:
         """
         Retrieves a paginated list of actors matching the criteria.
 
@@ -136,7 +136,7 @@ class UsuarioRepositoryProtocol(Protocol):
             busqueda: Case-insensitive partial match on name, surname, or email.
 
         Returns:
-            A list of Usuario (or its subclasses) instances.
+            A tuple containing a list of Usuario (or its subclasses) instances and the total count.
         """
         ...
 
