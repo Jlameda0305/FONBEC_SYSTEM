@@ -65,9 +65,10 @@ class ListarActoresUseCase:
         for actor in actores:
             dto = actor.to_dict()
             if getattr(actor, 'rol', None) == 'becario':
-                dto['estado_verificacion'] = actor.estado_verificacion.value if getattr(actor, 'estado_verificacion', None) else None
-                if getattr(actor, 'datos_academicos', None):
-                    da = actor.datos_academicos
+                da = getattr(actor, 'datos_academicos', None)
+                dto['estado_verificacion'] = da.estado_verificacion.value if (da and getattr(da, 'estado_verificacion', None)) else None
+                
+                if da:
                     dto['datos_academicos'] = {
                         'estado_verificacion': da.estado_verificacion.value if getattr(da, 'estado_verificacion', None) else None
                     }
