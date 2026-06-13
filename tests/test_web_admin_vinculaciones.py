@@ -13,9 +13,15 @@ class TestWebAdminVinculaciones(unittest.TestCase):
         cls.client = cls.app.test_client()
 
     def setUp(self):
+        from src.domain.domain_entities.datos_academicos import DatosAcademicos
         with self.app.app_context():
             init_db()
             self.session = SessionLocal()
+            # Clear any leftover seed data including foreign keys
+            self.session.query(DatosAcademicos).filter_by(becario_id="bec-test").delete()
+            self.session.query(Becario).filter_by(id_usuario="bec-test").delete()
+            self.session.query(Administrador).filter_by(id_usuario="admin-test").delete()
+            self.session.commit()
             # Seed un admin y un becario
             admin = Administrador(id_usuario="admin-test", nombre="A", apellido="A", email="a@a.com", telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="administrador")
             becario = Becario(id_usuario="bec-test", nombre="B", apellido="B", email="b@b.com", telefono="1", edad=20, sexo="M", direccion="D", password_hash="H", rol="becario")
@@ -24,7 +30,9 @@ class TestWebAdminVinculaciones(unittest.TestCase):
             self.session.commit()
 
     def tearDown(self):
+        from src.domain.domain_entities.datos_academicos import DatosAcademicos
         with self.app.app_context():
+            self.session.query(DatosAcademicos).filter_by(becario_id="bec-test").delete()
             self.session.query(Becario).filter_by(id_usuario="bec-test").delete()
             self.session.query(Administrador).filter_by(id_usuario="admin-test").delete()
             self.session.commit()
@@ -33,9 +41,9 @@ class TestWebAdminVinculaciones(unittest.TestCase):
     def test_get_vinculaciones(self):
         with self.client.session_transaction() as sess:
             sess["user_id"] = "admin-test"
-        response = self.client.get("/admin/becarios/bec-test/vinculaciones")
+        response = self.client.get("/admin/becarios/bec-test/detalle")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Gest", response.data)
+        self.assertIn(b"Vinculaciones", response.data)
 
 if __name__ == "__main__":
     unittest.main()

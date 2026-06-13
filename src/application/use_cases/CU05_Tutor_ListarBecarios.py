@@ -9,7 +9,6 @@ incluyendo el estado de sus datos académicos para facilitar la auditoría.
 from typing import List, Dict, Any
 
 from src.application.protocols import TutorRepositoryProtocol
-from src.domain.actors.becario import Becario
 
 class ListarBecariosTutorUseCase:
     """
@@ -41,7 +40,7 @@ class ListarBecariosTutorUseCase:
             dto = b.to_dict()
             
             # The domain entity guarantees these attributes exist, but we handle the Enum value extraction
-            dto['estado_verificacion'] = b.estado_verificacion.value if getattr(b, 'estado_verificacion', None) else None
+            dto['estado_verificacion'] = b.datos_academicos.estado_verificacion.value if getattr(b, 'datos_academicos', None) else None
             
             if b.datos_academicos:
                 da = b.datos_academicos

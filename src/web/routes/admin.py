@@ -12,6 +12,7 @@ from src.infrastructure.repositories import (
     SQLAlchemyBecarioRepository
 )
 from src.application.use_cases.CU05_Admin_ListarActores import ListarActoresUseCase
+from src.application.use_cases.CU06_Admin_ObtenerDatosBecario import AdminObtenerDatosBecarioUseCase
 from src.application.use_cases.CU04_Admin_GestionarPadrinos import GestionarPadrinosUseCase
 from src.application.use_cases.CU03_Admin_GestionarVinculaciones import GestionarVinculacionesUseCase
 
@@ -61,7 +62,7 @@ def directorio_rol(rol):
     use_case = ListarActoresUseCase(repo)
 
     try:
-        actores = use_case.ejecutar(
+        actores = use_case.execute(
             actor_admin=g.usuario_actual,
             tipo_actor=filtro_rol,
             pagina=pagina,
@@ -96,7 +97,7 @@ def listar_padrinos():
     use_case = ListarActoresUseCase(repo)
     
     try:
-        padrinos = use_case.ejecutar(
+        padrinos = use_case.execute(
             actor_admin=g.usuario_actual,
             tipo_actor="padrino",
             pagina=pagina,
@@ -190,19 +191,24 @@ def detalle_becario(id_becario):
     Muestra la página unificada de detalles del becario (Perfil, Vinculaciones y Académico).
     """
     becario_repo = SQLAlchemyBecarioRepository(g.db_session)
-    becario = becario_repo.obtener_por_id(id_becario)
+    datos_uc = AdminObtenerDatosBecarioUseCase(becario_repo)
     
-    if not becario:
-        flash("Becario no encontrado.", "error")
+    try:
+        datos = datos_uc.execute(actor_admin=g.usuario_actual, becario_id=id_becario)
+    except ValueError as e:
+        flash(str(e), "error")
+        return redirect(url_for("admin.dashboard"))
+    except PermissionError as e:
+        flash(str(e), "error")
         return redirect(url_for("admin.dashboard"))
         
     usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
     listar_uc = ListarActoresUseCase(usuario_repo)
     
     try:
-        tutores_disponibles = listar_uc.ejecutar(actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000)
-        mediadores_disponibles = listar_uc.ejecutar(actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000)
-        padrinos_disponibles = listar_uc.ejecutar(actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000)
+        tutores_disponibles = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000)
+        mediadores_disponibles = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000)
+        padrinos_disponibles = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000)
     except Exception as e:
         logging.error(f"Error cargando actores disponibles: {str(e)}")
         flash("Error al cargar actores disponibles.", "error")
@@ -212,7 +218,8 @@ def detalle_becario(id_becario):
     
     return render_template(
         "shared/becario_detalle.html",
-        becario=becario,
+        datos=datos,
+        id_usuario=id_becario,
         tutores=tutores_disponibles,
         mediadores=mediadores_disponibles,
         padrinos=padrinos_disponibles

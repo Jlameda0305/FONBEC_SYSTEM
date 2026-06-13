@@ -23,11 +23,11 @@ class TestWebAdmin(unittest.TestCase):
         # Default mock user is admin-001
         response = self.client.get("/admin/dashboard")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Directorio de Actores del Sistema", response.data)
+        self.assertIn(b"Panel Principal", response.data)
         
     def test_parametros_busqueda_url(self):
         # Force admin user to override any session state from previous tests
-        response = self.client.get("/admin/dashboard?busqueda=juan&filtro_rol=becario&force_user=admin-001")
+        response = self.client.get("/admin/directorio/becario?busqueda=juan&force_user=admin-001")
         self.assertEqual(response.status_code, 200)
         # Verify the inputs retained their values
         self.assertIn(b'value="juan"', response.data)

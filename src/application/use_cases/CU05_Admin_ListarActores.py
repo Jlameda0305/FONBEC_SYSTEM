@@ -21,9 +21,9 @@ class ListarActoresUseCase:
         """
         self.repositorio = repositorio
 
-    def ejecutar(
+    def execute(
         self,
-        actor_admin: object,
+        actor_admin: Administrador,
         tipo_actor: str,
         pagina: int = 1,
         limite: int = 50,
@@ -61,4 +61,18 @@ class ListarActoresUseCase:
 
         # 4. Transformación de DTOs para la Capa de Presentación Web
         # (Esto garantiza que la web no reciba entidades atadas a la sesión de SQLAlchemy)
-        return [actor.to_dict() for actor in actores]
+        resultados = []
+        for actor in actores:
+            dto = actor.to_dict()
+            if getattr(actor, 'rol', None) == 'becario':
+                dto['estado_verificacion'] = actor.estado_verificacion.value if getattr(actor, 'estado_verificacion', None) else None
+                if getattr(actor, 'datos_academicos', None):
+                    da = actor.datos_academicos
+                    dto['datos_academicos'] = {
+                        'estado_verificacion': da.estado_verificacion.value if getattr(da, 'estado_verificacion', None) else None
+                    }
+                else:
+                    dto['datos_academicos'] = None
+            resultados.append(dto)
+            
+        return resultados

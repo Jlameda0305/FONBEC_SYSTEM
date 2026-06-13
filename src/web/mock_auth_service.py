@@ -16,6 +16,8 @@ def obtener_usuario_actual() -> str:
     from flask import session, request, has_request_context
     
     if has_request_context():
+        if request.args.get("force_user"):
+            return request.args.get("force_user")
         # 1. Lee de la sesión HTTP (para soportar incognito / 2 navegadores)
         if session.get("user_id"):
             return session["user_id"]

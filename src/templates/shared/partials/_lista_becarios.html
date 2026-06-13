@@ -31,23 +31,15 @@
         <td>{{ becario.edad }} años</td>
         <td>{{ becario.sexo | capitalize }}</td>
         <td>
-          {% set estado = 'sin_datos' %}
-          {% if becario.datos_academicos %}
-            {% set estado = becario.datos_academicos.estado_verificacion.value if becario.datos_academicos.estado_verificacion is mapping else becario.datos_academicos.estado_verificacion %}
-            {% if estado is not string %}{% set estado = estado.value if estado is not string else estado %}{% endif %}
-            {% if estado is undefined or not estado %}{% set estado = 'sin_datos' %}{% endif %}
-          {% elif becario.estado_verificacion %}
-            {% set estado = becario.estado_verificacion | lower %}
-          {% endif %}
-          
-          {% set badge_class = 'badge-secondary' %}
-          {% if estado == 'aprobado' %}{% set badge_class = 'badge-success' %}
-          {% elif estado == 'incompleto' %}{% set badge_class = 'badge-warning' %}
-          {% elif estado == 'pendiente_revision' %}{% set badge_class = 'badge-info' %}
-          {% elif estado == 'pendiente_modificar' %}{% set badge_class = 'badge-danger' %}{% endif %}
+          {% set estado_lower = (becario.estado_verificacion or 'sin_datos') | lower %}
+          {% set badge_class = 'badge-dark' %}
+          {% if estado_lower == 'aprobado' %}{% set badge_class = 'badge-success' %}
+          {% elif estado_lower == 'incompleto' %}{% set badge_class = 'badge-warning' %}
+          {% elif estado_lower == 'pendiente_revision' %}{% set badge_class = 'badge-info' %}
+          {% elif estado_lower == 'pendiente_modificar' %}{% set badge_class = 'badge-danger' %}{% endif %}
           <span class="badge badge-dot mr-4">
             <i class="bg-{{ badge_class | replace('badge-', '') }}"></i>
-            <span class="status">{{ estado | replace('_', ' ') | title }}</span>
+            <span class="status">{{ estado_lower | replace('_', ' ') | title }}</span>
           </span>
         </td>
         <td>

@@ -38,7 +38,7 @@ class TestCU05ListarActores(unittest.TestCase):
         self.mock_repo.listar_usuarios.return_value = [self.becario_mock]
 
         # Execute use case
-        resultado = self.use_case.ejecutar(
+        resultado = self.use_case.execute(
             actor_admin=self.admin,
             tipo_actor="becario",
             pagina=2,
@@ -60,14 +60,14 @@ class TestCU05ListarActores(unittest.TestCase):
     def test_rechazar_no_administrador(self):
         # Pass a becario instead of an admin
         with self.assertRaises(PermissionError):
-            self.use_case.ejecutar(
+            self.use_case.execute(
                 actor_admin=self.becario_mock,  # Not an admin
                 tipo_actor="tutor"
             )
 
     def test_pagina_negativa_se_ajusta(self):
         self.mock_repo.listar_usuarios.return_value = []
-        self.use_case.ejecutar(self.admin, "tutor", pagina=-5, limite=20)
+        self.use_case.execute(self.admin, "tutor", pagina=-5, limite=20)
         
         # Pagina -5 is invalid, should default to page 1 -> offset 0
         self.mock_repo.listar_usuarios.assert_called_once_with(

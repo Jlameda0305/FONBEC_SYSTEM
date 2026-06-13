@@ -39,7 +39,15 @@
       
       <div class="card shadow mt-4">
         <div class="card-header border-0">
-          <h3 class="mb-0">Resultados</h3>
+          {% if filtro_rol == 'becario' %}
+            <h3 class="mb-0"><i class="ni ni-single-02 mr-2 text-info"></i> Resultado de becarios en el sistema <span class="badge badge-pill badge-info ml-2">{{ actores|length }}</span></h3>
+          {% elif filtro_rol == 'tutor' %}
+            <h3 class="mb-0"><i class="ni ni-badge mr-2 text-success"></i> Resultado de tutores en el sistema <span class="badge badge-pill badge-success ml-2">{{ actores|length }}</span></h3>
+          {% elif filtro_rol == 'mediador' %}
+            <h3 class="mb-0"><i class="ni ni-world-2 mr-2 text-warning"></i> Resultado de mediadores en el sistema <span class="badge badge-pill badge-warning ml-2">{{ actores|length }}</span></h3>
+          {% else %}
+            <h3 class="mb-0">Resultados <span class="badge badge-pill badge-secondary ml-2">{{ actores|length }}</span></h3>
+          {% endif %}
         </div>
         {% if filtro_rol == 'becario' %}
           {% set lista_becarios = actores %}
