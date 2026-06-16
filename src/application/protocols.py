@@ -146,6 +146,12 @@ class UsuarioRepositoryProtocol(Protocol):
         """
         ...
 
+    def obtener_por_id_y_rol(self, id_usuario: str, rol: str) -> Optional[Usuario]:
+        """
+        Retrieve a generic Usuario by its ID and explicitly known role.
+        """
+        ...
+
     def obtener_por_email(self, email: str) -> Optional[Usuario]:
         """
         Retrieve a generic Usuario by its email.
@@ -214,14 +220,14 @@ class AuthServiceProtocol(Protocol):
         """
         ...
 
-    def establecer_contrasena(self, access_token: str, nueva_contrasena: str, refresh_token: str = "dummy") -> None:
+    def establecer_contrasena(self, access_token: str, nueva_contrasena: str, refresh_token: str) -> None:
         """
         Sets a new password for the authenticated user.
         
         Args:
-            access_token: Auth access token.
+            access_token: The session access token.
             nueva_contrasena: The new password to set.
-            refresh_token: Refresh token to set the session properly.
+            refresh_token: The session refresh token.
         """
         ...
 

@@ -345,11 +345,13 @@ Permitir a usuarios actualizar sus datos personales (CU-03 de Usuario base).
 
 ## Funcionalidades Requeridas
 - Visualizar datos actuales del perfil
-- Editar: nombre, apellido, telefono, direccion, edad, sexo
+- Editar: telefono, direccion, edad, sexo
 - Cambiar contraseña (requiere contraseña actual)
 
 > [!NOTE]
 > El email NO es editable en MVP — es el identificador de auth. Cambio de email es complejidad innecesaria para MVP.
+
+otros campos no editables: nombre, apellido
 
 ## Componentes a Implementar
 

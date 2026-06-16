@@ -55,16 +55,27 @@ def create_app() -> Flask:
         # Load the user from the session if available
         g.usuario_actual = None
         user_id = session.get("user_id")
+        rol = session.get("rol")
+        
         if user_id:
             repo = SQLAlchemyUsuarioRepository(g.db_session)
-            g.usuario_actual = repo.obtener_por_id(user_id)
+            if rol:
+                g.usuario_actual = repo.obtener_por_id_y_rol(user_id, rol)
+            else:
+                g.usuario_actual = repo.obtener_por_id(user_id)
 
     @app.teardown_appcontext
     def _close_db_session(exception=None) -> None:
         """Close the SQLAlchemy session when the request ends."""
-        session = g.pop("db_session", None)
-        if session is not None:
-            session.close()
+        db_session = g.pop("db_session", None)
+        if db_session is not None:
+            try:
+                if exception is None:
+                    db_session.commit()
+                else:
+                    db_session.rollback()
+            finally:
+                db_session.close()
 
     # --- Register Blueprints ---
     from src.web.routes.becario import becario_bp

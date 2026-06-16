@@ -49,7 +49,7 @@ class SQLAlchemyTutorRepository(TutorRepositoryProtocol):
         and their nested compositions.
         """
         self.session.add(tutor)
-        self.session.commit()
+        self.session.flush()
 
 
 class SQLAlchemyBecarioRepository(BecarioRepositoryProtocol):
@@ -100,7 +100,7 @@ class SQLAlchemyBecarioRepository(BecarioRepositoryProtocol):
         adding the aggregate automatically synchronizes its nested compositions.
         """
         self.session.add(becario)
-        self.session.commit()
+        self.session.flush()
 
 
 class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
@@ -113,10 +113,32 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
 
     def obtener_por_id(self, id_usuario: str) -> Optional[Usuario]:
         for cls in [Becario, Tutor, Mediador, Administrador, Padrino]:
-            user = self.session.query(cls).filter_by(id_usuario=id_usuario).first()
-            if user:
-                return user
+            try:
+                if cls is Padrino:
+                    user = self.session.query(cls).filter_by(id_padrino=id_usuario).first()
+                else:
+                    user = self.session.query(cls).filter_by(id_usuario=id_usuario).first()
+                if user:
+                    return user
+            except Exception:
+                continue
         return None
+
+    def obtener_por_id_y_rol(self, id_usuario: str, rol: str) -> Optional[Usuario]:
+        clases_map = {
+            "becario": Becario,
+            "tutor": Tutor,
+            "mediador": Mediador,
+            "administrador": Administrador,
+            "padrino": Padrino
+        }
+        cls = clases_map.get(rol.lower())
+        if not cls:
+            return None
+            
+        if cls is Padrino:
+            return self.session.query(cls).filter_by(id_padrino=id_usuario).first()
+        return self.session.query(cls).filter_by(id_usuario=id_usuario).first()
 
     def obtener_por_email(self, email: str) -> Optional[Usuario]:
         for cls in [Becario, Tutor, Mediador, Administrador, Padrino]:
@@ -130,7 +152,7 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
         Persists a generic Usuario (Becario, Tutor, Mediador, Administrador) to the database.
         """
         self.session.add(usuario)
-        self.session.commit()
+        self.session.flush()
 
     def listar_usuarios(
         self,
@@ -184,14 +206,14 @@ class SQLAlchemyPadrinoRepository(PadrinoRepositoryProtocol):
 
     def crear_padrino(self, padrino: Padrino) -> None:
         self.session.add(padrino)
-        self.session.commit()
+        self.session.flush()
 
     def obtener_padrino_por_id(self, id_padrino: str) -> Optional[Padrino]:
         return self.session.query(Padrino).filter_by(id_padrino=id_padrino).first()
 
     def actualizar_padrino(self, padrino: Padrino) -> None:
         self.session.add(padrino)
-        self.session.commit()
+        self.session.flush()
 
     def eliminar_padrino(self, id_padrino: str) -> None:
         # Check if any Becario uses this Padrino
@@ -203,5 +225,5 @@ class SQLAlchemyPadrinoRepository(PadrinoRepositoryProtocol):
         padrino = self.obtener_padrino_por_id(id_padrino)
         if padrino:
             self.session.delete(padrino)
-            self.session.commit()
+            self.session.flush()
 

@@ -11,6 +11,8 @@ from src.infrastructure.repositories import SQLAlchemyUsuarioRepository
 from src.infrastructure.auth_service import SupabaseAuthService
 from src.application.use_cases.login import LoginUseCase
 from src.application.use_cases.completar_registro import CompletarRegistroUseCase
+from src.application.use_cases.recuperar_contrasena import RecuperarContrasenaUseCase
+from src.application.use_cases.cambiar_contrasena import CambiarContrasenaUseCase
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -118,7 +120,7 @@ def callback():
 def set_password():
     
     access_token = request.form.get("access_token") or session.get("temp_access_token")
-    refresh_token = request.form.get("refresh_token") or session.get("temp_refresh_token", "dummy")
+    refresh_token = request.form.get("refresh_token") or session.get("temp_refresh_token")
     password = request.form.get("password")
     password_confirm = request.form.get("password_confirm")
     
@@ -158,3 +160,92 @@ def set_password():
         flash("Ocurrió un error inesperado al completar el registro.", "error")
         logging.error(f"Error completing registration: {str(e)}")
         return render_template("auth/completar_registro.html", access_token=access_token)
+
+@auth_bp.route("/recuperar-contrasena", methods=["GET", "POST"])
+def recuperar_contrasena():
+    """
+    Handles password recovery request.
+    """
+    if request.method == "GET":
+        return render_template("auth/recuperar_contrasena.html")
+        
+    email = request.form.get("email")
+    if not email:
+        flash("Por favor, ingresa tu correo electrónico.", "error")
+        return redirect(url_for("auth.recuperar_contrasena"))
+        
+    try:
+        auth_service = SupabaseAuthService(get_supabase_client())
+        repo = SQLAlchemyUsuarioRepository(g.db_session)
+        use_case = RecuperarContrasenaUseCase(auth_service, repo)
+        use_case.ejecutar(email)
+        
+        flash("Si el correo está registrado, recibirás un enlace para recuperar tu contraseña.", "success")
+        return redirect(url_for("auth.login"))
+    except ValueError as e:
+        flash(str(e), "error")
+        return redirect(url_for("auth.recuperar_contrasena"))
+    except Exception as e:
+        logging.error(f"Error requesting password recovery: {e}")
+        flash("Ocurrió un error inesperado. Intenta nuevamente más tarde.", "error")
+        return redirect(url_for("auth.recuperar_contrasena"))
+
+@auth_bp.route("/nueva-contrasena", methods=["GET", "POST"])
+def nueva_contrasena():
+    """
+    Handles setting a new password via recovery token.
+    """
+    if request.method == "GET":
+        code = request.args.get("code")
+        if code:
+            try:
+                auth_service = SupabaseAuthService(get_supabase_client())
+                res = auth_service.intercambiar_codigo(code)
+                session["temp_access_token"] = res["access_token"]
+                session["temp_refresh_token"] = res["refresh_token"]
+                return render_template("auth/nueva_contrasena.html")
+            except Exception as e:
+                flash("El enlace de recuperación expiró o es inválido.", "error")
+                return redirect(url_for("auth.recuperar_contrasena"))
+
+        # Fallback for implicit flow (URL fragment)
+        return render_template("auth/callback_fallback.html", target_url=url_for("auth.nueva_contrasena"))
+        
+    # POST handling
+    access_token = request.form.get("access_token") or session.get("temp_access_token")
+    refresh_token = request.form.get("refresh_token") or session.get("temp_refresh_token")
+    
+    if not access_token or not refresh_token:
+        flash("Tokens de sesión faltantes o expirados.", "error")
+        return redirect(url_for("auth.recuperar_contrasena"))
+
+    # If this is the POST from callback_fallback.html, it will have access_token but no password fields
+    if request.form.get("access_token") and "password" not in request.form:
+        session["temp_access_token"] = access_token
+        session["temp_refresh_token"] = refresh_token
+        return render_template("auth/nueva_contrasena.html", access_token=access_token)
+
+    password = request.form.get("password")
+    password_confirm = request.form.get("password_confirm")
+    
+    if not access_token:
+        flash("Token de sesión faltante. Por favor, intenta usar el enlace de recuperación nuevamente.", "error")
+        return redirect(url_for("auth.recuperar_contrasena"))
+        
+    try:
+        auth_service = SupabaseAuthService(get_supabase_client())
+        use_case = CambiarContrasenaUseCase(auth_service)
+        use_case.ejecutar(access_token, password, password_confirm, refresh_token)
+        
+        session.pop("temp_access_token", None)
+        session.pop("temp_refresh_token", None)
+        
+        flash("Contraseña actualizada exitosamente. Ahora podés iniciar sesión.", "success")
+        return redirect(url_for("auth.login"))
+    except ValueError as e:
+        flash(str(e), "error")
+        return render_template("auth/nueva_contrasena.html", access_token=access_token)
+    except Exception as e:
+        logging.error(f"Error setting new password: {e}")
+        flash("Ocurrió un error inesperado al guardar la contraseña.", "error")
+        return render_template("auth/nueva_contrasena.html", access_token=access_token)

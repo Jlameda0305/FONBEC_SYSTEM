@@ -15,6 +15,9 @@ from src.application.use_cases.CU05_Admin_ListarActores import ListarActoresUseC
 from src.application.use_cases.CU06_Admin_ObtenerDatosBecario import AdminObtenerDatosBecarioUseCase
 from src.application.use_cases.CU04_Admin_GestionarPadrinos import GestionarPadrinosUseCase
 from src.application.use_cases.CU03_Admin_GestionarVinculaciones import GestionarVinculacionesUseCase
+from src.application.use_cases.invitar_usuario import InvitarUsuarioUseCase
+from src.infrastructure.database import get_supabase_client
+from src.infrastructure.auth_service import SupabaseAuthService
 
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -29,6 +32,12 @@ def get_vinculaciones_use_case():
     usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
     padrino_repo = SQLAlchemyPadrinoRepository(g.db_session)
     return GestionarVinculacionesUseCase(becario_repo, usuario_repo, padrino_repo)
+
+def get_invitar_usuario_use_case():
+    supabase_client = get_supabase_client()
+    auth_service = SupabaseAuthService(supabase_client)
+    usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
+    return InvitarUsuarioUseCase(auth_service, usuario_repo)
 
 
 @admin_bp.route("/dashboard", methods=["GET"])
@@ -215,9 +224,13 @@ def detalle_becario(id_becario):
     listar_uc = ListarActoresUseCase(usuario_repo)
     
     try:
-        tutores_disponibles = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000)
-        mediadores_disponibles = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000)
-        padrinos_disponibles = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000)
+        tutores_res = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="tutor", pagina=1, limite=1000)
+        mediadores_res = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="mediador", pagina=1, limite=1000)
+        padrinos_res = listar_uc.execute(actor_admin=g.usuario_actual, tipo_actor="padrino", pagina=1, limite=1000)
+        
+        tutores_disponibles = tutores_res.get("actores", [])
+        mediadores_disponibles = mediadores_res.get("actores", [])
+        padrinos_disponibles = padrinos_res.get("actores", [])
     except Exception as e:
         logging.error(f"Error cargando actores disponibles: {str(e)}")
         flash("Error al cargar actores disponibles.", "error")
@@ -293,10 +306,6 @@ def invitar_usuario():
     if request.method == "GET":
         return render_template("admin/invitar_usuario.html")
 
-    from src.infrastructure.database import get_supabase_client
-    from src.infrastructure.auth_service import SupabaseAuthService
-    from src.application.use_cases.invitar_usuario import InvitarUsuarioUseCase
-
     email = request.form.get("email")
     rol = request.form.get("rol")
 
@@ -305,11 +314,7 @@ def invitar_usuario():
         return redirect(url_for("admin.dashboard"))
 
     try:
-        supabase_client = get_supabase_client()
-        auth_service = SupabaseAuthService(supabase_client)
-        usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
-        uc = InvitarUsuarioUseCase(auth_service, usuario_repo)
-        
+        uc = get_invitar_usuario_use_case()
         user_id = uc.execute(actor_admin=g.usuario_actual, email=email, rol=rol)
         flash(f"Invitación enviada exitosamente a {email}.", "success")
     except PermissionError as e:

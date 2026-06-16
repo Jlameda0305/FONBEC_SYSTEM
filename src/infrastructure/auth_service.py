@@ -3,6 +3,7 @@ Supabase Authentication Service implementation.
 """
 
 from typing import Optional
+import os
 from supabase import Client
 from src.application.protocols import AuthServiceProtocol
 
@@ -20,16 +21,29 @@ class SupabaseAuthService(AuthServiceProtocol):
         Invites a user using Supabase Admin API.
         Note: Requires SUPABASE_SERVICE_ROLE_KEY initialized client.
         """
+        base_url = os.environ.get("BASE_URL", "http://127.0.0.1:5000").rstrip("/")
         response = self.supabase.auth.admin.invite_user_by_email(
             email,
             options={
                 "data": {
                     "rol": rol
                 },
-                "redirect_to": "http://127.0.0.1:5000/auth/callback"
+                "redirect_to": f"{base_url}/auth/callback"
             }
         )
         return response.user.id
+
+    def recuperar_contrasena(self, email: str) -> None:
+        """
+        Requests a password reset email via Supabase auth.
+        """
+        base_url = os.environ.get("BASE_URL", "http://127.0.0.1:5000").rstrip("/")
+        self.supabase.auth.reset_password_email(
+            email,
+            options={
+                "redirect_to": f"{base_url}/auth/nueva-contrasena"
+            }
+        )
 
     def intercambiar_codigo(self, code: str) -> dict:
         """
@@ -51,7 +65,7 @@ class SupabaseAuthService(AuthServiceProtocol):
         except Exception:
             return None
 
-    def establecer_contrasena(self, access_token: str, nueva_contrasena: str, refresh_token: str = "dummy") -> None:
+    def establecer_contrasena(self, access_token: str, nueva_contrasena: str, refresh_token: str) -> None:
         """
         Sets a new password for the authenticated user using Supabase auth.
         """

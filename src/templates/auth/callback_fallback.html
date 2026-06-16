@@ -8,7 +8,7 @@
     if (accessToken) {
         let form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/auth/callback';
+        form.action = '{{ target_url|default("/auth/callback") }}';
         
         let inputA = document.createElement('input');
         inputA.type = 'hidden';

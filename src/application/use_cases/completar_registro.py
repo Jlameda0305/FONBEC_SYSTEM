@@ -23,9 +23,11 @@ class CompletarRegistroUseCase:
         self.auth_service = auth_service
         self.usuario_repo = usuario_repo
 
-    def ejecutar(self, access_token: str, password: str, password_confirm: str, datos_usuario: dict, refresh_token: str = "dummy") -> bool:
-        if not access_token or not password:
-            raise ValueError("Token o contraseña faltantes.")
+    def ejecutar(self, access_token: str, password: str, password_confirm: str, datos_usuario: dict, refresh_token: str) -> bool:
+        if not access_token or not refresh_token:
+            raise ValueError("Token de sesión o refresh token faltantes.")
+        if not password:
+            raise ValueError("Contraseña faltante.")
             
         if password != password_confirm:
             raise ValueError("Las contraseñas no coinciden.")
