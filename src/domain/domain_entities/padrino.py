@@ -33,17 +33,3 @@ class Padrino:
         self.email = email
         self.telefono = telefono
         self.direccion = direccion
-
-    def to_dict(self) -> dict:
-        """
-        Serialize Padrino attributes safely for presentation layer.
-        """
-        return {
-            "id_padrino": self.id_padrino,
-            "nombre": self.nombre,
-            "apellido": self.apellido,
-            "email": self.email,
-            "telefono": self.telefono,
-            "direccion": self.direccion,
-            "rol": "padrino"
-        }

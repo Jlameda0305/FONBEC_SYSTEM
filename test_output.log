@@ -1,0 +1,113 @@
+...........................................................E...............................................FFF.FFFFF..
+======================================================================
+ERROR: test_obtener_usuario_actual_retorna_string (test_cu04_visualizar_datos_academicos.TestMockAuthService.test_obtener_usuario_actual_retorna_string)
+obtener_usuario_actual() returns a hardcoded becario_id.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_cu04_visualizar_datos_academicos.py", line 130, in test_obtener_usuario_actual_retorna_string
+    from src.web.mock_auth_service import obtener_usuario_actual
+ModuleNotFoundError: No module named 'src.web.mock_auth_service'
+
+======================================================================
+FAIL: test_acceso_concedido_administrador (test_web_admin.TestWebAdmin.test_acceso_concedido_administrador)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_admin.py", line 25, in test_acceso_concedido_administrador
+    self.assertEqual(response.status_code, 200)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 302 != 200
+
+======================================================================
+FAIL: test_acceso_denegado_becario (test_web_admin.TestWebAdmin.test_acceso_denegado_becario)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_admin.py", line 20, in test_acceso_denegado_becario
+    self.assertEqual(response.status_code, 403)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 302 != 403
+
+======================================================================
+FAIL: test_parametros_busqueda_url (test_web_admin.TestWebAdmin.test_parametros_busqueda_url)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_admin.py", line 31, in test_parametros_busqueda_url
+    self.assertEqual(response.status_code, 200)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 302 != 200
+
+======================================================================
+FAIL: test_html_contiene_datos_del_becario (test_web_becario.TestWebBecarioAcademico.test_html_contiene_datos_del_becario)
+The rendered HTML contains academic data fields structure.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_becario.py", line 39, in test_html_contiene_datos_del_becario
+    self.assertIn("Carrera", html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: 'Carrera' not found in '<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n<h1>Redirecting...</h1>\n<p>You should be redirected automatically to the target URL: <a href="/auth/login">/auth/login</a>. If not, click the link.\n'
+
+======================================================================
+FAIL: test_html_contiene_estado_verificacion (test_web_becario.TestWebBecarioAcademico.test_html_contiene_estado_verificacion)
+The rendered HTML contains the verification status badge.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_becario.py", line 46, in test_html_contiene_estado_verificacion
+    self.assertIn("badge", html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: 'badge' not found in '<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n<h1>Redirecting...</h1>\n<p>You should be redirected automatically to the target URL: <a href="/auth/login">/auth/login</a>. If not, click the link.\n'
+
+======================================================================
+FAIL: test_html_contiene_estructura_base (test_web_becario.TestWebBecarioAcademico.test_html_contiene_estructura_base)
+The rendered HTML extends the base template (has header, footer).
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_becario.py", line 52, in test_html_contiene_estructura_base
+    self.assertIn("FONBEC", html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: 'FONBEC' not found in '<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n<h1>Redirecting...</h1>\n<p>You should be redirected automatically to the target URL: <a href="/auth/login">/auth/login</a>. If not, click the link.\n'
+
+======================================================================
+FAIL: test_html_contiene_titulo (test_web_becario.TestWebBecarioAcademico.test_html_contiene_titulo)
+The rendered HTML contains the page title.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_becario.py", line 32, in test_html_contiene_titulo
+    self.assertIn("Datos Académicos", html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Datos Académicos' not found in '<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n<h1>Redirecting...</h1>\n<p>You should be redirected automatically to the target URL: <a href="/auth/login">/auth/login</a>. If not, click the link.\n'
+
+======================================================================
+FAIL: test_ruta_retorna_200 (test_web_becario.TestWebBecarioAcademico.test_ruta_retorna_200)
+GET /becario/academico returns 200 OK.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/jlameda/Documents/Proyectos/FONBEC/tests/test_web_becario.py", line 26, in test_ruta_retorna_200
+    self.assertEqual(response.status_code, 200)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 302 != 200
+
+----------------------------------------------------------------------
+Ran 118 tests in 49.745s
+
+FAILED (failures=8, errors=1)
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.
+✓ Mapeo imperativo completado.
+✓ Tablas sincronizadas con Supabase.

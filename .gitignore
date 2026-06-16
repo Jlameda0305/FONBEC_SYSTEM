@@ -5,7 +5,8 @@ FONBEC_SYSTEM/
 __pycache__/
 .atl/
 openspec/
-AGENT.md
 temp_seed.py
 Argon template/
 Yo/
+.pytest_cache/
+*.log

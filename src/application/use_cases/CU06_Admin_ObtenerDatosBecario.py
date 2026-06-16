@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Use Case 06 - Admin: Obtener Datos de Becario
 
@@ -85,7 +86,7 @@ class AdminObtenerDatosBecarioUseCase:
 
         datos_academicos = {}
         if getattr(becario, 'datos_academicos', None):
-            datos_academicos = becario.datos_academicos.to_dict()
+            datos_academicos = datos_academicos_to_dict(becario.datos_academicos)
             if getattr(becario.datos_academicos, 'estado_verificacion', None):
                 datos_academicos["estado_verificacion"] = becario.datos_academicos.estado_verificacion.value
 

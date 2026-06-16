@@ -75,8 +75,7 @@ def _make_becario() -> Becario:
         telefono="+5491100000000",
         edad=20,
         sexo="M",
-        direccion="Fake St 123",
-        password_hash="hash"
+        direccion="Fake St 123"
     )
 
 

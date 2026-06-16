@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Integration tests for SQLAlchemyBecarioRepository.
 
@@ -56,7 +57,7 @@ class TestSQLAlchemyBecarioRepository(unittest.TestCase):
         # Close the session to simulate real Use Case boundary
         self.session.close()
         # This would throw DetachedInstanceError if lazy loading was used
-        dto = becario.datos_academicos.to_dict()
+        dto = datos_academicos_to_dict(becario.datos_academicos)
         self.assertIsInstance(dto, dict)
         self.assertIn("estado_verificacion", dto)
 

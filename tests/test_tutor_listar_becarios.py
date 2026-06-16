@@ -34,7 +34,7 @@ class TestListarBecariosTutorUseCase(unittest.TestCase):
             apellido="Perez",
             email="tutor@test.com",
             telefono="12345",
-            edad=40, sexo="M", direccion="dir", password_hash="hash"
+            edad=40, sexo="M", direccion="dir"
         )
         tutor.lista_becarios = []
         self.repo.tutor_db["tutor-123"] = tutor
@@ -51,7 +51,7 @@ class TestListarBecariosTutorUseCase(unittest.TestCase):
             apellido="Perez",
             email="tutor@test.com",
             telefono="12345",
-            edad=40, sexo="M", direccion="dir", password_hash="hash"
+            edad=40, sexo="M", direccion="dir"
         )
 
         # Armar Becario 1 (Pendiente)
@@ -61,7 +61,7 @@ class TestListarBecariosTutorUseCase(unittest.TestCase):
             apellido="Gomez",
             email="carlos@test.com",
             telefono="999",
-            edad=20, sexo="M", direccion="dir", password_hash="hash"
+            edad=20, sexo="M", direccion="dir"
         )
         datos_1 = DatosAcademicos()
         datos_1.estado_verificacion = EstadoVerificacion.PENDIENTE_REVISION
@@ -74,7 +74,7 @@ class TestListarBecariosTutorUseCase(unittest.TestCase):
             apellido="Silva",
             email="ana@test.com",
             telefono="888",
-            edad=22, sexo="F", direccion="dir", password_hash="hash"
+            edad=22, sexo="F", direccion="dir"
         )
         datos_2 = DatosAcademicos()
         datos_2.estado_verificacion = EstadoVerificacion.APROBADO

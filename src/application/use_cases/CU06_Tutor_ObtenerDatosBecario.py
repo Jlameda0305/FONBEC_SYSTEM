@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Use Case 06 - Tutor: Obtener Datos de Becario
 
@@ -80,5 +81,5 @@ class ObtenerDatosBecarioUseCase:
             "perfil_becario": perfil_becario,
             "mediador_asignado": mediador_asignado,
             "padrino_asignado": padrino_asignado,
-            "datos_academicos": becario.datos_academicos.to_dict() if becario.datos_academicos else {}
+            "datos_academicos": datos_academicos_to_dict(becario.datos_academicos) if becario.datos_academicos else {}
         }

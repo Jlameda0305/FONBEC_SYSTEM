@@ -25,7 +25,7 @@ class TestObtenerDatosBecarioUseCase(unittest.TestCase):
             apellido="Tutor",
             email="tutor@test.com",
             telefono="111",
-            edad=40, sexo="M", direccion="dir", password_hash="hash"
+            edad=40, sexo="M", direccion="dir"
         )
         
         self.becario = Becario(
@@ -34,7 +34,7 @@ class TestObtenerDatosBecarioUseCase(unittest.TestCase):
             apellido="Gomez",
             email="carlos@test.com",
             telefono="222",
-            edad=20, sexo="M", direccion="Calle Falsa 123", password_hash="hash"
+            edad=20, sexo="M", direccion="Calle Falsa 123"
         )
         
         self.mediador = Mediador(
@@ -43,7 +43,7 @@ class TestObtenerDatosBecarioUseCase(unittest.TestCase):
             apellido="Mediador",
             email="ana@test.com",
             telefono="333",
-            edad=35, sexo="F", direccion="dir", password_hash="hash"
+            edad=35, sexo="F", direccion="dir"
         )
         
         self.padrino = Padrino(

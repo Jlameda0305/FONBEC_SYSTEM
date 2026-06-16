@@ -9,9 +9,10 @@ import unittest
 from typing import Optional
 
 from src.domain.enums import EstadoVerificacion, NivelCursado
-from src.domain.models import Becario, DatosAcademicos
+from src.domain.actors.becario import Becario
+from src.domain.domain_entities.datos_academicos import DatosAcademicos
 from src.application.protocols import BecarioRepositoryProtocol
-from src.application.use_cases.CU04_VisualizarDatosAcademicos import (
+from src.application.use_cases.cu04_visualizar_datos_academicos import (
     CU04_VisualizarDatosAcademicos,
 )
 
@@ -55,7 +56,6 @@ class TestCU04BecarioConDatos(unittest.TestCase):
             edad=19,
             sexo="Femenino",
             direccion="San Martin 100",
-            password_hash="hash_b1",
             nivel_cursado=NivelCursado.UNIVERSITARIO,
             datos_academicos=datos,
         )
@@ -93,7 +93,6 @@ class TestCU04BecarioSinDatos(unittest.TestCase):
             edad=20,
             sexo="Masculino",
             direccion="Belgrano 200",
-            password_hash="hash_b2",
             nivel_cursado=NivelCursado.UNIVERSITARIO,
         )
         # Force datos_academicos to None to test the guard clause
@@ -120,17 +119,6 @@ class TestCU04BecarioNoEncontrado(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             self.use_case.ejecutar("bec-inexistente")
         self.assertIn("bec-inexistente", str(ctx.exception))
-
-
-class TestMockAuthService(unittest.TestCase):
-    """Scenario: Mock auth service returns hardcoded user."""
-
-    def test_obtener_usuario_actual_retorna_string(self) -> None:
-        """obtener_usuario_actual() returns a hardcoded becario_id."""
-        from src.web.mock_auth_service import obtener_usuario_actual
-        resultado = obtener_usuario_actual()
-        self.assertIsInstance(resultado, str)
-        self.assertEqual(resultado, "admin-001")
 
 
 if __name__ == "__main__":

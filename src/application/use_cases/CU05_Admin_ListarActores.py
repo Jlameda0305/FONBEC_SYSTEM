@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Use Case: CU-ADM-05 Listar Actores del Sistema.
 Orchestrates the paginated retrieval of actors (Becarios, Tutores, etc.)
@@ -63,7 +64,7 @@ class ListarActoresUseCase:
         # (Esto garantiza que la web no reciba entidades atadas a la sesión de SQLAlchemy)
         resultados = []
         for actor in actores:
-            dto = actor.to_dict()
+            dto = usuario_to_dict(actor)
             if getattr(actor, 'rol', None) == 'becario':
                 da = getattr(actor, 'datos_academicos', None)
                 dto['estado_verificacion'] = da.estado_verificacion.value if (da and getattr(da, 'estado_verificacion', None)) else None

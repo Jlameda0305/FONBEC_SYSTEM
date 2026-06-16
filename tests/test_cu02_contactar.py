@@ -24,11 +24,11 @@ class TestCU02ContactarReferente(unittest.TestCase):
     def setUp(self):
         tutor = Tutor(
             id_usuario="tut1", nombre="Laura", apellido="M", email="laura@m.com",
-            telefono="123", edad=30, sexo="F", direccion="X", password_hash="hash", rol="tutor"
+            telefono="123", edad=30, sexo="F", direccion="X", rol="tutor"
         )
         mediador = Mediador(
             id_usuario="med1", nombre="Carlos", apellido="G", email="carlos@g.com",
-            telefono="456", edad=40, sexo="M", direccion="Y", password_hash="hash", rol="mediador"
+            telefono="456", edad=40, sexo="M", direccion="Y", rol="mediador"
         )
         padrino = Padrino(
             id_padrino="pad1", nombre="Ana", apellido="P", email="ana@p.com",
@@ -37,13 +37,13 @@ class TestCU02ContactarReferente(unittest.TestCase):
         
         becario_completo = Becario(
             id_usuario="bec1", nombre="Juan", apellido="B", email="juan@b.com",
-            telefono="000", edad=20, sexo="M", direccion="W", password_hash="hash",
+            telefono="000", edad=20, sexo="M", direccion="W",
             puntero_tutor=tutor, puntero_mediador=mediador, puntero_padrino=padrino
         )
         
         becario_sin_tutor = Becario(
             id_usuario="bec2", nombre="Pedro", apellido="B", email="pedro@b.com",
-            telefono="001", edad=21, sexo="M", direccion="W", password_hash="hash",
+            telefono="001", edad=21, sexo="M", direccion="W",
             puntero_mediador=mediador
         )
         

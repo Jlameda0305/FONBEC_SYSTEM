@@ -21,18 +21,18 @@ class TestCU03GestionarVinculaciones(unittest.TestCase):
         
         self.admin = Administrador(
             id_usuario="admin-1", nombre="A", apellido="B", email="e",
-            telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="administrador"
+            telefono="1", edad=30, sexo="M", direccion="D", rol="administrador"
         )
         
         self.becario = Becario(
             id_usuario="bec-1", nombre="A", apellido="B", email="e",
-            telefono="1", edad=20, sexo="F", direccion="D", password_hash="H", rol="becario"
+            telefono="1", edad=20, sexo="F", direccion="D", rol="becario"
         )
 
     def test_asignar_tutor_exito(self):
         tutor = Tutor(
             id_usuario="tut-1", nombre="A", apellido="B", email="e",
-            telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="tutor"
+            telefono="1", edad=30, sexo="M", direccion="D", rol="tutor"
         )
         self.becario_repo.obtener_por_id.return_value = self.becario
         self.usuario_repo.obtener_por_id.return_value = tutor
@@ -46,7 +46,7 @@ class TestCU03GestionarVinculaciones(unittest.TestCase):
         # Tratar de asignar a alguien que es mediador en la ranura de tutor
         mediador_infiltrado = Mediador(
             id_usuario="med-1", nombre="A", apellido="B", email="e",
-            telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="mediador"
+            telefono="1", edad=30, sexo="M", direccion="D", rol="mediador"
         )
         self.becario_repo.obtener_por_id.return_value = self.becario
         self.usuario_repo.obtener_por_id.return_value = mediador_infiltrado
@@ -61,7 +61,7 @@ class TestCU03GestionarVinculaciones(unittest.TestCase):
     def test_desasignar_mediador(self):
         mediador = Mediador(
             id_usuario="med-1", nombre="A", apellido="B", email="e",
-            telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="mediador"
+            telefono="1", edad=30, sexo="M", direccion="D", rol="mediador"
         )
         self.becario.puntero_mediador = mediador
         
@@ -75,7 +75,7 @@ class TestCU03GestionarVinculaciones(unittest.TestCase):
     def test_seguridad_rol_incorrecto(self):
         tutor_hacker = Tutor(
             id_usuario="tut-99", nombre="A", apellido="B", email="e",
-            telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="tutor"
+            telefono="1", edad=30, sexo="M", direccion="D", rol="tutor"
         )
         
         with self.assertRaises(PermissionError):

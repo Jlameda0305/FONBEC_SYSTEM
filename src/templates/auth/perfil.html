@@ -1,0 +1,140 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Mi Perfil — FONBEC{% endblock %}
+
+{% block content %}
+<div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0">Mi Perfil</h6>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--5">
+  <div class="row justify-content-center">
+    <!-- Información Personal -->
+    <div class="col-xl-8 order-xl-1">
+      <div class="card shadow">
+        <div class="card-header bg-white border-0">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h3 class="mb-0">Mi Cuenta</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('auth.perfil') }}" method="POST">
+            <h6 class="heading-small text-muted mb-4">Información del Usuario (Solo Lectura)</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-nombre">Nombre</label>
+                    <input type="text" id="input-nombre" class="form-control form-control-alternative" value="{{ usuario.nombre }}" readonly>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-apellido">Apellido</label>
+                    <input type="text" id="input-apellido" class="form-control form-control-alternative" value="{{ usuario.apellido }}" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-email">Email address</label>
+                    <input type="email" id="input-email" class="form-control form-control-alternative" value="{{ usuario.email }}" readonly>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-rol">Rol</label>
+                    <input type="text" id="input-rol" class="form-control form-control-alternative" value="{{ usuario.rol|capitalize }}" readonly>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <hr class="my-4" />
+            <!-- Información de Contacto Editable -->
+            <h6 class="heading-small text-muted mb-4">Información de Contacto</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-direccion">Dirección</label>
+                    <input id="input-direccion" name="direccion" class="form-control form-control-alternative" placeholder="Dirección completa" value="{{ usuario.direccion }}" type="text">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-telefono">Teléfono</label>
+                    <input type="text" id="input-telefono" name="telefono" class="form-control form-control-alternative" placeholder="Ej. 1123456789" value="{{ usuario.telefono }}">
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-edad">Edad</label>
+                    <input type="number" id="input-edad" name="edad" class="form-control form-control-alternative" placeholder="Edad" value="{{ usuario.edad }}">
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-sexo">Sexo</label>
+                    <select id="input-sexo" name="sexo" class="form-control form-control-alternative">
+                        <option value="">Seleccionar</option>
+                        <option value="Masculino" {% if usuario.sexo == 'Masculino' %}selected{% endif %}>Masculino</option>
+                        <option value="Femenino" {% if usuario.sexo == 'Femenino' %}selected{% endif %}>Femenino</option>
+                        <option value="Otro" {% if usuario.sexo == 'Otro' %}selected{% endif %}>Otro</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <hr class="my-4" />
+            <!-- Cambio de Contraseña -->
+            <h6 class="heading-small text-muted mb-4">Seguridad (Opcional)</h6>
+            <div class="pl-lg-4">
+                <p class="text-sm text-muted">Si deseas cambiar tu contraseña, completa los siguientes campos. Si no, déjalos en blanco.</p>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="input-password-actual">Contraseña Actual</label>
+                            <input type="password" id="input-password-actual" name="password_actual" class="form-control form-control-alternative" placeholder="Tu contraseña actual">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="input-nueva-contrasena">Nueva Contraseña</label>
+                            <input type="password" id="input-nueva-contrasena" name="nueva_contrasena" class="form-control form-control-alternative" placeholder="Nueva contraseña">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                {% set dashboard_url = url_for('auth.login') %}
+                {% if g.usuario_actual %}
+                  {% if g.usuario_actual.rol == 'administrador' %}
+                    {% set dashboard_url = url_for('admin.dashboard') %}
+                  {% elif g.usuario_actual.rol == 'becario' %}
+                    {% set dashboard_url = url_for('becario.dashboard') %}
+                  {% elif g.usuario_actual.rol == 'tutor' %}
+                    {% set dashboard_url = url_for('tutor.dashboard') %}
+                  {% endif %}
+                {% endif %}
+                <a href="{{ dashboard_url }}" class="btn btn-secondary"><i class="fas fa-arrow-left mr-2"></i>Volver</a>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

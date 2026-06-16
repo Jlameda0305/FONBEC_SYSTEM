@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 CU-ADM-04: Gestionar Padrinos (ABM)
 
@@ -64,7 +65,7 @@ class GestionarPadrinosUseCase:
         if not padrino:
             return None
             
-        return padrino.to_dict()
+        return usuario_to_dict(padrino)
 
     def modificar(self, actor_admin: object, id_padrino: str, datos: Dict[str, Any]) -> None:
         """

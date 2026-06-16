@@ -12,7 +12,7 @@ class Usuario(ABC):
     Abstract base for all system actors (AOO §1.1).
 
     login() and logout() raise NotImplementedError because actual
-    authentication is handled by Supabase Auth in the infrastructure layer.
+    authentication is handled by the infrastructure layer.
     """
     id_usuario: str
     nombre: str
@@ -22,45 +22,29 @@ class Usuario(ABC):
     edad: int
     sexo: str
     direccion: str
-    password_hash: str
     rol: str
 
     def login(self) -> None:
-        """Authenticate the user. Delegated to infrastructure/Supabase Auth."""
-        raise NotImplementedError(
-            "Autenticación delegada a la capa de infraestructura (Supabase Auth)"
-        )
+        """Authenticate the user. Delegated to infrastructure."""
+        raise NotImplementedError("Autenticación delegada a la capa de infraestructura.")
 
     def logout(self) -> None:
-        """End the user session. Delegated to infrastructure/Supabase Auth."""
-        raise NotImplementedError(
-            "Cierre de sesión delegado a la capa de infraestructura (Supabase Auth)"
-        )
+        """End the user session. Delegated to infrastructure."""
+        raise NotImplementedError("Cierre de sesión delegado a la capa de infraestructura.")
 
-    def actualizar_datos_personales(self, **kwargs) -> None:
-        """Update personal data fields. Stub — no .puml for this CU."""
-        raise NotImplementedError
-
+    def actualizar_datos_personales(self, telefono: str = None, direccion: str = None, edad: int = None, sexo: str = None) -> None:
+        """Update personal data fields."""
+        if telefono is not None:
+            self.telefono = telefono
+        if direccion is not None:
+            self.direccion = direccion
+        if edad is not None:
+            self.edad = edad
+        if sexo is not None:
+            self.sexo = sexo
     def restablecer_contrasena(self) -> None:
         """Reset password. Stub — no .puml for this CU."""
         raise NotImplementedError
-
-    def to_dict(self) -> dict:
-        """
-        Serialize base user attributes safely without triggering recursive loops.
-        Subclasses can override this if they need specific data.
-        """
-        return {
-            "id_usuario": self.id_usuario,
-            "nombre": self.nombre,
-            "apellido": self.apellido,
-            "email": self.email,
-            "telefono": self.telefono,
-            "edad": self.edad,
-            "sexo": self.sexo,
-            "direccion": self.direccion,
-            "rol": self.rol
-        }
 
     @abstractmethod
     def visualizar_datos_academicos(self) -> dict:

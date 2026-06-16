@@ -23,8 +23,8 @@ class TestWebAdminVinculaciones(unittest.TestCase):
             self.session.query(Administrador).filter_by(id_usuario="admin-test").delete()
             self.session.commit()
             # Seed un admin y un becario
-            admin = Administrador(id_usuario="admin-test", nombre="A", apellido="A", email="a@a.com", telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="administrador")
-            becario = Becario(id_usuario="bec-test", nombre="B", apellido="B", email="b@b.com", telefono="1", edad=20, sexo="M", direccion="D", password_hash="H", rol="becario")
+            admin = Administrador(id_usuario="admin-test", nombre="A", apellido="A", email="a@a.com", telefono="1", edad=30, sexo="M", direccion="D", rol="administrador")
+            becario = Becario(id_usuario="bec-test", nombre="B", apellido="B", email="b@b.com", telefono="1", edad=20, sexo="M", direccion="D", rol="becario")
             self.session.add(admin)
             self.session.add(becario)
             self.session.commit()

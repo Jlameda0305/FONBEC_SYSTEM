@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Use case: CU03 - Llenar / Actualizar Formulario Académico.
 """
@@ -99,4 +100,4 @@ class CU03_LlenarActualizarFormularioAcademico:
             raise e
 
         # 5. Return serialized DTO
-        return becario.datos_academicos.to_dict()
+        return datos_academicos_to_dict(becario.datos_academicos)

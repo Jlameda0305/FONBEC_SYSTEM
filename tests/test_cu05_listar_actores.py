@@ -18,8 +18,7 @@ class TestCU05ListarActores(unittest.TestCase):
             telefono="123",
             edad=30,
             sexo="M",
-            direccion="Test",
-            password_hash="hash"
+            direccion="Test"
         )
         self.becario_mock = Becario(
             id_usuario="bec-123",
@@ -29,8 +28,7 @@ class TestCU05ListarActores(unittest.TestCase):
             telefono="123",
             edad=20,
             sexo="M",
-            direccion="Test",
-            password_hash="hash"
+            direccion="Test"
         )
 
     def test_listar_actores_exito(self):

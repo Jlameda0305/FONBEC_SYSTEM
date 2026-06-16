@@ -29,7 +29,6 @@ def _make_usuario_kwargs(**overrides):
         "edad": 20,
         "sexo": "M",
         "direccion": "Calle Falsa 123",
-        "password_hash": "hashed",
     }
     defaults.update(overrides)
     return defaults

@@ -81,16 +81,7 @@
             <i class="ni ni-hat-3"></i> Datos Académicos
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">
-            <i class="ni ni-books"></i> Tutorías
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">
-            <i class="ni ni-email-83"></i> Envío de cartas
-          </a>
-        </li>
+
         {% endif %}
       </ul>
       <!-- Divider -->
@@ -104,6 +95,11 @@
           </a>
         </li>
         {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.perfil') }}">
+            <i class="ni ni-single-02 text-primary"></i> Mi Perfil
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('auth.logout') }}">
             <i class="ni ni-user-run text-danger"></i> Cerrar Sesión

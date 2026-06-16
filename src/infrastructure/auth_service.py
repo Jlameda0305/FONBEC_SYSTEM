@@ -94,3 +94,17 @@ class SupabaseAuthService(AuthServiceProtocol):
             }
         except Exception as e:
             raise ValueError(f"Error de autenticación: {str(e)}")
+
+    def logout(self, access_token: str) -> None:
+        """
+        Invalidates a session remotely using an access token.
+        """
+        try:
+            # Set a dummy session in the client so we can sign out
+            self.supabase.auth.set_session(access_token, "")
+            self.supabase.auth.sign_out()
+        except Exception:
+            # If the token is already expired or invalid, we ignore the error
+            # to ensure the local logout flow continues.
+            pass
+

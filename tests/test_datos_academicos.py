@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Unit tests for DatosAcademicos domain entity.
 
@@ -253,7 +254,7 @@ class TestToDictConDocumentos(unittest.TestCase):
     def test_to_dict_sin_documentos(self):
         """Empty lista_documentos produces an empty documentos dict."""
         datos = DatosAcademicos()
-        result = datos.to_dict()
+        result = datos_academicos_to_dict(datos)
         self.assertIn("documentos", result)
         self.assertEqual(result["documentos"], {})
 
@@ -266,7 +267,7 @@ class TestToDictConDocumentos(unittest.TestCase):
         datos.agregar_documento(
             DocumentoAcademico("Inscripcion", "/p2.pdf", datetime(2026, 6, 1))
         )
-        result = datos.to_dict()
+        result = datos_academicos_to_dict(datos)
         self.assertIn("Programa", result["documentos"])
         self.assertIn("Inscripcion", result["documentos"])
         self.assertEqual(result["documentos"]["Programa"]["ruta_archivo"], "/p1.pdf")

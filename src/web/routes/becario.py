@@ -9,7 +9,7 @@ from flask import Blueprint, g, render_template, request, redirect, url_for, fla
 from src.web.auth_utils import requiere_rol
 
 
-from src.application.use_cases.CU04_VisualizarDatosAcademicos import (
+from src.application.use_cases.cu04_visualizar_datos_academicos import (
     CU04_VisualizarDatosAcademicos,
 )
 from src.application.use_cases.CU03_LlenarActualizarFormularioAcademico import (

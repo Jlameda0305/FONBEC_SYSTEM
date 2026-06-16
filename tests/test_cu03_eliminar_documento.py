@@ -61,8 +61,7 @@ def _make_becario_con_documentos() -> Becario:
         telefono="+5491100000000",
         edad=20,
         sexo="M",
-        direccion="Fake St 123",
-        password_hash="hash"
+        direccion="Fake St 123"
     )
     becario.datos_academicos.agregar_documento(
         DocumentoAcademico(

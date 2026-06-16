@@ -12,7 +12,7 @@ class TestCU04GestionarPadrinos(unittest.TestCase):
         
         self.admin = Administrador(
             id_usuario="admin-1", nombre="A", apellido="B", email="e",
-            telefono="1", edad=30, sexo="M", direccion="D", password_hash="H", rol="administrador"
+            telefono="1", edad=30, sexo="M", direccion="D", rol="administrador"
         )
         self.otro_usuario = MagicMock()
         self.otro_usuario.rol = "becario"

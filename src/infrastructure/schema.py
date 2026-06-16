@@ -60,7 +60,6 @@ tabla_tutores = Table(
     Column("edad", Integer, nullable=False),
     Column("sexo", String, nullable=False),
     Column("direccion", String, nullable=False),
-    Column("password_hash", String, nullable=False),
     Column("rol", String, nullable=False, default="tutor"),
 )
 
@@ -76,7 +75,6 @@ tabla_administradores = Table(
     Column("edad", Integer, nullable=False),
     Column("sexo", String, nullable=False),
     Column("direccion", String, nullable=False),
-    Column("password_hash", String, nullable=False),
     Column("rol", String, nullable=False, default="administrador"),
 )
 
@@ -92,7 +90,6 @@ tabla_mediadores = Table(
     Column("edad", Integer, nullable=False),
     Column("sexo", String, nullable=False),
     Column("direccion", String, nullable=False),
-    Column("password_hash", String, nullable=False),
     Column("rol", String, nullable=False, default="mediador"),
 )
 
@@ -108,7 +105,6 @@ tabla_becarios = Table(
     Column("edad", Integer, nullable=False),
     Column("sexo", String, nullable=False),
     Column("direccion", String, nullable=False),
-    Column("password_hash", String, nullable=False),
     Column("rol", String, nullable=False, default="becario"),
     
     # Becario specific attributes

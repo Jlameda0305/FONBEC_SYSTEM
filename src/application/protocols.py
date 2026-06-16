@@ -158,6 +158,12 @@ class UsuarioRepositoryProtocol(Protocol):
         """
         ...
 
+    def guardar(self, usuario: Usuario) -> None:
+        """
+        Persists a generic Usuario to the database.
+        """
+        ...
+
 class PadrinoRepositoryProtocol(Protocol):
     """
     Abstract contract for accessing Padrino persistence.
@@ -239,3 +245,19 @@ class AuthServiceProtocol(Protocol):
             dict containing access_token, refresh_token, and user object.
         """
         ...
+
+    def recuperar_contrasena(self, email: str) -> None:
+        """
+        Initiates a password recovery process via email.
+        """
+        ...
+
+    def logout(self, access_token: str) -> None:
+        """
+        Invalidates a session remotely using an access token.
+        
+        Args:
+            access_token: The session access token to invalidate.
+        """
+        ...
+

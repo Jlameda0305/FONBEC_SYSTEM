@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 from src.application.protocols import TutorRepositoryProtocol
 
 class AuditarDatosAcademicosUseCase:
@@ -47,4 +48,4 @@ class AuditarDatosAcademicosUseCase:
         self.tutor_repository.guardar(tutor)
         
         # 6. Devolver DTO del estado actualizado
-        return becario.datos_academicos.to_dict()
+        return datos_academicos_to_dict(becario.datos_academicos)

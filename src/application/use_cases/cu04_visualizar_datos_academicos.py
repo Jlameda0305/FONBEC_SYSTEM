@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Caso de Uso 04: Visualizar Datos Académicos (Becario).
 
@@ -55,4 +56,4 @@ class CU04_VisualizarDatosAcademicos:
         if becario.datos_academicos is None:
             return {}
 
-        return becario.datos_academicos.to_dict()
+        return datos_academicos_to_dict(becario.datos_academicos)

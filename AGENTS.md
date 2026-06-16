@@ -8,7 +8,7 @@ Actuarás como un Arquitecto de Software y Desarrollador Senior en Python. Tu ob
 * **Backend:** Python con el framework web Flask.
 * **Base de Datos y ORM:** Supabase PostgreSQL. El mapeo ORM se realiza de forma **imperativa** utilizando SQLAlchemy (totalmente desacoplado de las clases del Dominio).
 * **Storage y Auth:** Supabase Storage para almacenamiento de adjuntos (PDFs) y Supabase Auth para la validación y protección de rutas.
-* **Frontend:** Plantillas procesadas desde el servidor con Jinja2, estilizadas con **CSS Vainilla** (responsivo y moderno), evitando utilitarios como Tailwind a menos que se indique lo contrario.
+* **Frontend:** Plantillas procesadas desde el servidor con Jinja2, estructuradas y estilizadas utilizando el framework **Bootstrap (Argon Dashboard)** para acelerar el desarrollo del MVP y mantener consistencia visual.
 
 ## 3. Estructura de Directorios Obligatoria
 El código debe residir y respetar la siguiente estructura para garantizar el Desacoplamiento (Separation of Concerns):

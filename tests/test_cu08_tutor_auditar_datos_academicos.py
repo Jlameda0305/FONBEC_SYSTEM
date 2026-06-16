@@ -47,7 +47,6 @@ class TestAuditarDatosAcademicosUseCase(unittest.TestCase):
             edad=20,
             sexo="M",
             direccion="Calle 123",
-            password_hash="hash",
             datos_academicos=self.datos
         )
 
@@ -61,7 +60,6 @@ class TestAuditarDatosAcademicosUseCase(unittest.TestCase):
             edad=40,
             sexo="F",
             direccion="Av Siempre Viva",
-            password_hash="hash",
             lista_becarios=[self.becario]
         )
         self.repo.guardar(self.tutor)

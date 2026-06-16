@@ -1,3 +1,4 @@
+from src.application.dto_mapper import usuario_to_dict, datos_academicos_to_dict
 """
 Use Case 05 - Tutor: Listar Becarios Asignados
 
@@ -45,7 +46,7 @@ class ListarBecariosTutorUseCase:
                 if termino not in nombre_completo and termino not in email:
                     continue
 
-            dto = b.to_dict()
+            dto = usuario_to_dict(b)
             
             # The domain entity guarantees these attributes exist, but we handle the Enum value extraction
             dto['estado_verificacion'] = b.datos_academicos.estado_verificacion.value if getattr(b, 'datos_academicos', None) else None

@@ -13,6 +13,7 @@ from src.application.use_cases.login import LoginUseCase
 from src.application.use_cases.completar_registro import CompletarRegistroUseCase
 from src.application.use_cases.recuperar_contrasena import RecuperarContrasenaUseCase
 from src.application.use_cases.cambiar_contrasena import CambiarContrasenaUseCase
+from src.application.use_cases.actualizar_perfil import ActualizarPerfilUseCase, ActualizarPerfilRequest
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -77,8 +78,21 @@ def logout():
     """
     Clears the session and logs the user out.
     """
+    access_token = session.get("access_token")
+    if access_token:
+        try:
+            auth_service = SupabaseAuthService(get_supabase_client())
+            auth_service.logout(access_token)
+        except Exception as e:
+            logging.error(f"Error invalidating Supabase token on logout: {e}")
+            
     session.clear()
-    flash("Has cerrado sesión exitosamente.", "success")
+    
+    if request.args.get("expired"):
+        flash("Tu sesión ha expirado, ingresa nuevamente.", "error")
+    else:
+        flash("Has cerrado sesión exitosamente.", "success")
+        
     return redirect(url_for("auth.login"))
 
 @auth_bp.route("/callback", methods=["GET", "POST"])
@@ -249,3 +263,62 @@ def nueva_contrasena():
         logging.error(f"Error setting new password: {e}")
         flash("Ocurrió un error inesperado al guardar la contraseña.", "error")
         return render_template("auth/nueva_contrasena.html", access_token=access_token)
+
+@auth_bp.route("/perfil", methods=["GET", "POST"])
+def perfil():
+    """
+    Handles user profile visualization and updates.
+    Requires an active session.
+    """
+    user_id = session.get("user_id")
+    rol = session.get("rol")
+    
+    if not user_id or not rol:
+        flash("Debes iniciar sesión para ver tu perfil.", "error")
+        return redirect(url_for("auth.login"))
+        
+    usuario = g.usuario_actual
+    if not usuario:
+        flash("Usuario no encontrado.", "error")
+        return redirect(url_for("auth.login"))
+
+    if request.method == "GET":
+        return render_template("auth/perfil.html", usuario=usuario)
+        
+    # Handle POST
+    telefono = request.form.get("telefono")
+    direccion = request.form.get("direccion")
+    edad_str = request.form.get("edad")
+    edad = int(edad_str) if edad_str and edad_str.isdigit() else None
+    sexo = request.form.get("sexo")
+    
+    password_actual = request.form.get("password_actual")
+    nueva_contrasena = request.form.get("nueva_contrasena")
+    
+    try:
+        auth_service = SupabaseAuthService(get_supabase_client())
+        repo = SQLAlchemyUsuarioRepository(g.db_session)
+        use_case = ActualizarPerfilUseCase(repo, auth_service)
+        
+        req = ActualizarPerfilRequest(
+            user_id=user_id,
+            rol=rol,
+            telefono=telefono,
+            direccion=direccion,
+            edad=edad,
+            sexo=sexo,
+            password_actual=password_actual,
+            nueva_contrasena=nueva_contrasena
+        )
+        use_case.ejecutar(req)
+        
+        flash("Perfil actualizado exitosamente.", "success")
+        return redirect(url_for("auth.perfil"))
+        
+    except ValueError as e:
+        flash(str(e), "error")
+        return redirect(url_for("auth.perfil"))
+    except Exception as e:
+        logging.error(f"Error updating profile: {e}")
+        flash("Ocurrió un error inesperado al actualizar el perfil.", "error")
+        return redirect(url_for("auth.perfil"))
