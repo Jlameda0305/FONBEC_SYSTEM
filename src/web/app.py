@@ -57,51 +57,19 @@ def create_app() -> Flask:
     from src.web.routes.becario import becario_bp
     from src.web.routes.tutor import tutor_bp
     from src.web.routes.admin import admin_bp
+    from src.web.routes.auth import auth_bp
+    
     app.register_blueprint(becario_bp)
     app.register_blueprint(tutor_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)
 
     # --- Default Route ---
-    # --- Dummy Login Routes (For Development) ---
-    from flask import redirect, url_for, render_template, session
-    from src.domain.actors.becario import Becario
-    from src.domain.actors.tutor import Tutor
-    from src.domain.actors.mediador import Mediador
-    from src.domain.actors.administrador import Administrador
-    from src.domain.domain_entities.padrino import Padrino
+    from flask import redirect, url_for
     
     @app.route("/")
     def index():
-        # Get DB session from g (since this runs within request context)
-        db = g.db_session
-        
-        usuarios = {
-            "administrador": db.query(Administrador).all(),
-            "becario": db.query(Becario).all(),
-            "tutor": db.query(Tutor).all(),
-            "mediador": db.query(Mediador).all(),
-            "padrino": db.query(Padrino).all(),
-        }
-        
-        return render_template("login.html", usuarios=usuarios, session=session)
-
-    @app.route("/login/<user_id>/<rol>")
-    def set_login(user_id, rol):
-        session["user_id"] = user_id
-        
-        # Redirigir según rol
-        if rol == "administrador":
-            return redirect(url_for("admin.dashboard"))
-        elif rol == "becario":
-            return redirect(url_for("becario.visualizar_academico"))
-        elif rol == "tutor":
-            return redirect(url_for("tutor.dashboard"))
-        else:
-            return redirect(url_for("index"))
-
-    @app.route("/logout")
-    def logout():
-        session.pop("user_id", None)
-        return redirect(url_for("index"))
+        """Redirects to the new login system."""
+        return redirect(url_for("auth.login"))
 
     return app

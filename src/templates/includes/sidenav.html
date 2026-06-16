@@ -54,6 +54,11 @@
             <i class="ni ni-heart-2"></i> Padrinos
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin.invitar_usuario') }}">
+            <i class="ni ni-send text-primary"></i> Invitar Usuario
+          </a>
+        </li>
         {% elif g.usuario_actual and g.usuario_actual.rol == 'tutor' %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('tutor.dashboard') }}">
@@ -100,7 +105,7 @@
         </li>
         {% endif %}
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('logout') }}">
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">
             <i class="ni ni-user-run text-danger"></i> Cerrar Sesión
           </a>
         </li>

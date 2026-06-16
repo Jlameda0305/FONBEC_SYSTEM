@@ -17,6 +17,18 @@ if not SUPABASE_DATABASE_URL:
     print("Error: SUPABASE_DATABASE_URL no está configurada en el archivo .env", file=sys.stderr)
     sys.exit(1)
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+def get_supabase_client():
+    """
+    Creates and returns a Supabase Client instance with the Service Role Key.
+    """
+    from supabase import create_client
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+        raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set.")
+    return create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
 # Ensure the URL uses 'postgresql://' instead of 'postgres://' for newer SQLAlchemy compatibility
 if SUPABASE_DATABASE_URL.startswith("postgres://"):
     SUPABASE_DATABASE_URL = SUPABASE_DATABASE_URL.replace("postgres://", "postgresql://", 1)

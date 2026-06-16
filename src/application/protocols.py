@@ -146,6 +146,12 @@ class UsuarioRepositoryProtocol(Protocol):
         """
         ...
 
+    def obtener_por_email(self, email: str) -> Optional[Usuario]:
+        """
+        Retrieve a generic Usuario by its email.
+        """
+        ...
+
 class PadrinoRepositoryProtocol(Protocol):
     """
     Abstract contract for accessing Padrino persistence.
@@ -167,5 +173,56 @@ class PadrinoRepositoryProtocol(Protocol):
         """
         Delete a Padrino by ID.
         Must check for assigned Becarios and raise ValueError if any exist.
+        """
+        ...
+
+
+class AuthServiceProtocol(Protocol):
+    """
+    Abstract contract for handling authentication and authorization operations.
+    """
+
+    def invitar_usuario(self, email: str, rol: str) -> str:
+        """
+        Invites a user by email and assigns them a predefined role.
+
+        Args:
+            email: The email address to invite.
+            rol: The role to assign (e.g., 'becario', 'administrador').
+
+        Returns:
+            The user ID of the invited user or a status message.
+        """
+        ...
+
+    def obtener_usuario(self, access_token: str) -> Optional[dict]:
+        """
+        Retrieves user information using an access token.
+
+        Args:
+            access_token: The auth access token.
+
+        Returns:
+            A dictionary containing user info if valid, None otherwise.
+        """
+        ...
+
+    def establecer_contrasena(self, access_token: str, nueva_contrasena: str, refresh_token: str = "dummy") -> None:
+        """
+        Sets a new password for the authenticated user.
+        
+        Args:
+            access_token: Auth access token.
+            nueva_contrasena: The new password to set.
+            refresh_token: Refresh token to set the session properly.
+        """
+        ...
+
+    def login(self, email: str, password: str) -> dict:
+        """
+        Authenticates a user with email and password.
+        
+        Returns:
+            dict containing access_token, refresh_token, and user object.
         """
         ...

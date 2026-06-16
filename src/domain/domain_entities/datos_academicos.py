@@ -121,7 +121,6 @@ class DatosAcademicos:
             "materias_a_cursar", "materias_adeudadas",
         }
         
-        from datetime import datetime
         current_year = datetime.now().year
 
         for campo, valor in kwargs.items():

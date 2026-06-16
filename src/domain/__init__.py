@@ -36,6 +36,7 @@ __all__ = [
     "Referente",
     "Tutor",
     "Mediador",
+    "Administrador",
     "Padrino",
     "DatosAcademicos",
     "DocumentoAcademico",

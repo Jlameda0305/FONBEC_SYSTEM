@@ -47,19 +47,3 @@ class Administrador(Usuario):
                 "observaciones": datos.observaciones,
             }
         }
-
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Serialize the administrator's pure attributes.
-        """
-        return {
-            "id_usuario": self.id_usuario,
-            "nombre": self.nombre,
-            "apellido": self.apellido,
-            "email": self.email,
-            "telefono": self.telefono,
-            "edad": self.edad,
-            "sexo": self.sexo,
-            "direccion": self.direccion,
-            "rol": self.rol
-        }

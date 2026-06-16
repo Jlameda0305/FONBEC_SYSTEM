@@ -1,0 +1,57 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Invitar Usuario — FONBEC{% endblock %}
+
+{% block content %}
+<div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0">Gestión de Usuarios</h6>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card bg-secondary shadow border-0">
+        <div class="card-header bg-transparent pb-3">
+          <div class="text-muted text-center mt-2 mb-3"><small>Invitar nuevo integrante al sistema</small></div>
+        </div>
+        <div class="card-body px-lg-5 py-lg-5">
+          <form role="form" action="{{ url_for('admin.invitar_usuario') }}" method="POST">
+            
+            <div class="form-group mb-3">
+              <div class="input-group input-group-alternative">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                </div>
+                <input class="form-control" placeholder="Email del usuario" type="email" name="email" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <div class="input-group input-group-alternative">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-badge"></i></span>
+                </div>
+                <select class="form-control" name="rol" required>
+                  <option value="" disabled selected>Seleccione el rol</option>
+                  <option value="becario">Becario</option>
+                  <option value="tutor">Tutor</option>
+                  <option value="mediador">Mediador</option>
+                  <option value="administrador">Administrador</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary my-4">Enviar Invitación</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

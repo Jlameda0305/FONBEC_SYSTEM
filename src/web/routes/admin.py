@@ -282,3 +282,42 @@ def desvincular_actor(id_becario, tipo_vinculacion):
         
     return redirect(url_for("admin.detalle_becario", id_becario=id_becario))
 
+
+@admin_bp.route("/invitar", methods=["GET", "POST"])
+@requiere_rol("administrador")
+def invitar_usuario():
+    """
+    POST /admin/invitar
+    Invita a un nuevo usuario al sistema delegando la operación al servicio de auth.
+    """
+    if request.method == "GET":
+        return render_template("admin/invitar_usuario.html")
+
+    from src.infrastructure.database import get_supabase_client
+    from src.infrastructure.auth_service import SupabaseAuthService
+    from src.application.use_cases.invitar_usuario import InvitarUsuarioUseCase
+
+    email = request.form.get("email")
+    rol = request.form.get("rol")
+
+    if not email or not rol:
+        flash("Email y rol son requeridos.", "error")
+        return redirect(url_for("admin.dashboard"))
+
+    try:
+        supabase_client = get_supabase_client()
+        auth_service = SupabaseAuthService(supabase_client)
+        usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
+        uc = InvitarUsuarioUseCase(auth_service, usuario_repo)
+        
+        user_id = uc.execute(actor_admin=g.usuario_actual, email=email, rol=rol)
+        flash(f"Invitación enviada exitosamente a {email}.", "success")
+    except PermissionError as e:
+        flash(str(e), "error")
+    except ValueError as e:
+        flash(str(e), "error")
+    except Exception as e:
+        logging.error(f"Error al invitar usuario: {str(e)}")
+        flash("Error inesperado al procesar la invitación.", "error")
+        
+    return redirect(url_for("admin.dashboard"))

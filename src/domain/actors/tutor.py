@@ -66,9 +66,7 @@ class Tutor(Referente):
             resultado["mensaje"] = "El becario no ha cargado datos"
         elif datos.estado_verificacion == EstadoVerificacion.PENDIENTE_REVISION:
             resultado["opciones"] = ["aprobar", "rechazar"]
-        elif datos.estado_verificacion in (
-            EstadoVerificacion.INCOMPLETO, EstadoVerificacion.VACIO
-        ):
+        elif datos.estado_verificacion == EstadoVerificacion.INCOMPLETO:
             resultado["mensaje"] = "Contactar al becario para completar los datos"
 
         return resultado

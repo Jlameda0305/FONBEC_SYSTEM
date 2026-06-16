@@ -118,6 +118,20 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
                 return user
         return None
 
+    def obtener_por_email(self, email: str) -> Optional[Usuario]:
+        for cls in [Becario, Tutor, Mediador, Administrador, Padrino]:
+            user = self.session.query(cls).filter_by(email=email).first()
+            if user:
+                return user
+        return None
+
+    def guardar(self, usuario: Usuario) -> None:
+        """
+        Persists a generic Usuario (Becario, Tutor, Mediador, Administrador) to the database.
+        """
+        self.session.add(usuario)
+        self.session.commit()
+
     def listar_usuarios(
         self,
         limite: int,

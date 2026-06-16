@@ -56,7 +56,9 @@ class Becario(Usuario):
             resultado["mensaje"] = "Debes llenar el formulario"
         elif datos.estado_verificacion == EstadoVerificacion.PENDIENTE_MODIFICAR:
             resultado["mensaje"] = f"Observaciones del tutor: {datos.observaciones}"
-        elif datos.estado_verificacion in (
+
+        if datos.estado_verificacion in (
+            EstadoVerificacion.VACIO,
             EstadoVerificacion.INCOMPLETO,
             EstadoVerificacion.PENDIENTE_MODIFICAR,
         ):
