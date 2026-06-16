@@ -128,3 +128,7 @@ class SupabaseStorageServiceImpl(IStorageServiceProtocol):
              # Depending on the supabase-py version, we might need to raise if it's empty
              # But if it's already deleted, that's fine.
              pass
+
+def get_storage_service() -> IStorageServiceProtocol:
+    """Factory function for dependency injection."""
+    return SupabaseStorageServiceImpl()

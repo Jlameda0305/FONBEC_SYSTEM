@@ -3,7 +3,14 @@ Authentication HTTP Controller (Flask Blueprint).
 """
 
 import logging
-from flask import Blueprint, request, redirect, url_for, flash, render_template
+import traceback
+from flask import Blueprint, request, redirect, url_for, flash, render_template, session, g
+
+from src.infrastructure.database import get_supabase_client
+from src.infrastructure.repositories import SQLAlchemyUsuarioRepository
+from src.infrastructure.auth_service import SupabaseAuthService
+from src.application.use_cases.login import LoginUseCase
+from src.application.use_cases.completar_registro import CompletarRegistroUseCase
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -21,12 +28,7 @@ def login_post():
     POST /auth/login
     Handles the login submission.
     """
-    from flask import session
-    from src.infrastructure.database import get_supabase_client
-    from src.infrastructure.repositories import SQLAlchemyUsuarioRepository
-    from src.infrastructure.auth_service import SupabaseAuthService
-    from src.application.use_cases.login import LoginUseCase
-    
+
     email = request.form.get("email")
     password = request.form.get("password")
     
@@ -35,7 +37,6 @@ def login_post():
         return redirect(url_for("auth.login"))
         
     try:
-        from flask import g
         auth_service = SupabaseAuthService(get_supabase_client())
         repo = SQLAlchemyUsuarioRepository(g.db_session)
         use_case = LoginUseCase(auth_service, repo)
@@ -43,6 +44,7 @@ def login_post():
         result = use_case.ejecutar(email, password)
         
         # Save session data
+        session.permanent = True
         session["access_token"] = result["access_token"]
         session["refresh_token"] = result["refresh_token"]
         session["rol"] = result["rol"]
@@ -63,8 +65,6 @@ def login_post():
         flash(str(e), "error")
         return redirect(url_for("auth.login"))
     except Exception as e:
-        import logging
-        import traceback
         logging.error(f"Error during login: {e}")
         logging.error(traceback.format_exc())
         flash("Ocurrió un error inesperado durante el login.", "error")
@@ -75,7 +75,6 @@ def logout():
     """
     Clears the session and logs the user out.
     """
-    from flask import session
     session.clear()
     flash("Has cerrado sesión exitosamente.", "success")
     return redirect(url_for("auth.login"))
@@ -93,52 +92,18 @@ def callback():
         # Check if we got a code (PKCE flow)
         code = request.args.get("code")
         if code:
-            from src.infrastructure.database import get_supabase_client
-            from flask import session
             try:
-                supabase = get_supabase_client()
-                # Intercambiar código por sesión
-                res = supabase.auth.exchange_code_for_session({"auth_code": code})
-                session["temp_access_token"] = res.session.access_token
-                session["temp_refresh_token"] = res.session.refresh_token
+                auth_service = SupabaseAuthService(get_supabase_client())
+                res = auth_service.intercambiar_codigo(code)
+                session["temp_access_token"] = res["access_token"]
+                session["temp_refresh_token"] = res["refresh_token"]
                 return render_template("auth/completar_registro.html")
             except Exception as e:
                 flash(f"El enlace de invitación expiró o es inválido: {str(e)}", "error")
                 return redirect(url_for("index"))
 
         # Render a simple page that extracts the hash and POSTs it (Implicit Flow fallback)
-        return """
-        <html><body>
-        <script>
-            let hash = window.location.hash.substring(1);
-            let params = new URLSearchParams(hash);
-            let accessToken = params.get('access_token');
-            let refreshToken = params.get('refresh_token');
-            if (accessToken) {
-                let form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/auth/callback';
-                
-                let inputA = document.createElement('input');
-                inputA.type = 'hidden';
-                inputA.name = 'access_token';
-                inputA.value = accessToken;
-                form.appendChild(inputA);
-                
-                let inputR = document.createElement('input');
-                inputR.type = 'hidden';
-                inputR.name = 'refresh_token';
-                inputR.value = refreshToken || 'dummy';
-                form.appendChild(inputR);
-                
-                document.body.appendChild(form);
-                form.submit();
-            } else {
-                window.location.href = '/';
-            }
-        </script>
-        </body></html>
-        """
+        return render_template("auth/callback_fallback.html")
     
     # Handle POST
     access_token = request.form.get("access_token")
@@ -151,11 +116,6 @@ def callback():
 
 @auth_bp.route("/set-password", methods=["POST"])
 def set_password():
-    from src.infrastructure.database import get_supabase_client
-    from src.infrastructure.repositories import SQLAlchemyUsuarioRepository
-    from src.infrastructure.auth_service import SupabaseAuthService
-    from src.application.use_cases.completar_registro import CompletarRegistroUseCase
-    from flask import session
     
     access_token = request.form.get("access_token") or session.get("temp_access_token")
     refresh_token = request.form.get("refresh_token") or session.get("temp_refresh_token", "dummy")
@@ -177,7 +137,6 @@ def set_password():
         return redirect(url_for("index"))
         
     try:
-        from flask import g
         auth_service = SupabaseAuthService(get_supabase_client())
         repo = SQLAlchemyUsuarioRepository(g.db_session)
         use_case = CompletarRegistroUseCase(auth_service, repo)

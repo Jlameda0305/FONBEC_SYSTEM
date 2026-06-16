@@ -31,6 +31,16 @@ class SupabaseAuthService(AuthServiceProtocol):
         )
         return response.user.id
 
+    def intercambiar_codigo(self, code: str) -> dict:
+        """
+        Exchanges an auth code for a session via Supabase.
+        """
+        res = self.supabase.auth.exchange_code_for_session({"auth_code": code})
+        return {
+            "access_token": res.session.access_token,
+            "refresh_token": res.session.refresh_token
+        }
+
     def obtener_usuario(self, access_token: str) -> Optional[dict]:
         """
         Retrieves user info using an access token.

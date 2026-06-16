@@ -88,7 +88,7 @@
         </a>
         <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-right">
           <div class=" dropdown-header noti-title">
-            <h6 class="text-overflow m-0">¡Hola!</h6>
+            <h6 class="text-overflow m-0">¡Hola{% if g.usuario_actual %}, {{ g.usuario_actual.nombre }}{% endif %}!</h6>
           </div>
           <div class="dropdown-divider"></div>
           <a href="{{ url_for('auth.logout') }}" class="dropdown-item">

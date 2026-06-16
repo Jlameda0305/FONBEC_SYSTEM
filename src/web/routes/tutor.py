@@ -6,7 +6,6 @@ Acts as a pure adapter between the HTTP layer and the Tutor Application Use Case
 from flask import Blueprint, g, render_template, request, redirect, url_for, flash
 
 from src.web.auth_utils import requiere_rol
-from src.web.mock_auth_service import obtener_usuario_actual  # noqa: disable=rule-2, IGNORAR REGLA 2
 from src.application.use_cases.CU05_Tutor_ListarBecarios import ListarBecariosTutorUseCase
 from src.application.use_cases.CU06_Tutor_ObtenerDatosBecario import ObtenerDatosBecarioUseCase
 from src.application.use_cases.CU08_Tutor_AuditarDatosAcademicos import AuditarDatosAcademicosUseCase
@@ -29,7 +28,6 @@ def dashboard():
     GET /tutor/dashboard
     
     Renders the main dashboard for the Tutor. 
-    Retrieves the list of assigned Becarios via CU05.
     """
     # Por ahora el dashboard solo mostrará las próximas tutorías
     # En el MVP esta sección se renderiza vacía
@@ -43,7 +41,7 @@ def mis_becarios():
     
     Renders the list of assigned Becarios via CU05.
     """
-    user_id = obtener_usuario_actual()
+    user_id = g.usuario_actual.id_usuario
     busqueda = request.args.get("busqueda", "")
     
     repo = SQLAlchemyTutorRepository(g.db_session)
@@ -67,7 +65,7 @@ def becario_detalle(id_usuario):
     
     Loads the detailed profile of the assigned Becario (CU06).
     """
-    user_id = obtener_usuario_actual()
+    user_id = g.usuario_actual.id_usuario
     repo = SQLAlchemyTutorRepository(g.db_session)
     use_case = ObtenerDatosBecarioUseCase(repo)
     
@@ -91,7 +89,7 @@ def procesar_auditoria_academica(id_becario):
     
     Processes the auditing decision (Aprobar/Rechazar) from the Tutor (CU08).
     """
-    id_tutor = obtener_usuario_actual()
+    id_tutor = g.usuario_actual.id_usuario
     decision = request.form.get("decision")
     observaciones = request.form.get("observaciones", "")
     

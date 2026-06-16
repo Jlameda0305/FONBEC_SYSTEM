@@ -31,9 +31,12 @@ def create_app() -> Flask:
         template_folder=template_dir,
         static_folder=static_dir,
     )
-    
-    # Required for flash() messages and session management
+    # Session Management and Security
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-fonbec-1234")
+    from datetime import timedelta
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
     # --- Database Initialization ---
     # Initialize the imperative mapping and sync tables once at startup.
@@ -41,10 +44,20 @@ def create_app() -> Flask:
         init_db()
 
     # --- Request Lifecycle: Database Session ---
+    from flask import session
+    from src.infrastructure.repositories import SQLAlchemyUsuarioRepository
+    
     @app.before_request
     def _open_db_session() -> None:
-        """Create a fresh SQLAlchemy session for each HTTP request."""
+        """Create a fresh SQLAlchemy session for each HTTP request and load current user."""
         g.db_session = SessionLocal()
+        
+        # Load the user from the session if available
+        g.usuario_actual = None
+        user_id = session.get("user_id")
+        if user_id:
+            repo = SQLAlchemyUsuarioRepository(g.db_session)
+            g.usuario_actual = repo.obtener_por_id(user_id)
 
     @app.teardown_appcontext
     def _close_db_session(exception=None) -> None:

@@ -123,7 +123,7 @@ class UsuarioRepositoryProtocol(Protocol):
         self,
         limite: int,
         offset: int,
-        rol: Optional[str] = None,
+        rol: str,
         busqueda: Optional[str] = None,
     ) -> tuple[List[Usuario], int]:
         """
@@ -192,6 +192,13 @@ class AuthServiceProtocol(Protocol):
 
         Returns:
             The user ID of the invited user or a status message.
+        """
+        ...
+
+    def intercambiar_codigo(self, code: str) -> dict:
+        """
+        Exchanges an auth code for a session.
+        Returns dict with access_token and refresh_token.
         """
         ...
 

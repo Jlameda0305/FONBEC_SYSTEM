@@ -112,7 +112,7 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
         self.session = session
 
     def obtener_por_id(self, id_usuario: str) -> Optional[Usuario]:
-        for cls in [Becario, Tutor, Mediador, Administrador]:
+        for cls in [Becario, Tutor, Mediador, Administrador, Padrino]:
             user = self.session.query(cls).filter_by(id_usuario=id_usuario).first()
             if user:
                 return user
@@ -136,17 +136,14 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
         self,
         limite: int,
         offset: int,
-        rol: Optional[str] = None,
+        rol: str,
         busqueda: Optional[str] = None,
-    ) -> list[Usuario]:
+    ) -> tuple[list[Usuario], int]:
         """
         Retrieves actors paginated. Since Concrete Table Inheritance is used,
         the role MUST be provided to determine which physical table to query.
         """
         from sqlalchemy import or_
-        
-        if not rol:
-            raise ValueError("El parámetro 'rol' es obligatorio para listar usuarios.")
 
         clases_map = {
             "becario": Becario,

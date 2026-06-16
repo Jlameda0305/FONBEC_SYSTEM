@@ -1,0 +1,32 @@
+<html>
+<body>
+<script>
+    let hash = window.location.hash.substring(1);
+    let params = new URLSearchParams(hash);
+    let accessToken = params.get('access_token');
+    let refreshToken = params.get('refresh_token');
+    if (accessToken) {
+        let form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/auth/callback';
+        
+        let inputA = document.createElement('input');
+        inputA.type = 'hidden';
+        inputA.name = 'access_token';
+        inputA.value = accessToken;
+        form.appendChild(inputA);
+        
+        let inputR = document.createElement('input');
+        inputR.type = 'hidden';
+        inputR.name = 'refresh_token';
+        inputR.value = refreshToken || 'dummy';
+        form.appendChild(inputR);
+        
+        document.body.appendChild(form);
+        form.submit();
+    } else {
+        window.location.href = '/';
+    }
+</script>
+</body>
+</html>

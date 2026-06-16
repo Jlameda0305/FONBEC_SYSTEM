@@ -8,7 +8,7 @@ Contains zero business logic — only wiring and rendering.
 from flask import Blueprint, g, render_template, request, redirect, url_for, flash
 from src.web.auth_utils import requiere_rol
 
-from src.web.mock_auth_service import obtener_usuario_actual
+
 from src.application.use_cases.CU04_VisualizarDatosAcademicos import (
     CU04_VisualizarDatosAcademicos,
 )
@@ -22,7 +22,7 @@ from src.application.use_cases.CU02_ContactarReferente import (
     ObtenerDatosReferentesUseCase,
 )
 from src.infrastructure.repositories import SQLAlchemyBecarioRepository
-from src.infrastructure.storage.supabase_storage import SupabaseStorageServiceImpl
+from src.infrastructure.storage.supabase_storage import get_storage_service
 
 # Explicit document type keys — order matches the UI fields
 TIPOS_DOCUMENTO = ["Programa", "CartaCompromiso", "Inscripcion"]
@@ -46,7 +46,7 @@ def dashboard():
     Renders the main dashboard. Retrieves the referentes data (Tutor, Mediador, Padrino)
     via CU02.
     """
-    user_id = obtener_usuario_actual()
+    user_id = g.usuario_actual.id_usuario
     repo = SQLAlchemyBecarioRepository(g.db_session)
     use_case = ObtenerDatosReferentesUseCase(repo)
     
@@ -69,7 +69,7 @@ def visualizar_academico():
     executes CU04, and renders the academic data view.
     """
     # 1. Resolve the authenticated user (mock for now)
-    user_id = obtener_usuario_actual()
+    user_id = g.usuario_actual.id_usuario
 
     # 2. Instantiate Infrastructure + Application layers via DI
     repo = SQLAlchemyBecarioRepository(g.db_session)
@@ -98,9 +98,9 @@ def editar_formulario_academico():
     Handles filling and updating the academic form (CU03).
     Reads three explicit file inputs: Programa, CartaCompromiso, Inscripcion.
     """
-    user_id = obtener_usuario_actual()
+    user_id = g.usuario_actual.id_usuario
     repo = SQLAlchemyBecarioRepository(g.db_session)
-    storage = SupabaseStorageServiceImpl()
+    storage = get_storage_service()
     
     if request.method == "POST":
         # Extraer y transformar datos
@@ -153,7 +153,7 @@ def eliminar_documento_academico():
     Expects form field 'tipo_documento' with one of:
         Programa, CartaCompromiso, Inscripcion.
     """
-    user_id = obtener_usuario_actual()
+    user_id = g.usuario_actual.id_usuario
     tipo_documento = request.form.get("tipo_documento", "").strip()
 
     if tipo_documento not in TIPOS_DOCUMENTO:
@@ -161,7 +161,7 @@ def eliminar_documento_academico():
         return redirect(url_for("becario.editar_formulario_academico"))
 
     repo = SQLAlchemyBecarioRepository(g.db_session)
-    storage = SupabaseStorageServiceImpl()
+    storage = get_storage_service()
 
     try:
         use_case = CU03_EliminarDocumentoAcademico(repo, storage)
