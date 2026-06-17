@@ -64,8 +64,7 @@ class CompletarRegistroUseCase:
             "telefono": datos_usuario.get("telefono", ""),
             "edad": datos_usuario.get("edad", 0),
             "sexo": datos_usuario.get("sexo", ""),
-            "direccion": datos_usuario.get("direccion", ""),
-            "password_hash": ""  # No longer used in domain, handled by Supabase
+            "direccion": datos_usuario.get("direccion", "")
         }
         
         if rol == "becario":
@@ -79,11 +78,18 @@ class CompletarRegistroUseCase:
         else:
             raise ValueError(f"Rol '{rol}' no reconocido.")
             
-        # 4. Set the password in Supabase
-        self.auth_service.establecer_contrasena(access_token, password, refresh_token=refresh_token)
-        
-        # 5. Persist the new domain entity in the database
-        # If this fails, we might have an inconsistency, but that's a known risk documented in Phase 1
+        # 4. Persist the new domain entity in the database FIRST
         self.usuario_repo.guardar(nuevo_usuario)
         
+        # 5. Set the password in Supabase
+        try:
+            self.auth_service.establecer_contrasena(access_token, password, refresh_token=refresh_token)
+        except Exception as e:
+            # Saga pattern: Revert the local database change if Supabase fails
+            try:
+                self.usuario_repo.eliminar(nuevo_usuario)
+            except Exception:
+                pass
+            raise ValueError(f"Hubo un error al establecer la contraseña en el servidor de autenticación: {str(e)}")
+            
         return True

@@ -164,6 +164,12 @@ class UsuarioRepositoryProtocol(Protocol):
         """
         ...
 
+    def eliminar(self, usuario: Usuario) -> None:
+        """
+        Removes a generic Usuario from the database.
+        """
+        ...
+
 class PadrinoRepositoryProtocol(Protocol):
     """
     Abstract contract for accessing Padrino persistence.

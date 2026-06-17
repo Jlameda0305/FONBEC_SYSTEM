@@ -154,6 +154,13 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
         self.session.add(usuario)
         self.session.flush()
 
+    def eliminar(self, usuario: Usuario) -> None:
+        """
+        Removes a generic Usuario from the database.
+        """
+        self.session.delete(usuario)
+        self.session.flush()
+
     def listar_usuarios(
         self,
         limite: int,
