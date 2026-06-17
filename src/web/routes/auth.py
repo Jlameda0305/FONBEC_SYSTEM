@@ -123,11 +123,16 @@ def callback():
     
     # Handle POST
     access_token = request.form.get("access_token")
+    refresh_token = request.form.get("refresh_token")
+    
     if not access_token:
         flash("Token no encontrado.", "error")
         return redirect(url_for("index"))
         
-    return render_template("auth/completar_registro.html", access_token=access_token)
+    session["temp_access_token"] = access_token
+    session["temp_refresh_token"] = refresh_token
+        
+    return render_template("auth/completar_registro.html")
 
 
 @auth_bp.route("/set-password", methods=["POST"])
