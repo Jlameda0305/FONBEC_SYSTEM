@@ -299,6 +299,72 @@
   </div>
   {% endif %}
 
+  {% if g.usuario_actual.rol == 'administrador' %}
+  <!-- SECCIÓN: Peligro / Eliminar Becario -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow border-danger">
+        <div class="card-header bg-transparent border-0">
+          <h3 class="mb-0 text-danger"><i class="fas fa-exclamation-triangle mr-2"></i>Zona de Peligro</h3>
+        </div>
+        <div class="card-body">
+          <p>Al eliminar este becario se borrará permanentemente toda su información, incluyendo documentos almacenados, historial de vinculaciones y su cuenta de acceso al sistema. <strong>Esta acción es irreversible.</strong></p>
+          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete-becario">
+            Eliminar Becario
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Delete Becario -->
+  <div class="modal fade" id="modal-delete-becario" tabindex="-1" role="dialog" aria-labelledby="modal-delete-becario-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <form method="POST" action="{{ url_for('admin.eliminar_becario', id_becario=id_becario|default(id_usuario)) }}" id="form-delete-becario">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-delete-becario-label">Confirmar Eliminación</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Para confirmar que deseas eliminar a <strong>{{ actor.nombre }} {{ actor.apellido }}</strong>, por favor escribe su correo electrónico (<code>{{ actor.email }}</code>) a continuación:</p>
+            <div class="form-group">
+              <input type="email" name="email_confirmacion" id="email_confirmacion_input" class="form-control" placeholder="Correo electrónico del becario" autocomplete="off" required>
+            </div>
+            <div class="alert alert-warning text-sm mb-0">
+              <i class="fas fa-exclamation-circle mr-2"></i> Si el correo no coincide, la acción fallará o no se permitirá.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger" id="btn-confirm-delete" disabled>Eliminar Permanentemente</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const emailInput = document.getElementById('email_confirmacion_input');
+      const btnDelete = document.getElementById('btn-confirm-delete');
+      const expectedEmail = "{{ actor.email }}";
+
+      if (emailInput && btnDelete) {
+        emailInput.addEventListener('input', function() {
+          if (this.value.trim() === expectedEmail) {
+            btnDelete.disabled = false;
+          } else {
+            btnDelete.disabled = true;
+          }
+        });
+      }
+    });
+  </script>
+  {% endif %}
+
   <div class="row mt-4">
     <div class="col-12 text-center">
       <a href="javascript:history.back()" class="btn btn-secondary"><i class="fas fa-arrow-left mr-2"></i>Volver</a>

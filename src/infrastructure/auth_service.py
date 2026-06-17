@@ -108,3 +108,12 @@ class SupabaseAuthService(AuthServiceProtocol):
             # to ensure the local logout flow continues.
             pass
 
+    def eliminar_usuario_auth(self, user_id: str) -> None:
+        """
+        Deletes a user identity from Supabase Auth via Admin API.
+        Requires SUPABASE_SERVICE_ROLE_KEY to be configured.
+        """
+        try:
+            self.supabase.auth.admin.delete_user(user_id)
+        except Exception as e:
+            raise ValueError(f"No se pudo eliminar el usuario en Auth: {str(e)}")

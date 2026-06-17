@@ -113,15 +113,12 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
 
     def obtener_por_id(self, id_usuario: str) -> Optional[Usuario]:
         for cls in [Becario, Tutor, Mediador, Administrador, Padrino]:
-            try:
-                if cls is Padrino:
-                    user = self.session.query(cls).filter_by(id_padrino=id_usuario).first()
-                else:
-                    user = self.session.query(cls).filter_by(id_usuario=id_usuario).first()
-                if user:
-                    return user
-            except Exception:
-                continue
+            if cls is Padrino:
+                user = self.session.query(cls).filter_by(id_padrino=id_usuario).first()
+            else:
+                user = self.session.query(cls).filter_by(id_usuario=id_usuario).first()
+            if user:
+                return user
         return None
 
     def obtener_por_id_y_rol(self, id_usuario: str, rol: str) -> Optional[Usuario]:
@@ -203,6 +200,24 @@ class SQLAlchemyUsuarioRepository(UsuarioRepositoryProtocol):
         resultados = query.offset(offset).limit(limite).all()
         return resultados, total
 
+    def desvincular_referente(self, referente_id: str, rol: str) -> None:
+        from sqlalchemy import update
+        from src.infrastructure.schema import tabla_becarios
+        
+        stmt = None
+        rol = rol.lower()
+        if rol == "padrino":
+            stmt = update(tabla_becarios).where(tabla_becarios.c.padrino_id == referente_id).values(padrino_id=None)
+        elif rol == "tutor":
+            stmt = update(tabla_becarios).where(tabla_becarios.c.tutor_id == referente_id).values(tutor_id=None)
+        elif rol == "mediador":
+            stmt = update(tabla_becarios).where(tabla_becarios.c.mediador_id == referente_id).values(mediador_id=None)
+            
+        if stmt is not None:
+            self.session.execute(stmt)
+            self.session.flush()
+
+
 class SQLAlchemyPadrinoRepository(PadrinoRepositoryProtocol):
     """
     Concrete implementation of PadrinoRepositoryProtocol using SQLAlchemy.
@@ -223,9 +238,13 @@ class SQLAlchemyPadrinoRepository(PadrinoRepositoryProtocol):
         self.session.flush()
 
     def eliminar_padrino(self, id_padrino: str) -> None:
-        # Check if any Becario uses this Padrino
-        # Since we use concrete table mapping, we query Becario directly
-        becarios_asignados = self.session.query(Becario).filter(tabla_becarios.c.padrino_id == id_padrino).count()
+        from sqlalchemy import select, func
+        from src.infrastructure.schema import tabla_becarios
+        
+        # Check if any Becario uses this Padrino using SQLAlchemy Core properly
+        stmt = select(func.count()).select_from(tabla_becarios).where(tabla_becarios.c.padrino_id == id_padrino)
+        becarios_asignados = self.session.execute(stmt).scalar()
+        
         if becarios_asignados > 0:
             raise ValueError("debes eliminar la relacion antes de eliminar al padrino")
         

@@ -5,9 +5,7 @@ Defines the contracts that the Infrastructure layer must implement
 to satisfy the Dependency Inversion Principle. Use Cases depend on
 these abstractions, never on concrete repositories.
 """
-
-from typing import Optional, Protocol, List, Dict, Any
-
+from typing import Optional, Protocol, List
 from src.domain.actors.becario import Becario
 from src.domain.actors.tutor import Tutor
 from src.domain.actors.abstract_actor import Usuario
@@ -170,6 +168,12 @@ class UsuarioRepositoryProtocol(Protocol):
         """
         ...
 
+    def desvincular_referente(self, referente_id: str, rol: str) -> None:
+        """
+        Unlinks all Becarios associated with the specified Referente (Padrino, Tutor, Mediador).
+        """
+        ...
+
 class PadrinoRepositoryProtocol(Protocol):
     """
     Abstract contract for accessing Padrino persistence.
@@ -266,4 +270,11 @@ class AuthServiceProtocol(Protocol):
             access_token: The session access token to invalidate.
         """
         ...
+
+    def eliminar_usuario_auth(self, user_id: str) -> None:
+        """
+        Deletes user identity from Supabase Auth completely.
+        """
+        ...
+
 

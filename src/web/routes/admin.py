@@ -18,6 +18,9 @@ from src.application.use_cases.CU03_Admin_GestionarVinculaciones import Gestiona
 from src.application.use_cases.invitar_usuario import InvitarUsuarioUseCase
 from src.infrastructure.database import get_supabase_client
 from src.infrastructure.auth_service import SupabaseAuthService
+from src.infrastructure.storage.supabase_storage import SupabaseStorageService
+from src.application.use_cases.eliminar_becario import EliminarBecarioUseCase
+from src.application.use_cases.eliminar_referente import EliminarReferenteUseCase
 
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -38,6 +41,18 @@ def get_invitar_usuario_use_case():
     auth_service = SupabaseAuthService(supabase_client)
     usuario_repo = SQLAlchemyUsuarioRepository(g.db_session)
     return InvitarUsuarioUseCase(auth_service, usuario_repo)
+
+def get_eliminar_becario_uc():
+    supabase_client = get_supabase_client()
+    repo = SQLAlchemyUsuarioRepository(g.db_session)
+    storage = SupabaseStorageService(supabase_client)
+    auth = SupabaseAuthService(supabase_client)
+    return EliminarBecarioUseCase(repo, storage, auth)
+
+def get_eliminar_referente_uc():
+    repo = SQLAlchemyUsuarioRepository(g.db_session)
+    auth = SupabaseAuthService(get_supabase_client())
+    return EliminarReferenteUseCase(repo, auth)
 
 
 @admin_bp.route("/dashboard", methods=["GET"])
@@ -186,19 +201,50 @@ def editar_padrino(id_padrino):
     return render_template("admin/padrino_form.html", padrino=padrino)
 
 
-@admin_bp.route("/padrinos/<id_padrino>/eliminar", methods=["POST"])
+@admin_bp.route("/referentes/<rol>/<id_referente>/eliminar", methods=["POST"])
 @requiere_rol("administrador")
-def eliminar_padrino(id_padrino):
-    uc = get_padrinos_use_case()
+def eliminar_referente(rol, id_referente):
+    email_confirmacion = request.form.get("email_confirmacion", "").strip()
+    
+    uc = get_eliminar_referente_uc()
     try:
-        uc.eliminar(actor_admin=g.usuario_actual, id_padrino=id_padrino)
-        flash("Padrino eliminado correctamente.", "success")
+        uc.execute(actor_admin=g.usuario_actual, referente_id=id_referente, rol=rol, email_confirmacion=email_confirmacion)
+        # Commit to save DB changes because Saga pattern succeeded
+        g.db_session.commit()
+        flash(f"{rol.capitalize()} eliminado correctamente.", "success")
     except ValueError as e:
+        g.db_session.rollback()
         flash(str(e), "error")
     except Exception as e:
-        flash("Ocurrió un error inesperado al eliminar el padrino.", "error")
+        g.db_session.rollback()
+        logging.error(f"Error eliminando referente: {e}")
+        flash("Ocurrió un error inesperado al eliminar el usuario.", "error")
         
-    return redirect(url_for("admin.listar_padrinos"))
+    if rol == "padrino":
+        return redirect(url_for("admin.listar_padrinos"))
+    return redirect(url_for("admin.directorio_rol", rol=rol))
+
+
+@admin_bp.route("/becarios/<id_becario>/eliminar", methods=["POST"])
+@requiere_rol("administrador")
+def eliminar_becario(id_becario):
+    email_confirmacion = request.form.get("email_confirmacion", "").strip()
+    
+    uc = get_eliminar_becario_uc()
+    try:
+        uc.execute(actor_admin=g.usuario_actual, becario_id=id_becario, email_confirmacion=email_confirmacion)
+        # Commit to save DB changes because Saga pattern succeeded
+        g.db_session.commit()
+        flash("Becario eliminado correctamente.", "success")
+    except ValueError as e:
+        g.db_session.rollback()
+        flash(str(e), "error")
+    except Exception as e:
+        g.db_session.rollback()
+        logging.error(f"Error eliminando becario: {e}")
+        flash("Ocurrió un error inesperado al eliminar el becario.", "error")
+        
+    return redirect(url_for("admin.directorio_rol", rol="becario"))
 
 
 @admin_bp.route("/becarios/<id_becario>/detalle", methods=["GET"])
