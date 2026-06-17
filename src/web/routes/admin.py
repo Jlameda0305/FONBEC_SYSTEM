@@ -18,7 +18,7 @@ from src.application.use_cases.CU03_Admin_GestionarVinculaciones import Gestiona
 from src.application.use_cases.invitar_usuario import InvitarUsuarioUseCase
 from src.infrastructure.database import get_supabase_client
 from src.infrastructure.auth_service import SupabaseAuthService
-from src.infrastructure.storage.supabase_storage import SupabaseStorageService
+from src.infrastructure.storage.supabase_storage import SupabaseStorageServiceImpl
 from src.application.use_cases.eliminar_becario import EliminarBecarioUseCase
 from src.application.use_cases.eliminar_referente import EliminarReferenteUseCase
 
@@ -45,7 +45,7 @@ def get_invitar_usuario_use_case():
 def get_eliminar_becario_uc():
     supabase_client = get_supabase_client()
     repo = SQLAlchemyUsuarioRepository(g.db_session)
-    storage = SupabaseStorageService(supabase_client)
+    storage = SupabaseStorageServiceImpl()
     auth = SupabaseAuthService(supabase_client)
     return EliminarBecarioUseCase(repo, storage, auth)
 
