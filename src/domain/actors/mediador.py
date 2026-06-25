@@ -1,7 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+from datetime import datetime
 
+from src.domain.enums import EstadoVerificacion
 from .abstract_actor import Referente
 
 if TYPE_CHECKING:
@@ -10,16 +12,27 @@ if TYPE_CHECKING:
 @dataclass
 class Mediador(Referente):
     """
-    Mediador actor (AOO §1.5) — reference class for MVP.
+    Mediador actor (AOO §1.5) — audit + cartas referent.
 
-    Only get_datos_contacto() is implemented. All active methods
-    (CU-07, CU-13 to CU-15) are out of MVP scope.
+    MVP methods: seleccionar_becario, visualizar_datos_academicos,
+    auditar_datos_academicos_becario, get_datos_contacto.
     """
     rol: str = "mediador"
 
     def seleccionar_becario(self, id_becario: str) -> Becario:
-        """Out of MVP scope (CU-07 — no .puml)."""
-        raise NotImplementedError("CU-07: fuera del alcance del MVP")
+        """
+        Select a Becario from lista_becarios by ID (CU-07).
+        Loads: becario data + calendario envíos + padrino + contacto tutor.
+
+        Raises:
+            ValueError: If no Becario with the given ID is found.
+        """
+        for becario in self.lista_becarios:
+            if becario.id_usuario == id_becario:
+                return becario
+        raise ValueError(
+            "No posee permisos para acceder al becario solicitado."
+        )
 
     def visualizar_datos_academicos(self, becario: Becario = None) -> dict:
         """Out of MVP scope — no Mediador .puml for CU-04."""
