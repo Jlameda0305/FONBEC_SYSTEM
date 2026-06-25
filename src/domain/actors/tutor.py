@@ -1,7 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-from datetime import datetime
 
 from src.domain.enums import EstadoVerificacion
 from .abstract_actor import Referente
@@ -12,11 +11,10 @@ if TYPE_CHECKING:
 @dataclass
 class Tutor(Referente):
     """
-    Tutor actor (AOO §1.4) — academic auditor.
+    Tutor actor (AOO §1.4) — tutorías-only referent.
 
     MVP methods: seleccionar_becario, visualizar_datos_academicos,
-    auditar_datos_academicos_becario, get_datos_contacto,
-    contactar_mediador_becario.
+    get_datos_contacto, contactar_mediador_becario.
     """
     rol: str = "tutor"
 
@@ -70,43 +68,6 @@ class Tutor(Referente):
             resultado["mensaje"] = "Contactar al becario para completar los datos"
 
         return resultado
-
-    def auditar_datos_academicos_becario(
-        self,
-        becario: Becario,
-        decision: str,
-        observaciones: str = "",
-    ) -> None:
-        """
-        Approve or reject a Becario's academic data (CU-08).
-
-        Args:
-            becario: The Becario whose data is being audited.
-            decision: "aprobar" or "rechazar".
-            observaciones: Required when rejecting (stored on DatosAcademicos).
-
-        Raises:
-            ValueError: If decision is invalid or state doesn't allow auditing.
-        """
-        datos = becario.datos_academicos
-
-        if datos.estado_verificacion != EstadoVerificacion.PENDIENTE_REVISION:
-            raise ValueError(
-                "Solo se pueden auditar datos en estado Pendiente_Revision"
-            )
-
-        if decision == "aprobar":
-            datos.actualizar_estado(EstadoVerificacion.APROBADO)
-            datos.observaciones = None
-            datos.fecha_observacion = None
-        elif decision == "rechazar":
-            datos.actualizar_estado(EstadoVerificacion.PENDIENTE_MODIFICAR)
-            datos.observaciones = observaciones
-            datos.fecha_observacion = datetime.now()
-        else:
-            raise ValueError(
-                f"Decisión inválida: '{decision}'. Debe ser 'aprobar' o 'rechazar'"
-            )
 
     def get_datos_contacto(self) -> dict:
         """
