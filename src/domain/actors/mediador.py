@@ -35,8 +35,40 @@ class Mediador(Referente):
         )
 
     def visualizar_datos_academicos(self, becario: Becario = None) -> dict:
-        """Out of MVP scope — no Mediador .puml for CU-04."""
-        raise NotImplementedError("Visualización de datos por Mediador: fuera del alcance del MVP")
+        """
+        Visualize academic data of a selected Becario (CU-04 Mediador view).
+
+        Args:
+            becario: The selected Becario whose data to visualize.
+
+        Returns:
+            Dictionary with academic data and available options per state.
+        """
+        if becario is None:
+            raise ValueError("Debe seleccionar un becario primero")
+
+        datos = becario.datos_academicos
+        resultado = {
+            "estado": datos.estado_verificacion.value,
+            "datos": {
+                "nombre_carrera": datos.nombre_carrera,
+                "anio_ingreso": datos.anio_ingreso,
+                "anio_en_curso": datos.anio_en_curso,
+                "materias_a_cursar": datos.materias_a_cursar,
+                "materias_adeudadas": datos.materias_adeudadas,
+                "observaciones": datos.observaciones,
+            },
+            "opciones": [],
+        }
+
+        if datos.estado_verificacion == EstadoVerificacion.VACIO:
+            resultado["mensaje"] = "El becario no ha cargado datos"
+        elif datos.estado_verificacion == EstadoVerificacion.PENDIENTE_REVISION:
+            resultado["opciones"] = ["aprobar", "rechazar"]
+        elif datos.estado_verificacion == EstadoVerificacion.INCOMPLETO:
+            resultado["mensaje"] = "Contactar al becario para completar los datos"
+
+        return resultado
 
     def auditar_datos_academicos_becario(
         self,
