@@ -29,6 +29,8 @@ class LoginUseCase:
         if not email or not password:
             raise ValueError("Email y contraseña son requeridos.")
             
+        email = email.lower().strip()
+            
         # 1. Authenticate with Supabase Auth
         try:
             auth_response = self.auth_service.login(email, password)
@@ -46,10 +48,14 @@ class LoginUseCase:
         usuario_db = self.usuario_repo.obtener_por_email(email)
         
         if not usuario_db:
-            # The account exists in Supabase but the profile was deleted in PostgreSQL
-            # To be safe, we would ideally sign them out of Supabase too if they were logged in,
-            # but auth_service.login() already issued tokens. 
-            # We raise an error so the controller can handle it and prevent session creation.
+            # The account exists in Supabase but the profile was deleted in PostgreSQL.
+            # Applying rudimentary Saga pattern: we revoke the Supabase session
+            # since the local database check failed.
+            try:
+                self.auth_service.logout(auth_response["access_token"])
+            except Exception:
+                pass
+                
             raise ValueError("Tu cuenta existe pero tu perfil fue eliminado localmente. Contactá al administrador.")
             
         return {

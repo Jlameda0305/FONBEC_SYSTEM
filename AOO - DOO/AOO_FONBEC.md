@@ -8,6 +8,7 @@
 ```
 Usuario (abstracta)  
 ├── Becario                    ← Aggregate Root del modelo  
+├── Administrador              ← Actor de gestión global
 ├── Referente (abstracta)  
 │   ├── Tutor  
 │   └── Mediador  
@@ -125,6 +126,8 @@ Agrupa el comportamiento y el estado común a `Tutor` y `Mediador`.
 
 ### 1.4 Subclase: `Tutor`
 
+> **Nota de diseño — Rediseño de roles (Tutor ↔ Mediador):** Tras la migración de responsabilidades, el `Tutor` es el referente responsable de la **gestión de tutorías** del becario. La auditoría de datos académicos (Aprobar/Rechazar) fue transferida al `Mediador` (ver §1.5). El `Tutor` conserva la visualización de datos académicos, pero **sin** opciones de aprobación/rechazo.
+
 - **Atributos:**
 
   - `rol = "tutor"`
@@ -133,9 +136,7 @@ Agrupa el comportamiento y el estado común a `Tutor` y `Mediador`.
 
   - `seleccionar\_becario()` *(carga: datos del becario + calendario tutorias + contacto mediador)*
 
-  - `visualizar\_datos\_academicos()` *(visualiza datos del becario seleccionado)*
-
-  - `auditar\_datos\_academicos\_becario()` *(delega la transición de estado a `DatosAcademicos.actualizar\_estado()`)*
+  - `visualizar\_datos\_academicos()` *(visualiza datos del becario seleccionado, sin opciones de auditoría)*
 
   - `visualizar\_calendario\_tutoria()`
 
@@ -152,6 +153,8 @@ Agrupa el comportamiento y el estado común a `Tutor` y `Mediador`.
 
 ### 1.5 Subclase: `Mediador`
 
+> **Nota de diseño — Rediseño de roles (Tutor ↔ Mediador):** Tras la migración, el `Mediador` asume dos responsabilidades: la **auditoría de datos académicos** (Aprobar/Rechazar, transferida desde el `Tutor` — la lógica de transición de estados de `DatosAcademicos` se conserva intacta) y la **gestión del programa de envío de cartas** (caso de uso de desarrollo futuro). El `Mediador` es ahora el único referente con potestad de auditoría.
+
 - **Atributos:**
 
   - `rol = "mediador"`
@@ -160,7 +163,9 @@ Agrupa el comportamiento y el estado común a `Tutor` y `Mediador`.
 
   - `seleccionar\_becario()` *(carga: datos del becario + calendario envíos + padrino + contacto tutor)*
 
-  - `visualizar\_datos\_academicos()` *(visualiza datos del becario seleccionado)*
+  - `visualizar\_datos\_academicos()` *(visualiza datos del becario seleccionado; expone opciones **Aprobar** / **Rechazar** cuando `estado\_verificacion` = `Pendiente\_Revision`)*
+
+  - `auditar\_datos\_academicos\_becario()` *(delega la transición de estado a `DatosAcademicos.actualizar\_estado()`; exclusivo del Mediador)*
 
   - `ver\_calendario\_envio\_cartas()` *(siempre en contexto del becario seleccionado)*
 
@@ -274,9 +279,16 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
   - `actualizar\_fecha\_envio(nueva\_fecha)`
 
 
+### 1.11 Subclase: `Administrador`
+
+Actor de gestión central del sistema. Su existencia responde a la necesidad operativa de gestionar usuarios y vinculaciones. Todo el detalle funcional, atributos, métodos y casos de uso de este actor se encuentran especificados en el anexo **`Administrador.md`**.
+
+
 ## 2. Casos de Uso
 
 ### Actores del sistema
+
+- **Administrador** (Ver anexo `Administrador.md` para casos de uso específicos)
 
 - **Becario**
 
@@ -424,8 +436,8 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 | - | - | - | - |
 | `Vacio` | Mensaje "debes llenar el formulario" | Mensaje "el becario no ha cargado datos" | Igual que Tutor |
 | `Incompleto` | Visualiza datos con campos faltantes remarcados | Visualiza con campos faltantes remarcados | Visualiza |
-| `Pendiente\_Revision` | Visualiza con estado | Visualiza + opciones **Aprobar** / **Rechazar** | Visualiza con estado |
-| `Pendiente\_Modificar` | Visualiza datos + observaciones del Tutor | Visualiza datos + observaciones | Visualiza |
+| `Pendiente\_Revision` | Visualiza con estado | Visualiza con estado | Visualiza + opciones **Aprobar** / **Rechazar** |
+| `Pendiente\_Modificar` | Visualiza datos + observaciones del Mediador | Visualiza datos + observaciones | Visualiza |
 | `Aprobado` | Visualiza con estado | Visualiza | Visualiza |
 
 
@@ -517,9 +529,9 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 
 
 
-### CU-08: Auditar Datos Académicos *(función principal del Tutor)*
+### CU-08: Auditar Datos Académicos *(función principal del Mediador)*
 
-**Actor:** Tutor
+**Actor:** Mediador
 
 **Precondiciones:**
 
@@ -531,9 +543,9 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 
 **Flujo principal — Aprobación:**
 
-1. El tutor verifica manualmente la información.
+1. El mediador verifica manualmente la información.
 
-2. El tutor selecciona "Aprobar".
+2. El mediador selecciona "Aprobar".
 
 3. El sistema invoca `datos\_academicos.actualizar\_estado(Aprobado)`.
 
@@ -543,11 +555,11 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 
 **Flujo alternativo — Rechazo:**
 
-1. El tutor selecciona "Rechazar".
+1. El mediador selecciona "Rechazar".
 
 2. El sistema habilita un campo para cargar observaciones.
 
-3. El tutor ingresa las observaciones.
+3. El mediador ingresa las observaciones.
 
 4. El sistema invoca `datos\_academicos.actualizar\_estado(Pendiente\_Modificar)`.
 
@@ -784,9 +796,8 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 
 | Responsabilidades | Colaboradores |
 | - | - |
-| Seleccionar un becario (cargar: calendario + mediador) | `Becario` |
-| Visualizar datos académicos del becario seleccionado | `DatosAcademicos` |
-| Delegar la aprobación/rechazo de datos académicos | `DatosAcademicos` |
+| Seleccionar un becario (cargar: calendario tutorías + mediador) | `Becario` |
+| Visualizar datos académicos del becario seleccionado (sin auditoría) | `DatosAcademicos` |
 | Gestionar tutorías (crear, actualizar, cancelar) | `Tutoria` |
 | Exponer sus propios datos de contacto | — |
 | Contactar al mediador del becario seleccionado | `Becario`, `Mediador` |
@@ -798,7 +809,8 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 | Responsabilidades | Colaboradores |
 | - | - |
 | Seleccionar un becario (cargar: calendario envíos + tutor + padrino) | `Becario` |
-| Visualizar datos académicos del becario seleccionado | `DatosAcademicos` |
+| Visualizar datos académicos del becario seleccionado (con opciones de auditoría) | `DatosAcademicos` |
+| Delegar la aprobación/rechazo de datos académicos (auditoría) | `DatosAcademicos` |
 | Gestionar envíos de carta (crear, actualizar) | `EnvioCarta` |
 | Exponer sus propios datos de contacto | — |
 | Contactar al tutor del becario seleccionado | `Becario`, `Tutor` |
@@ -865,26 +877,29 @@ Navegación exclusiva a través de `Becario.lista\_envios\_cartas`. No contiene 
 | RN-06 | Las opciones "Aprobar" y "Rechazar" en la auditoría solo están disponibles si `estado\_verificacion` = `Pendiente\_Revision`. | `DatosAcademicos` |
 | RN-07 | Para ejecutar cualquier acción sobre un becario (más allá de listar), el referente debe haberlo seleccionado primero. | `Tutor`, `Mediador` |
 | RN-08 | El estado `Enviada` en `EnvioCarta` es asignado por un actor externo al sistema. | `EnvioCarta` |
+| RN-09 | La auditoría de datos académicos (Aprobar/Rechazar, CU-08) es responsabilidad exclusiva del `Mediador`. Ningún otro actor puede ejecutarla. | `Mediador`, `DatosAcademicos` |
 
 
 
 ## 5. Alcance Futuro
 
-Los siguientes puntos quedan fuera del alcance de esta iteración y serán abordados en etapas posteriores del proyecto:
+Los siguientes puntos se encuentran actualmente en desarrollo o quedan para iteraciones futuras:
 
-- Sistema de autenticación (login / logout / restablecer contraseña).
-
-- Rol Administrador: casos de uso de alta, baja y asignación de usuarios (tutor, mediador, padrino a becario).
-
-- Integración con el sistema externo Fonbec (postcondición de la auditoría de datos académicos).
+- Integración con el sistema externo Fonbec mediante flujos automatizados (postcondición de la auditoría de datos académicos).
 
 - Mecanismo de asignación del estado `Enviada` en `EnvioCarta` por actor externo.
 
 - Sistema de notificaciones ante cambios de estado (datos académicos, disponibilidad de becario en tutorías).
 
-- Diagrama formal de transición de estados para `DatosAcademicos`, `Tutoria` y `EnvioCarta`.
-
-- Restricciones de acceso por rol en la capa de autorización.
-
 - Ampliación de campos de `Tutoria` (modalidad, duración, etc.).
+
+> **Nota de actualización:**
+> El sistema de autenticación, la gestión de sesiones (login/logout), la infraestructura de base de datos (Supabase), la separación de responsabilidades y el rol `Administrador` (con todos sus casos de uso de ABM y vinculación) ya han sido implementados y se encuentran detallados en sus respectivos documentos anexos (ver `Administrador.md`).
+
+> **Nota de actualización — Rediseño de roles (Tutor ↔ Mediador):**
+> Por decisión de negocio, se redefinen las responsabilidades de los referentes:
+> - El **`Mediador`** asume la **auditoría de datos académicos** (CU-08, transferida desde el `Tutor` sin reescribir la lógica de transición de estados de `DatosAcademicos`) y la **gestión del programa de envío de cartas** (CU-13 a CU-15, desarrollo futuro).
+> - El **`Tutor`** queda como referente responsable de la **gestión de tutorías** (CU-09 a CU-12, desarrollo futuro), conservando la visualización de datos académicos sin opciones de auditoría.
+>
+> La estructura de navegación se preserva: `Becario` sigue siendo el Aggregate Root, `puntero_tutor`/`puntero_mediador` mantienen sus nombres (RN-01) y la prohibición de relación directa Tutor↔Mediador (RN-03) se mantiene. La exclusividad de la auditoría sobre el `Mediador` se formaliza en RN-09. Los diagramas `.puml` y `Administrador.md` quedan pendientes de sincronización en una iteración posterior.
 

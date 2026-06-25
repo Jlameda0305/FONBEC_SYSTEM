@@ -23,6 +23,8 @@ class RecuperarContrasenaUseCase:
         Raises:
             ValueError: If the email is not registered in the system.
         """
+        email = email.lower().strip()
+
         usuario = self.usuario_repo.obtener_por_email(email)
         if not usuario:
             raise ValueError("El correo no existe, contacta a Fonbec para mas informacion")
