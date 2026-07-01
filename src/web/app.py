@@ -80,11 +80,13 @@ def create_app() -> Flask:
     # --- Register Blueprints ---
     from src.web.routes.becario import becario_bp
     from src.web.routes.tutor import tutor_bp
+    from src.web.routes.mediador import mediador_bp
     from src.web.routes.admin import admin_bp
     from src.web.routes.auth import auth_bp
     
     app.register_blueprint(becario_bp)
     app.register_blueprint(tutor_bp)
+    app.register_blueprint(mediador_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
 

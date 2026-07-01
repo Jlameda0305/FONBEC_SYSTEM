@@ -233,11 +233,11 @@ class TestVisualizarFormularioAcademico(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# CU-08: Tutor audits academic data
+# CU-08: Mediador audits academic data
 # ---------------------------------------------------------------------------
 
 class TestAuditarDatosAcademicos(unittest.TestCase):
-    """Tutor.auditar_datos_academicos_becario() (CU-08)."""
+    """Mediador.auditar_datos_academicos_becario() (CU-08)."""
 
     def _becario_pendiente_revision(self) -> Becario:
         """Helper: create a Becario with datos in PENDIENTE_REVISION."""
@@ -258,9 +258,9 @@ class TestAuditarDatosAcademicos(unittest.TestCase):
 
     def test_aprobar_cambia_estado(self):
         """Approving sets estado to APROBADO."""
-        tutor = _make_tutor()
+        mediador = _make_mediador()
         becario = self._becario_pendiente_revision()
-        tutor.auditar_datos_academicos_becario(becario, "aprobar")
+        mediador.auditar_datos_academicos_becario(becario, "aprobar")
         self.assertEqual(
             becario.datos_academicos.estado_verificacion,
             EstadoVerificacion.APROBADO,
@@ -268,9 +268,9 @@ class TestAuditarDatosAcademicos(unittest.TestCase):
 
     def test_rechazar_cambia_estado_y_guarda_observaciones(self):
         """Rejecting sets PENDIENTE_MODIFICAR and stores observaciones."""
-        tutor = _make_tutor()
+        mediador = _make_mediador()
         becario = self._becario_pendiente_revision()
-        tutor.auditar_datos_academicos_becario(
+        mediador.auditar_datos_academicos_becario(
             becario, "rechazar", observaciones="Falta documento de inscripción"
         )
         self.assertEqual(
@@ -284,25 +284,26 @@ class TestAuditarDatosAcademicos(unittest.TestCase):
 
     def test_aprobar_limpia_observaciones(self):
         """Approving clears any previous observaciones."""
-        tutor = _make_tutor()
+        mediador = _make_mediador()
         becario = self._becario_pendiente_revision()
         becario.datos_academicos.observaciones = "Obs previa"
-        tutor.auditar_datos_academicos_becario(becario, "aprobar")
+        mediador.auditar_datos_academicos_becario(becario, "aprobar")
         self.assertIsNone(becario.datos_academicos.observaciones)
 
     def test_decision_invalida_rechazada(self):
         """Invalid decision string raises ValueError."""
-        tutor = _make_tutor()
+        mediador = _make_mediador()
         becario = self._becario_pendiente_revision()
         with self.assertRaises(ValueError):
-            tutor.auditar_datos_academicos_becario(becario, "pendiente")
+            mediador.auditar_datos_academicos_becario(becario, "pendiente")
 
     def test_auditar_en_estado_incorrecto_rechazado(self):
         """Cannot audit when estado is not PENDIENTE_REVISION."""
-        tutor = _make_tutor()
+        mediador = _make_mediador()
         becario = _make_becario()  # estado VACIO
         with self.assertRaises(ValueError):
-            tutor.auditar_datos_academicos_becario(becario, "aprobar")
+            mediador.auditar_datos_academicos_becario(becario, "aprobar")
+
 
 
 # ---------------------------------------------------------------------------

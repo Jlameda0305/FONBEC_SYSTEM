@@ -61,6 +61,8 @@ def login_post():
             return redirect(url_for("becario.dashboard"))
         elif rol == "tutor":
             return redirect(url_for("tutor.dashboard"))
+        elif rol == "mediador":
+            return redirect(url_for("mediador.dashboard"))
         else:
             return redirect(url_for("index"))
             

@@ -42,6 +42,10 @@
             <a class="dropdown-item" href="{{ url_for('tutor.mis_becarios') }}">
               <i class="ni ni-single-02 text-info"></i> Mis Becarios
             </a>
+            {% elif g.usuario_actual and g.usuario_actual.rol == 'mediador' %}
+            <a class="dropdown-item" href="{{ url_for('mediador.dashboard') }}">
+              <i class="ni ni-tv-2 text-primary"></i> Mi Panel
+            </a>
             {% elif g.usuario_actual and g.usuario_actual.rol == 'becario' %}
             <a class="dropdown-item" href="{{ url_for('becario.dashboard') }}">
               <i class="ni ni-tv-2 text-primary"></i> Mi Panel

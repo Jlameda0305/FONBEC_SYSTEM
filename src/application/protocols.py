@@ -11,6 +11,7 @@ from src.domain.actors.tutor import Tutor
 from src.domain.actors.abstract_actor import Usuario
 from src.domain.domain_entities.padrino import Padrino
 
+from src.domain.actors.mediador import Mediador
 
 class TutorRepositoryProtocol(Protocol):
     """
@@ -35,6 +36,32 @@ class TutorRepositoryProtocol(Protocol):
 
         Args:
             tutor: The Tutor instance to save.
+        """
+        ...
+
+class MediadorRepositoryProtocol(Protocol):
+    """
+    Abstract contract for accessing Mediador persistence.
+    """
+
+    def obtener_por_id(self, mediador_id: str) -> Optional[Mediador]:
+        """
+        Retrieve a Mediador aggregate by its unique user ID.
+
+        Args:
+            mediador_id: The unique identifier of the Mediador.
+
+        Returns:
+            The Mediador instance if found, None otherwise.
+        """
+        ...
+
+    def guardar(self, mediador: Mediador) -> None:
+        """
+        Persist the Mediador aggregate back to the storage backend.
+
+        Args:
+            mediador: The Mediador instance to save.
         """
         ...
 

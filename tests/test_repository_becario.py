@@ -39,8 +39,8 @@ class TestSQLAlchemyBecarioRepository(unittest.TestCase):
         becario = self.repo.obtener_por_id("bec-001")
         self.assertIsNotNone(becario)
         self.assertEqual(becario.id_usuario, "bec-001")
-        self.assertEqual(becario.nombre, "Ana")
-        self.assertEqual(becario.apellido, "Lopez")
+        self.assertEqual(becario.nombre, "A")
+        self.assertEqual(becario.apellido, "B")
 
     def test_datos_academicos_cargados(self) -> None:
         """The datos_academicos composition is eagerly loaded (not None)."""

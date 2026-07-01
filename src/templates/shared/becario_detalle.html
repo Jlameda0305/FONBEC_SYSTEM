@@ -26,8 +26,8 @@
 
 
 
-  <!-- SECCIÓN: Decisión de Auditoría (Solo Tutor) -->
-  {% if g.usuario_actual.rol == 'tutor' %}
+  <!-- SECCIÓN: Decisión de Auditoría (Solo Mediador) -->
+  {% if g.usuario_actual.rol == 'mediador' %}
   {% set d_academicos = datos.datos_academicos %}
   <div class="row mb-4">
     <div class="col-12">
@@ -54,7 +54,7 @@
               </div>
               {% endif %}
             {% elif d_academicos.estado_verificacion == 'Pendiente_Revision' %}
-              <form method="POST" action="{{ url_for('tutor.procesar_auditoria_academica', id_becario=id_bec) }}" id="audit-form">
+              <form method="POST" action="{{ url_for('mediador.procesar_auditoria_academica', id_becario=id_bec) }}" id="audit-form">
                 <div class="form-group">
                   <label class="form-control-label" for="observaciones">
                     Observaciones <small class="text-muted">(Requeridas para rechazar)</small>

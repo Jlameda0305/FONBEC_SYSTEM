@@ -9,7 +9,13 @@ from typing import Optional
 
 from sqlalchemy.orm import Session, joinedload
 
-from src.application.protocols import BecarioRepositoryProtocol, TutorRepositoryProtocol, UsuarioRepositoryProtocol, PadrinoRepositoryProtocol
+from src.application.protocols import (
+    BecarioRepositoryProtocol, 
+    TutorRepositoryProtocol, 
+    UsuarioRepositoryProtocol, 
+    PadrinoRepositoryProtocol,
+    MediadorRepositoryProtocol
+)
 from src.domain.actors.becario import Becario
 from src.domain.actors.tutor import Tutor
 from src.domain.actors.mediador import Mediador
@@ -49,6 +55,37 @@ class SQLAlchemyTutorRepository(TutorRepositoryProtocol):
         and their nested compositions.
         """
         self.session.add(tutor)
+        self.session.flush()
+
+
+class SQLAlchemyMediadorRepository(MediadorRepositoryProtocol):
+    """
+    Concrete implementation of MediadorRepositoryProtocol using SQLAlchemy.
+    """
+
+    def __init__(self, session: Session) -> None:
+        self.session = session
+
+    def obtener_por_id(self, mediador_id: str) -> Optional[Mediador]:
+        """
+        Retrieve a Mediador by its user ID. Eagerly loads its list of Becarios 
+        and their respective DatosAcademicos to prevent N+1 queries.
+        """
+        return (
+            self.session.query(Mediador)
+            .options(
+                joinedload(Mediador.lista_becarios)
+                .joinedload(Becario.datos_academicos)
+            )
+            .filter_by(id_usuario=mediador_id)
+            .first()
+        )
+
+    def guardar(self, mediador: Mediador) -> None:
+        """
+        Persists the Mediador aggregate back to the storage backend.
+        """
+        self.session.add(mediador)
         self.session.flush()
 
 

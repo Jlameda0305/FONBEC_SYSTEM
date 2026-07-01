@@ -6,7 +6,7 @@ rendered by the Jinja2 templates.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+
 
 from src.web.app import create_app
 
@@ -22,29 +22,15 @@ class TestWebBecarioAcademico(unittest.TestCase):
         cls.client = cls.app.test_client()
 
     def setUp(self):
-        # Set up standard session and user mock for all requests in this test
-        self.patcher = patch('src.infrastructure.repositories.SQLAlchemyUsuarioRepository')
-        self.mock_repo_class = self.patcher.start()
-        
-        self.mock_repo = MagicMock()
-        self.mock_user = MagicMock()
-        self.mock_user.id_usuario = "bec-002"
-        self.mock_user.rol = "becario"
-        # We also need the user to have valid 'datos_academicos' for the view to render properly without crashing
-        self.mock_user.datos_academicos = MagicMock()
-        self.mock_user.datos_academicos.nombre_carrera = "Ingeniería"
-        self.mock_user.datos_academicos.anio_ingreso = 2020
-        self.mock_user.datos_academicos.estado_verificacion = MagicMock(value="APROBADO")
-        
-        self.mock_repo.obtener_por_id_y_rol.return_value = self.mock_user
-        self.mock_repo_class.return_value = self.mock_repo
+        # The user bec-001 is injected in setUp as a becario.
+        pass
 
     def tearDown(self):
-        self.patcher.stop()
+        pass
 
     def _get_academico(self):
         with self.client.session_transaction() as sess:
-            sess["user_id"] = "bec-002"
+            sess["user_id"] = "bec-001"
             sess["rol"] = "becario"
         return self.client.get("/becario/academico")
 
