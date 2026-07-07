@@ -7,6 +7,8 @@ from flask import Blueprint, g, render_template, request, redirect, url_for, fla
 
 from src.web.auth_utils import requiere_rol
 from src.application.use_cases.CU08_Mediador_AuditarDatosAcademicos import AuditarDatosAcademicosUseCase
+from src.application.use_cases.CU05_Mediador_ListarBecarios import ListarBecariosMediadorUseCase
+from src.application.use_cases.CU06_Mediador_ObtenerDatosBecario import ObtenerDatosBecarioUseCase
 from src.infrastructure.repositories import SQLAlchemyMediadorRepository
 
 mediador_bp = Blueprint("mediador", __name__, url_prefix="/mediador")
@@ -27,8 +29,51 @@ def dashboard():
     
     Renders the main dashboard for the Mediador. 
     """
-    # En el MVP se puede reutilizar la vista base temporalmente
-    return render_template("tutor/dashboard.html")
+    # En el MVP se renderiza la vista de construcción para envíos de cartas
+    return render_template("mediador/dashboard.html")
+
+@mediador_bp.route("/mis-becarios", methods=["GET"])
+@requiere_rol("mediador")
+def mis_becarios():
+    """
+    GET /mediador/mis-becarios
+    
+    Renders the list of assigned Becarios via CU05.
+    """
+    user_id = g.usuario_actual.id_usuario
+    busqueda = request.args.get("busqueda", "")
+    
+    repo = SQLAlchemyMediadorRepository(g.db_session)
+    use_case = ListarBecariosMediadorUseCase(repo)
+    
+    try:
+        becarios_list = use_case.execute(user_id, busqueda=busqueda)
+    except ValueError as e:
+        flash(str(e), "error")
+        becarios_list = []
+        
+    return render_template("mediador/mis_becarios.html", becarios=becarios_list, busqueda=busqueda)
+
+
+@mediador_bp.route("/becario/<id_usuario>", methods=["GET"])
+@requiere_rol("mediador")
+def becario_detalle(id_usuario):
+    """
+    GET /mediador/becario/<id_usuario>
+    
+    Loads the detailed profile of the assigned Becario (CU06).
+    """
+    user_id = g.usuario_actual.id_usuario
+    repo = SQLAlchemyMediadorRepository(g.db_session)
+    use_case = ObtenerDatosBecarioUseCase(repo)
+    
+    try:
+        datos = use_case.execute(user_id, id_usuario)
+    except ValueError as e:
+        flash(str(e), "error")
+        return redirect(url_for("mediador.dashboard"))
+        
+    return render_template("shared/becario_detalle.html", datos=datos, id_usuario=id_usuario)
 
 
 @mediador_bp.route("/becario/<id_becario>/auditoria", methods=["POST"])

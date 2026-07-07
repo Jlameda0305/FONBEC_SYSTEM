@@ -1,0 +1,30 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Mis Becarios Asignados — FONBEC{% endblock %}
+
+{% block content %}
+<div class="header bg-gradient-primary pb-6 pt-5 pt-md-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <h6 class="h2 text-white d-inline-block mb-0"><i class="ni ni-single-02 mr-2"></i> Mis Becarios Asignados</h6>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt--5">
+  <div class="row">
+    <div class="col-12">
+      {% include 'shared/partials/_filtro_busqueda.html' %}
+      
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0"><i class="ni ni-single-02 mr-2 text-info"></i> Mis Becarios <span class="badge badge-pill badge-info ml-2">{{ becarios|length }}</span></h3>
+        </div>
+        
+        {% set lista_becarios = becarios %}
+        {% include 'shared/partials/_lista_becarios.html' %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

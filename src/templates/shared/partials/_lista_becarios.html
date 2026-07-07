@@ -43,7 +43,14 @@
           </span>
         </td>
         <td>
-          <a href="{{ url_for('admin.detalle_becario', id_becario=becario.id_usuario) if g.usuario_actual.rol == 'administrador' else url_for('tutor.becario_detalle', id_usuario=becario.id_usuario) }}" class="btn btn-sm btn-info">
+          {% if g.usuario_actual.rol == 'administrador' %}
+            {% set detalle_url = url_for('admin.detalle_becario', id_becario=becario.id_usuario) %}
+          {% elif g.usuario_actual.rol == 'mediador' %}
+            {% set detalle_url = url_for('mediador.becario_detalle', id_usuario=becario.id_usuario) %}
+          {% else %}
+            {% set detalle_url = url_for('tutor.becario_detalle', id_usuario=becario.id_usuario) %}
+          {% endif %}
+          <a href="{{ detalle_url }}" class="btn btn-sm btn-info">
             <i class="fas fa-search mr-1"></i> Ver Detalles
           </a>
         </td>
