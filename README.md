@@ -42,7 +42,7 @@ Plataforma Web empresarial para gestionar el programa de becas de la Fundación 
 | **Arquitectura** | Usamos **Clean Architecture** (Dominio, Aplicación, Infraestructura, Web). Todo está documentado bajo el estándar arc42 en `/docs/`. |
 | **Glosario (Lenguaje Oblicuo)** | Lectura obligatoria para alinear conceptos de código y negocio: [12-Glosario](docs/12-glosario.md). |
 | **Variables `.env` Clave** | `FLASK_ENV`, `SECRET_KEY`, `SUPABASE_URL`, `SUPABASE_KEY` (Role Key de admin API), y `SUPABASE_DATABASE_URL` (para el ORM de SQLAlchemy). |
-| **Seguridad y Estado** | La sesión local depende enteramente de un `SECRET_KEY` robusto. Ver la [Matriz de Riesgos y Deuda Técnica](docs/arc42/11-riesgos-y-deuda-tecnica.md) documentada. |
+| **Seguridad y Estado** | La sesión local depende enteramente de un `SECRET_KEY` robusto. Ver la [Matriz de Riesgos y Deuda Técnica](docs/11-riesgos-y-deuda-tecnica.md) documentada. |
 
 ## ✅ Checklist para Desarrolladores
 
