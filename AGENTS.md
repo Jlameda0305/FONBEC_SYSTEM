@@ -20,10 +20,11 @@ El código debe residir y respetar la siguiente estructura para garantizar el De
 * `src/templates/`: Vistas visuales HTML.
 * `tests/`: Suite completa de pruebas unitarias y de integración.
 
-## 4. Fuente de la Verdad (Diseño AOO - DOO)
-Para cualquier decisión de diseño de clases, máquinas de estado o flujos, **DEBES consultar obligatoriamente** la carpeta `AOO - DOO/` y los diagramas `.puml`. 
-* Los diagramas UML y de estados son la especificación funcional inquebrantable del sistema.
-* Toda máquina de estados (ej. el flujo `DatosAcademicos`) debe ceñirse bidireccionalmente a los diagramas.
+## 4. Fuente de la Verdad (Diseño y Arquitectura arc42)
+Para cualquier decisión de diseño de clases, máquinas de estado, flujos o Lenguaje Oblicuo del dominio, **DEBES consultar obligatoriamente** la documentación oficial bajo el estándar arc42 ubicada en la carpeta `docs/arc42/`.
+* La arquitectura general y las reglas de negocio están modeladas en los documentos arc42, siendo la principal referencia conceptual el Glosario de Negocio (`12-glosario.md`).
+* Toda máquina de estados (ej. el flujo `DatosAcademicos`) debe ceñirse a las especificaciones allí descritas.
+* Si existe discrepancia entre la documentación y el código, la fuente de verdad técnica y estructural siempre es el **código fuente actual**.
 
 ## 5. Restricciones y Reglas Estrictas de Desarrollo
 1. **Agregado Raíz:** La clase `Becario` es el *Aggregate Root*. Toda navegación o persistencia estructural hacia el resto de los objetos de su contexto (`DatosAcademicos`, `Tutorias`) pasa a través de él.

@@ -10,3 +10,4 @@ Argon template/
 Yo/
 .pytest_cache/
 *.log
+.gga/
