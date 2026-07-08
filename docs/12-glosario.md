@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 12. Glosario
 
 Este glosario define el *Ubiquitous Language* (Lenguaje Oblicuo) del Dominio del sistema FONBEC, garantizando que el equipo de desarrollo, los arquitectos y los expertos del negocio utilicen los mismos términos técnicos y conceptuales sin ambigüedades.

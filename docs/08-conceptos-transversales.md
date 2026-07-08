@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 8. Conceptos Transversales
 
 Esta sección documenta los enfoques generales, patrones de diseño y reglas transversales que aplican a múltiples partes del sistema FONBEC. Estos conceptos aseguran la coherencia conceptual y técnica en todo el código base.

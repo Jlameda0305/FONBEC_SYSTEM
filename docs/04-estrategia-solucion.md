@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 4. Estrategia de Solución
 
 Esta sección documenta las decisiones tecnológicas y arquitectónicas fundamentales que determinan la estructura del sistema FONBEC. Cada decisión responde a una o más metas de calidad identificadas en la Sección 1 (§1.2).

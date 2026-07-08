@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 9. Decisiones de Diseño Arquitectónico (ADRs)
 
 Esta sección documenta formalmente las decisiones de arquitectura más críticas, costosas de revertir o con mayor impacto en el ciclo de vida del sistema FONBEC. Se utiliza el formato ADR (Architecture Decision Record) para capturar el contexto, la decisión y sus consecuencias.

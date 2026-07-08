@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 6. Vista de Ejecución
 
 Esta sección documenta los flujos del sistema en tiempo de ejecución a través de los escenarios más representativos. Los diagramas de secuencia muestran cómo interactúan los bloques de construcción (capa web, casos de uso, dominio, infraestructura y servicios externos) durante la ejecución de cada caso de uso.

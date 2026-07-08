@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 11. Riesgos y Deuda Técnica
 
 Esta sección documenta los riesgos de seguridad y la deuda técnica estructural identificados en el sistema FONBEC, derivados de auditorías estáticas forenses y análisis de arquitectura (Domain-Driven Design).

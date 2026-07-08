@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 10. Requerimientos de Calidad
 
 Esta sección profundiza en las metas de calidad identificadas en la Sección 1.2, definiendo escenarios concretos (Quality Scenarios) que especifican cómo debe reaccionar el sistema FONBEC ante situaciones determinadas para asegurar que la arquitectura cumpla con su propósito.

@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 7. Vista de Despliegue
 
 Esta sección documenta la infraestructura física y de servicios en la que se ejecuta el sistema FONBEC. Se presentan dos entornos: desarrollo local y producción.

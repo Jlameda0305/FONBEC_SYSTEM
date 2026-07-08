@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # Documentación Arquitectónica FONBEC — arc42
 
 **Versión:** 1.0  

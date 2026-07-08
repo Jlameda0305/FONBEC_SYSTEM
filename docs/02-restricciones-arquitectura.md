@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 2. Restricciones de la Arquitectura
 
 Las restricciones que se documentan en esta sección son decisiones previas al diseño, condiciones del entorno o marcos de referencia organizacionales que limitan las opciones disponibles para la arquitectura del sistema. Su origen se encuentra en el código fuente, en las dependencias declaradas y en las reglas de desarrollo formalizadas en `AGENTS.md`.

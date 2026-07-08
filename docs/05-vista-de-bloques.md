@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/VARIACION%203%20NEGRO.png" alt="FONBEC Logo" width="250">
+</div>
+
 # 5. Vista de Bloques
 
 Esta sección describe la descomposición estática del sistema FONBEC en bloques de construcción. Se presentan tres niveles de zoom: el sistema completo como caja blanca (Nivel 1), cada capa arquitectónica con sus componentes internos (Nivel 2) y los componentes más complejos con su estructura interna (Nivel 3).
