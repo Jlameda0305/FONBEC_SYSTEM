@@ -1,13 +1,23 @@
+# Entornos Virtuales
+.venv/
+venv/
+env/
 
-FONBEC_SYSTEM/
-.env
-.vscode/
-__pycache__/
+# Entorno de Agentes IA y SDD
+.gga/
 .atl/
 openspec/
+
+# Configuración local y credenciales
+.env
+.vscode/
+
+# Cachés y temporales de Python
+__pycache__/
+.pytest_cache/
+*.log
+
+# Archivos específicos del proyecto
 temp_seed.py
 Argon template/
 Yo/
-.pytest_cache/
-*.log
-.gga
